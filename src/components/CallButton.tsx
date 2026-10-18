@@ -6,13 +6,15 @@ import { fill } from "@/lib/template";
 type CallButtonProps = {
   /** Texto visible; por defecto copy.callButton.label. P. ej. callLabel de products.json. */
   label?: string;
-  size?: "sm" | "md";
+  /** "icon": botón redondo solo con ícono (botón flotante); el texto queda para lectores de pantalla. */
+  size?: "sm" | "md" | "icon";
   className?: string;
 };
 
 const sizes = {
-  sm: "min-h-11 px-4 text-sm",
-  md: "min-h-12 px-6 text-base",
+  sm: "min-h-11 px-4 text-sm rounded-control",
+  md: "min-h-12 px-6 text-base rounded-control",
+  icon: "size-14 rounded-full",
 };
 
 // Botón de llamada reutilizable (FR-01, FR-02, FR-04, FR-11, FR-15). Siempre usa el
@@ -30,10 +32,13 @@ export function CallButton({
         texto: label,
         telefono: formatPhone(site.phone),
       })}
-      className={`inline-flex items-center justify-center gap-2 rounded-control bg-cta font-semibold whitespace-nowrap text-white shadow-suave transition-colors hover:bg-hoja ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold whitespace-nowrap text-white shadow-suave transition-colors hover:bg-hoja ${sizes[size]} ${className}`}
     >
-      <Phone aria-hidden="true" className="size-4 shrink-0" />
-      {label}
+      <Phone
+        aria-hidden="true"
+        className={`shrink-0 ${size === "icon" ? "size-6" : "size-4"}`}
+      />
+      {size === "icon" ? <span className="sr-only">{label}</span> : label}
     </a>
   );
 }

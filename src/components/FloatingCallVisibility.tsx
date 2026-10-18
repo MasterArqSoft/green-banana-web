@@ -29,7 +29,7 @@ export function FloatingCallVisibility({ children }: { children: ReactNode }) {
     <div
       // Oculto: fuera de la pantalla, sin foco ni lectura (inert).
       inert={!visible}
-      className={`fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 transition-transform duration-300 md:hidden ${
+      className={`fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 transition-transform duration-300 md:hidden ${
         visible ? "translate-y-0" : "translate-y-[150%]"
       }`}
     >

@@ -5,6 +5,21 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: botón flotante compacto
+
+### Decisiones del usuario
+- En móvil, la barra superior fija (FR-01) y el botón flotante de ancho completo (FR-17) mostraban dos "Llamar" a la vez, y el flotante tapaba una franja del contenido. El usuario eligió un **flotante compacto**: botón redondo de 56 px abajo a la derecha. La barra superior no cambia.
+
+### Cambios
+- `CallButton`: nuevo `size="icon"`, redondo, con ícono de 24 px y el texto en `sr-only`. El `aria-label` se mantiene ("Llamar al +57…").
+- `FloatingCall` usa `size="icon"`; `FloatingCallVisibility` se ancla a la derecha (`right-4`) en lugar de ocupar todo el ancho.
+- Prueba unitaria nueva: redondo, con texto para lectores de pantalla.
+
+### Verificado
+- `npm run validate` pasa: 96 pruebas unitarias y 13 e2e. Captura a 360 px revisada: el botón no tapa el texto.
+
+---
+
 ## 2026-10-18: T-33, composición y revisión a 360 px (con Playwright)
 
 ### Decisiones del usuario
@@ -26,7 +41,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - Capturas a 360 px revisadas: sin desbordes; tipografía, tarjetas y contrastes correctos. La página mide unos 9.400 px de alto en móvil, sobre todo por los espacios reservados de fotos.
 
 ### Abierto
-- **[POR CONFIRMAR] Botón Llamar duplicado en móvil:** la barra superior fija (FR-01) ya tiene "Llamar". El botón flotante (FR-17), de ancho completo, repite el mismo botón y tapa una franja del contenido mientras se hace scroll. Decisión del usuario pendiente.
+- Botón Llamar duplicado en móvil: resuelto en la entrada siguiente (flotante compacto).
 - La marca se recorta en móvil ("Guineo Verde Santa M…"), así que no se ve "(FICTICIO)"; la franja de demo sí lo aclara.
 
 ---
