@@ -29,6 +29,11 @@ try {
       "--chrome-flags=--headless=new",
       "--output=json",
       `--output-path=${report}`,
+      // Fuera de producción la página lleva noindex a propósito (demo con datos
+      // ficticios, D-11); esa auditoría de SEO fallaría siempre. En producción se mide.
+      ...(process.env.SITE_ENV === "production"
+        ? []
+        : ["--skip-audits=is-crawlable"]),
     ],
     {
       env: { ...process.env, CHROME_PATH: chromium.executablePath() },

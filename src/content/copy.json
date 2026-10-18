@@ -25,7 +25,7 @@
     "primaryCta": "Llamar para pedir",
     "secondaryCta": "Ver origen",
     "note": "Te damos el precio por teléfono. Garantía de frescura de 24 horas.",
-    "imagePending": "Foto de guineo verde pendiente"
+    "imageAlt": "Mano de guineo verde recién cortado sobre una mesa de madera."
   },
   "trustBar": [
     {
@@ -66,7 +66,7 @@
     "text": "Trabajamos con {productor} en {municipio}, {departamento}. Recibimos el guineo en nuestro acopio de {ciudad} y de allí lo distribuimos. Cada lote lleva su fecha de corte.",
     "steps": ["Finca", "Acopio en {ciudad}", "Tu casa o tu negocio"],
     "batch": "Lote {codigo} · Cortado el {fecha}",
-    "imagePending": "Foto del productor o del acopio pendiente"
+    "imageAlt": "Manos seleccionando guineo verde en el acopio."
   },
   "recipes": {
     "title": "¿Qué cocinar con guineo verde?",
@@ -79,12 +79,18 @@
   "howItWorks": {
     "title": "Cómo funciona",
     "steps": [
-      { "highlight": "Llama", "text": "y cuéntanos qué necesitas." },
+      {
+        "highlight": "Llama",
+        "text": "y cuéntanos qué necesitas."
+      },
       {
         "highlight": "Confirmamos",
         "text": "la presentación, el precio y la zona por teléfono."
       },
-      { "highlight": "Recibes", "text": "y pagas según lo acordado." }
+      {
+        "highlight": "Recibes",
+        "text": "y pagas según lo acordado."
+      }
     ]
   },
   "coverage": {

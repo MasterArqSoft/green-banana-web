@@ -215,7 +215,7 @@ default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'u
 | Técnica | Detalle |
 |---|---|
 | HTML estático | Todo el contenido renderizado en build |
-| Imágenes | AVIF/WebP, `srcset`, `width` y `height` explícitos, `loading="lazy"` fuera del primer viewport, imagen del hero con `fetchpriority="high"` |
+| Imágenes | AVIF/WebP (JPG de respaldo en el hero), `srcset` con versiones menores (tarjetas 200 px, recetas 400 px, origen 600 px), `width` y `height` explícitos, `loading="lazy"` fuera del primer viewport, imagen del hero con `fetchpriority="high"`. Configuración en `src/lib/images.ts`; las genera `npm run images` |
 | Fuentes | Autoalojadas, subconjunto latino, máximo 2 familias, `font-display: swap` |
 | JavaScript | Componente cliente (`'use client'`) solo para el botón flotante; el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
 | CSS | Tailwind con purga; CSS crítico en línea |

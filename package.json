@@ -15,6 +15,7 @@
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "budget": "node scripts/budget.mjs",
     "lighthouse": "node scripts/lighthouse.mjs",
+    "images": "node scripts/images.mjs",
     "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run budget && playwright test && npm run audit:prod",
     "prepare": "husky"
   },
@@ -38,6 +39,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.10",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.0.5"

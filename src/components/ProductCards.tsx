@@ -1,7 +1,8 @@
-import { Leaf } from "lucide-react";
 import { CallButton } from "@/components/CallButton";
+import { Picture } from "@/components/Picture";
 import { copy, products } from "@/lib/content";
 import { formatWeight, markPending } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 import type { Presentation } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
@@ -55,12 +56,13 @@ export function ProductCards() {
             key={product.id}
             className="flex gap-4 rounded-card bg-white p-4 shadow-suave lg:flex-col"
           >
-            {/* Espacio reservado de la foto 1:1 (T-04); decorativo hasta tenerla. */}
-            <div
-              aria-hidden="true"
-              className="flex aspect-square w-24 shrink-0 items-center justify-center rounded-control bg-hoja-claro text-hoja lg:w-full"
-            >
-              <Leaf className="size-8" />
+            <div className="w-24 shrink-0 lg:w-full">
+              <Picture
+                spec={IMAGES.products[product.id]}
+                alt={product.imageAlt}
+                sizes="(min-width: 1024px) 280px, 96px"
+                className="aspect-square w-full rounded-control object-cover"
+              />
             </div>
             <div className="flex flex-1 flex-col gap-2">
               <h3 className="text-lg font-semibold text-hoja">

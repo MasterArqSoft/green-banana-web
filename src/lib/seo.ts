@@ -1,4 +1,5 @@
 import { copy, site } from "@/lib/content";
+import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";
 
 // Rutas publicadas del sitio, para el sitemap.
@@ -17,13 +18,12 @@ export function seoValues() {
 export const seoTitle = () => fill(copy.seo.title, seoValues());
 export const seoDescription = () => fill(copy.seo.description, seoValues());
 
-// Imagen para redes generada en src/app/og.png/route.tsx.
-export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
-
+// Imagen para redes: recorte JPG de la foto del hero (IMAGES.og, generado por npm run images).
 export function ogImage() {
   return {
-    url: absoluteUrl("/og.png"),
-    ...OG_IMAGE_SIZE,
+    url: absoluteUrl(`/images/${IMAGES.og.output}.jpg`),
+    width: IMAGES.og.width,
+    height: IMAGES.og.height,
     alt: fill(copy.seo.ogImageAlt, seoValues()),
   };
 }

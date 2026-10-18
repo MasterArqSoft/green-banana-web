@@ -5,6 +5,41 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-04, fotos (generadas con IA) en la página
+
+### Decisiones del usuario
+- Mientras consigue fotos reales (RP-02), las 12 imágenes se generan con **ChatGPT** a partir de los prompts del proyecto, con nombres fijos en `fotos-originales/`.
+
+### Revisión de las imágenes
+- 9 sin problemas: guineo verde, sin texto, logos, caras ni lugares.
+- **Cayeye, patacón y chips** tenían plátano hartón o guineos dudosos al fondo. Se **recortaron** para dejarlos fuera, sin regenerarlas (configurado en `crop` de `images.ts`).
+
+### Cambios
+- `fotos-originales/` en `.gitignore`: los originales (~2,3 MB cada uno) no se suben.
+- `sharp` 0.35.5. `src/lib/images.ts` es la configuración única de cada foto (origen, recorte, tamaño, formatos, peso máximo y versiones menores). `scripts/images.mjs` y `npm run images` generan `public/images/` y bajan la calidad hasta cumplir el peso; fallan si alguna no cabe.
+- Formatos y pesos:
+  - Hero: AVIF, WebP y JPG; escritorio 1600 × 1000 (81 KB en AVIF), móvil 800 × 1000 (45 KB en AVIF).
+  - Tarjetas 600 × 600 ≤ 40 KB, origen 1200 × 800 ≤ 90 KB y recetas 600 × 400 ≤ 40 KB, en AVIF y WebP.
+  - Imagen para redes: `og.jpg` de 1200 × 630 (74 KB), recorte del hero. Se eliminó la ruta `src/app/og.png`, que generaba la tarjeta de texto.
+- `src/components/Picture.tsx`: `<picture>` con AVIF y WebP, `srcset`/`sizes`, ancho y alto explícitos y `loading="lazy"`. El hero usa dirección de arte (4:5 en móvil y 16:10 desde `md`) y `fetchPriority="high"`.
+- Textos alternativos en el contenido: `imageAlt` en `products.json`, `recipes.json`, `copy.hero` y `copy.origin`. Se quitaron los `imagePending`.
+- **Rendimiento:** con las fotos, el LCP de laboratorio subió a 3,5 s. Causa: Chrome descargaba en paralelo las fotos "diferidas" cercanas a la pantalla, y las tarjetas bajaban 600 px para mostrarse a 96 px. Solución: **versiones menores en `srcset`** (tarjetas 200 px, de ~5 a 9 KB; recetas 400 px; origen 600 px). Se probaron sin efecto un hero móvil de 640 × 800 y la precarga del hero; ambos se descartaron.
+- `scripts/lighthouse.mjs`: fuera de producción omite `is-crawlable`, porque la demo lleva `noindex` a propósito. Con eso, el SEO vuelve a 100.
+- `doc/creditos.md`: las 12 fotos como "propias ficticias, generadas con ChatGPT", con los recortes anotados.
+- Pruebas `tests/unit/images.test.tsx`: cada archivo y versión existe y cumple su peso; `Picture`; prioridad del hero; textos alternativos y carga diferida en tarjetas y recetas.
+
+### Verificado
+- `npm run validate` pasa: 160 pruebas unitarias, 32 e2e y presupuesto de 266,8 KB. axe sigue sin infracciones.
+- Lighthouse móvil (4 corridas): Rendimiento 90-96, Accesibilidad 100, Buenas prácticas 100 y SEO 100. LCP de laboratorio 2,4-3,3 s; LCP observado ~0,3 s.
+- Capturas a 360 px y en escritorio revisadas; ninguna imagen rota.
+
+### Abierto
+- El rendimiento está apenas sobre 90 en algunas corridas: hay poco margen para agregar peso.
+- RP-02: reemplazar por fotos reales y actualizar `doc/creditos.md`.
+- En móvil, el botón flotante tapa por un momento el borde derecho del botón "Llamar para precio" de la última tarjeta mientras se hace scroll. Es menor.
+
+---
+
 ## 2026-10-18: cifras de presentaciones marcadas como pendientes
 
 ### Decisiones del usuario

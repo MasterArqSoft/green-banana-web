@@ -1,5 +1,7 @@
-import { Clock, CookingPot } from "lucide-react";
+import { Clock } from "lucide-react";
+import { Picture } from "@/components/Picture";
 import { copy, recipes } from "@/lib/content";
+import { IMAGES } from "@/lib/images";
 
 // Usos y recetas (FR-07): tarjetas con foto, nombre, tiempo y descripción corta.
 // Si algún día se publican recetas completas, van en la propia página, sin enlaces externos.
@@ -22,13 +24,12 @@ export function Recipes() {
             key={recipe.id}
             className="flex flex-col overflow-hidden rounded-card bg-white shadow-suave"
           >
-            {/* Espacio reservado de la foto 3:2 (600 × 400, T-04); decorativo hasta tenerla. */}
-            <div
-              aria-hidden="true"
-              className="flex aspect-[3/2] items-center justify-center bg-hoja-claro text-hoja"
-            >
-              <CookingPot className="size-10" />
-            </div>
+            <Picture
+              spec={IMAGES.recipes[recipe.id as keyof typeof IMAGES.recipes]}
+              alt={recipe.imageAlt}
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+              className="aspect-[3/2] w-full object-cover"
+            />
             <div className="flex flex-col gap-2 p-4">
               <h3 className="text-lg font-semibold text-hoja">{recipe.name}</h3>
               <p className="flex items-center gap-1 text-sm font-semibold">

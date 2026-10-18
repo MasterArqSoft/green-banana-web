@@ -8,7 +8,7 @@ describe("SEO (T-31, NFR-03)", () => {
   it("arma URL absolutas a partir de site.url", () => {
     expect(absoluteUrl("/")).toBe(`${site.url}/`);
     expect(absoluteUrl("/terminos")).toBe(`${site.url}/terminos`);
-    expect(ogImage().url).toBe(`${site.url}/og.png`);
+    expect(ogImage().url).toBe(`${site.url}/images/og.jpg`);
   });
 
   it("el título incluye la ciudad y la marca", () => {
