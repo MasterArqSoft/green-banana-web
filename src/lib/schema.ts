@@ -154,6 +154,8 @@ export const copySchema = z.strictObject({
     batch: textWith("codigo").and(textWith("fecha")),
     imagePending: text,
   }),
+  // FR-07. Las tarjetas vienen de recipes.json; timeLabel solo lo leen los lectores de pantalla.
+  recipes: z.strictObject({ title: text, timeLabel: text }),
 });
 
 export type Site = z.infer<typeof siteSchema>;

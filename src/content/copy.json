@@ -56,5 +56,9 @@
     "steps": ["Finca", "Acopio en {ciudad}", "Tu casa o tu negocio"],
     "batch": "Lote {codigo} · Cortado el {fecha}",
     "imagePending": "Foto del productor o del acopio pendiente"
+  },
+  "recipes": {
+    "title": "¿Qué cocinar con guineo verde?",
+    "timeLabel": "Tiempo de preparación:"
   }
 }
