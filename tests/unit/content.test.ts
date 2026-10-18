@@ -37,6 +37,10 @@ describe("carga del contenido", () => {
     expect(content.site.phoneIsPlaceholder).toBe(true);
   });
 
+  it("el contenido actual no tiene frases prohibidas (P1, P3)", async () => {
+    await expect(import("@/lib/content")).resolves.toBeDefined();
+  });
+
   it("bloquea el build de producción con el número ficticio (riesgo R5)", async () => {
     vi.stubEnv("SITE_ENV", "production");
     await expect(import("@/lib/content")).rejects.toThrow(

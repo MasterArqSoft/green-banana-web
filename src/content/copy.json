@@ -60,5 +60,9 @@
   "recipes": {
     "title": "¿Qué cocinar con guineo verde?",
     "timeLabel": "Tiempo de preparación:"
+  },
+  "benefits": {
+    "title": "Lo que aporta",
+    "text": "El guineo verde es fuente de almidón resistente, un tipo de fibra. Es un alimento de cocina tradicional y no sustituye la orientación de un profesional de la salud."
   }
 }

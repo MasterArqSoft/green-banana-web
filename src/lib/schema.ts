@@ -156,6 +156,8 @@ export const copySchema = z.strictObject({
   }),
   // FR-07. Las tarjetas vienen de recipes.json; timeLabel solo lo leen los lectores de pantalla.
   recipes: z.strictObject({ title: text, timeLabel: text }),
+  // FR-08. Texto cauteloso; las frases prohibidas las bloquea src/lib/claims.ts.
+  benefits: z.strictObject({ title: text, text }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
