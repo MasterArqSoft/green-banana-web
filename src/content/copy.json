@@ -37,5 +37,11 @@
       "title": "Seleccionado a mano",
       "text": "Solo guineo firme y verde"
     }
-  ]
+  ],
+  "products": {
+    "title": "Presentaciones",
+    "unitWeight": "~{peso} por unidad",
+    "units": "~{unidades} unidades",
+    "note": "El precio se informa por teléfono. El costo de envío también se informa antes de confirmar."
+  }
 }

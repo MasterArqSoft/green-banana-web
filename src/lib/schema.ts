@@ -132,6 +132,13 @@ export const copySchema = z.strictObject({
       }),
     )
     .length(4, "La franja de confianza lleva exactamente 4 elementos"),
+  // FR-04. El nombre, el peso y el texto del botón de cada tarjeta vienen de products.json.
+  products: z.strictObject({
+    title: text,
+    unitWeight: textWith("peso"),
+    units: textWith("unidades"),
+    note: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
