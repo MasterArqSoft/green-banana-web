@@ -158,6 +158,13 @@ export const copySchema = z.strictObject({
   recipes: z.strictObject({ title: text, timeLabel: text }),
   // FR-08. Texto cauteloso; las frases prohibidas las bloquea src/lib/claims.ts.
   benefits: z.strictObject({ title: text, text }),
+  // FR-09: tres pasos; "highlight" es la palabra que va en negrita.
+  howItWorks: z.strictObject({
+    title: text,
+    steps: z
+      .array(z.strictObject({ highlight: text, text }))
+      .length(3, "Cómo funciona tiene 3 pasos"),
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;

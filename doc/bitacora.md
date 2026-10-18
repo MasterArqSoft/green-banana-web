@@ -5,6 +5,20 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-19, cómo funciona
+
+### Cambios
+- `src/components/HowItWorks.tsx` (FR-09): sección `#como-funciona` sobre fondo `hoja-claro`, con H2 "Cómo funciona" y una lista ordenada de 3 tarjetas.
+  - Cada paso lleva un número en un círculo verde hoja (decorativo; el orden lo da `<ol>`) y la primera palabra en negrita: **Llama**, **Confirmamos**, **Recibes**.
+  - 1 columna en móvil y 3 en escritorio.
+- `copy.json` bloque `howItWorks` (`highlight` + `text` por paso) y `copySchema` con exactamente 3 pasos. El título "Cómo funciona" es el nombre de la sección en el spec.
+- Pruebas `tests/unit/HowItWorks.test.tsx`: título, 3 pasos en `<ol>` y orden.
+
+### Verificado
+- `npm run validate` pasa con 62 pruebas.
+
+---
+
 ## 2026-10-18: T-46, beneficios y bloqueo de frases prohibidas
 
 ### Cambios
