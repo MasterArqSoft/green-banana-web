@@ -53,3 +53,6 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+# Originales de las fotos (pesados): solo se publican las versiones optimizadas de public/images/
+/fotos-originales/

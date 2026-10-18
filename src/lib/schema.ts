@@ -64,6 +64,7 @@ export const presentationSchema = z.strictObject({
   approxWeightG: approxWeightG.optional(),
   approxUnits: text.optional(),
   callLabel: text,
+  imageAlt: text,
   // Cifras aún sin confirmar con el proveedor (T-03): se muestran entre corchetes y
   // bloquean el build de producción. Se borra el campo al confirmarlas.
   pendingConfirmation: z
@@ -92,7 +93,13 @@ export const faqSchema = z
 
 export const recipesSchema = z
   .array(
-    z.strictObject({ id: slug, name: text, time: text, description: text }),
+    z.strictObject({
+      id: slug,
+      name: text,
+      time: text,
+      description: text,
+      imageAlt: text,
+    }),
   )
   .min(1)
   .superRefine(uniqueIds);
@@ -153,14 +160,14 @@ export const copySchema = z.strictObject({
     acopio: textWith("ciudad"),
     phone: textWith("telefono"),
   }),
-  // FR-02. imagePending se muestra mientras no haya foto con licencia (T-04).
+  // FR-02.
   hero: z.strictObject({
     title: textWith("ciudad"),
     subtitle: text,
     primaryCta: text,
     secondaryCta: text,
     note: text,
-    imagePending: text,
+    imageAlt: text,
   }),
   // FR-03: exactamente cuatro elementos. El título puede usar {ciudad}.
   trustBar: z
@@ -192,7 +199,7 @@ export const copySchema = z.strictObject({
     text: textWith("productor").and(textWith("municipio")),
     steps: z.array(text).length(3, "El esquema de origen tiene 3 pasos"),
     batch: textWith("codigo").and(textWith("fecha")),
-    imagePending: text,
+    imageAlt: text,
   }),
   // FR-07. Las tarjetas vienen de recipes.json; timeLabel solo lo leen los lectores de pantalla.
   recipes: z.strictObject({ title: text, timeLabel: text }),

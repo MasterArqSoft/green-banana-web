@@ -1,6 +1,7 @@
-import { Leaf } from "lucide-react";
 import { CallButton } from "@/components/CallButton";
+import { imageSrc } from "@/components/Picture";
 import { copy, site } from "@/lib/content";
+import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";
 
 // Hero (FR-02): H1 con propuesta de valor y acopio, usos, CTA Llamar, CTA "Ver origen"
@@ -34,12 +35,41 @@ export function Hero() {
         <p className="text-sm">{hero.note}</p>
       </div>
 
-      {/* Espacio reservado con la proporción de la foto (móvil 4:5, escritorio 16:10)
-          para que no haya saltos de diseño al agregarla (CLS). */}
-      <div className="flex aspect-[4/5] flex-col items-center justify-center gap-3 rounded-card bg-hoja-claro text-hoja md:aspect-[16/10]">
-        <Leaf aria-hidden="true" className="size-12" />
-        <p className="text-sm font-semibold">{hero.imagePending}</p>
-      </div>
+      {/* Foto vertical 4:5 en móvil y horizontal 16:10 desde md. Es la única con
+          prioridad alta: es el LCP. */}
+      <picture>
+        <source
+          media="(min-width: 768px)"
+          type="image/avif"
+          srcSet={imageSrc(IMAGES.heroDesktop, "avif")}
+        />
+        <source
+          media="(min-width: 768px)"
+          type="image/webp"
+          srcSet={imageSrc(IMAGES.heroDesktop, "webp")}
+        />
+        <source
+          media="(min-width: 768px)"
+          srcSet={imageSrc(IMAGES.heroDesktop, "jpg")}
+        />
+        <source
+          type="image/avif"
+          srcSet={imageSrc(IMAGES.heroMobile, "avif")}
+        />
+        <source
+          type="image/webp"
+          srcSet={imageSrc(IMAGES.heroMobile, "webp")}
+        />
+        <img
+          src={imageSrc(IMAGES.heroMobile, "jpg")}
+          alt={hero.imageAlt}
+          width={IMAGES.heroMobile.width}
+          height={IMAGES.heroMobile.height}
+          fetchPriority="high"
+          decoding="async"
+          className="aspect-[4/5] w-full rounded-card object-cover md:aspect-[16/10]"
+        />
+      </picture>
     </section>
   );
 }

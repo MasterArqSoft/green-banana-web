@@ -1,6 +1,8 @@
-import { ArrowRight, Sprout } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Picture } from "@/components/Picture";
 import { copy, origin, site } from "@/lib/content";
 import { formatDate } from "@/lib/format";
+import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";
 
 // Origen y trazabilidad (FR-06). Destino del botón "Ver origen" del hero (#origen).
@@ -50,11 +52,12 @@ export function Origin() {
           </p>
         </div>
 
-        {/* Espacio reservado de la foto 3:2 (1200 × 800, T-04). */}
-        <div className="flex aspect-[3/2] flex-col items-center justify-center gap-3 rounded-card bg-white/70 text-hoja">
-          <Sprout aria-hidden="true" className="size-12" />
-          <p className="text-sm font-semibold">{copy.origin.imagePending}</p>
-        </div>
+        <Picture
+          spec={IMAGES.origin}
+          alt={copy.origin.imageAlt}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="aspect-[3/2] w-full rounded-card object-cover"
+        />
       </div>
     </section>
   );

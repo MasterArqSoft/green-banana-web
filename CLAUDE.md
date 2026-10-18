@@ -37,7 +37,8 @@ npm run format         # Prettier (escribe); format:check solo verifica
 npm run validate       # TODO junto: format:check, lint, typecheck, test, build, budget, playwright test y audit:prod. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
 npm run audit:prod     # npm audit solo de dependencias de producción, falla con altas o críticas
 npm run budget         # peso inicial por página (gzip) ≤ 300 KB; requiere out/ construido
-npm run lighthouse     # Lighthouse móvil, 4 categorías ≥ 90 (AC-08); requiere out/; no está en validate (lento)
+npm run lighthouse     # Lighthouse móvil, 4 categorías ≥ 90 (AC-08); requiere out/; no está en validate (lento). Fuera de producción omite is-crawlable (la demo es noindex)
+npm run images         # genera public/images/ desde fotos-originales/ (originales fuera de Git)
 npm test               # pruebas unitarias (Vitest, tests/unit/**/*.test.ts); test:watch en modo vigilancia
 npx vitest run tests/unit/tel.test.ts            # un solo archivo
 npx vitest run tests/unit/tel.test.ts -t "formatPhone"   # una sola prueba por nombre
@@ -63,6 +64,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - **JavaScript mínimo:** el único componente cliente (`'use client'`) es `FloatingCallVisibility` (T-28). Solo decide cuándo mostrar el botón, usando `IntersectionObserver` sobre `#hero` y `#pie`, y recibe el `CallButton` ya renderizado como `children`. **Nunca importes `@/lib/content` en un componente cliente**: todo el contenido viajaría en el JavaScript del navegador. El acordeón de FAQ usa `<details>`/`<summary>` nativos, sin JavaScript. Todo lo demás se renderiza en el build.
 - **SEO:** `src/lib/seo.ts` arma URL absolutas desde `site.url` (sin `/` final; demo hoy, dominio en RP-01). Metadatos en `layout.tsx` (textos en `copy.seo`), `robots.ts` y `sitemap.ts`, imagen para redes en `src/app/og.png/route.tsx` (se usa una ruta `.png` porque la convención `opengraph-image` exporta un archivo sin extensión) y JSON-LD `LocalBusiness` y `FAQPage`. Las rutas especiales necesitan `export const dynamic = "force-static"` con `output: "export"`. Fuera de producción: `noindex` y `robots.txt` con `Disallow: /`.
 - **Enlaces internos:** usa `next/link` (agrega solo el prefijo de la demo). Para `<a>` simples a rutas propias, usa `assetPath`.
+- **Fotos:** se configuran en `src/lib/images.ts` (origen, recorte, tamaño, formatos, peso máximo y `variants` para srcset). `npm run images` las genera desde `fotos-originales/` (fuera de Git) en `public/images/` y falla si alguna supera su peso. En componentes usa `<Picture spec={IMAGES…} alt sizes>` (AVIF + WebP, ancho y alto explícitos, `loading="lazy"`); solo el hero tiene `fetchPriority="high"`. Los textos alternativos viven en el contenido (`imageAlt` en `products.json`, `recipes.json` y `copy.json`). No uses `git checkout` sobre archivos con cambios sin commit.
 - **Imágenes de `public/`:** usa `assetPath(src)` de `src/lib/asset.ts` en el `src`, para que funcionen con el prefijo de la demo.
 - **Rutas (App Router):** `src/app/page.tsx` (landing) y las páginas legales `terminos/`, `privacidad/` y `garantia/`. No hay carpeta `api/` en Fase 1 (R-06).
 - **Sin precios en el modelo de datos:** `products.json` no tiene campos de precio; `pricePerKg` y `priceTotal` llegan con R-01.
