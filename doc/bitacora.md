@@ -5,6 +5,26 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-11, script único de validación
+
+### Cambios
+- `package.json`:
+  - `npm run validate` ejecuta en orden `format:check`, `lint`, `typecheck`, `test`, `build` y `audit:prod`, y se detiene en el primer fallo. Es el comando que reutilizará la pipeline de R-10.
+  - `audit:prod` = `npm audit --omit=dev --audit-level=high`: falla con vulnerabilidades altas o críticas en dependencias de producción. Las de desarrollo (5 altas conocidas, ver T-07) quedan para T-40; si se incluyeran, `validate` fallaría siempre.
+  - lint-staged ahora también revisa archivos `.mts` (antes `vitest.config.mts` quedaba fuera del pre-commit).
+- `CLAUDE.md`: comandos `validate` y `audit:prod`. `spec/03-plan.md` §7: alcance de `npm audit`.
+
+### Verificado
+- `npm run validate` pasa en unos 20 s.
+- Con un `pricePerKg` agregado a `products.json` falla en las pruebas con "Unrecognized key: pricePerKg". El archivo se restauró.
+- ESLint ya revisaba `.mts`; solo faltaba en lint-staged.
+
+### Abierto
+- El workflow de la demo (`pages.yml`) solo ejecuta `build`. Podría ejecutar `validate` para no desplegar una demo con pruebas rotas: sugerencia pendiente de aprobación.
+- Decidir en T-40 qué hacer con las vulnerabilidades de dependencias de desarrollo.
+
+---
+
 ## 2026-10-18: T-10, tokens de diseño, fuentes y layout base
 
 ### Decisiones del usuario

@@ -26,7 +26,7 @@ No son fuente de verdad:
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). Léelo al empezar para retomar el contexto.
 
 ## Estado actual y comandos
-T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. T-08 hecho: `src/lib/tel.ts` con pruebas unitarias (Vitest). T-10 hecho: tokens de diseño en `src/app/globals.css` y fuentes en `src/app/fonts.ts`. Falta el script único de validación (T-11) y Playwright.
+T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. T-08 hecho: `src/lib/tel.ts` con pruebas unitarias (Vitest). T-10 hecho: tokens de diseño en `src/app/globals.css` y fuentes en `src/app/fonts.ts`. T-11 hecho: `npm run validate`. Falta Playwright (T-37).
 
 ```bash
 npm run dev            # servidor de desarrollo en http://localhost:3000
@@ -34,11 +34,13 @@ npm run build          # exportación estática en out/
 npm run lint           # ESLint
 npm run typecheck      # next typegen && tsc --noEmit (genera los tipos de rutas como LayoutProps)
 npm run format         # Prettier (escribe); format:check solo verifica
+npm run validate       # TODO junto: format:check, lint, typecheck, test, build y audit:prod. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
+npm run audit:prod     # npm audit solo de dependencias de producción, falla con altas o críticas
 npm test               # pruebas unitarias (Vitest, tests/unit/**/*.test.ts); test:watch en modo vigilancia
 npx vitest run tests/unit/tel.test.ts            # un solo archivo
 npx vitest run tests/unit/tel.test.ts -t "formatPhone"   # una sola prueba por nombre
 ```
-Cuando existan, documenta aquí Playwright y el script de T-11.
+Cuando exista, documenta aquí Playwright y agrégalo a `validate`.
 
 **Next.js 16 cambia APIs respecto a versiones anteriores** (ver `AGENTS.md`). Antes de usar una API de Next, consulta la guía en `node_modules/next/dist/docs/`. Con `output: "export"` no se pueden usar `cacheComponents`/PPR, `headers`, `redirects`, `rewrites`, Server Actions, Route Handlers con Request ni el optimizador de imágenes por defecto (`images.unoptimized: true`).
 
