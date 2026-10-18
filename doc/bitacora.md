@@ -5,6 +5,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-40, dependencias
+
+### Cambios
+- `.github/dependabot.yml`:
+  - npm semanal (lunes, hora de Bogotá), con menores y parches agrupados en un solo PR, mayores por separado y máximo 5 PR abiertos;
+  - GitHub Actions, mensual.
+- En GitHub, con `gh api`: **alertas de seguridad de Dependabot** y **PR automáticos de seguridad** activados.
+- React y React DOM 19.3.0 → **19.3.1** (parche), con versión exacta.
+- `allowScripts`: `unrs-resolver: false`. Su script de instalación (`napi-postinstall`) solo verifica o descarga el binario nativo, que ya viene incluido (el lint funciona). Así desaparece el aviso de npm en cada instalación.
+- Plan §7 y T-40 actualizados: Dependabot ya no espera a R-10, porque el repositorio está en GitHub desde T-07.
+
+### Vulnerabilidades: riesgo aceptado
+- `npm audit` completo: **5 altas**, todas por `braces` (GHSA-vfj7-8cjw-p6xm, DoS por patrones muy anidados), vía `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces` 3.0.3.
+- **No hay versión corregida:** 3.0.3 es la última publicada, y `npm audit fix --force` bajaría a `eslint-config-next@14`, incompatible con Next 16.
+- **Impacto:** solo en el lint durante el desarrollo, con patrones fijos del proyecto. No llega al sitio publicado (`npm audit --omit=dev`: 0).
+- **Decisión:** la validación sigue usando `audit:prod`. Dependabot avisará cuando haya arreglo. [POR CONFIRMAR con el usuario: aceptación del riesgo]
+- Versiones mayores pendientes, sin aplicar: ESLint 10, TypeScript 7, @types/node 26. Dependabot las propondrá una por una para evaluarlas.
+
+### Verificado
+- `npm run validate` pasa: 160 pruebas unitarias, 32 e2e y presupuesto de 266,8 KB.
+- API de GitHub: `vulnerability-alerts` 204 y `automated-security-fixes.enabled: true`.
+
+---
+
 ## 2026-10-18: T-04, fotos (generadas con IA) en la página
 
 ### Decisiones del usuario

@@ -88,7 +88,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | T-37 | Pruebas e2e Playwright: botón Llamar en todos los puntos de contacto, acordeón, navegación por teclado | AC-01 a 03, 09 | 4 | T-33 |
 | T-38 | Auditoría de accesibilidad (axe) y prueba con lector de pantalla | NFR-02, AC-09 | 3 | T-33 |
 | T-39 | Revisión de copy contra P1 y P3, sin precios, sin imágenes sin licencia y la lista legal (spec §9) | AC-02, 07, 13 | 2 | T-33, T-27 |
-| T-40 | `npm audit` en el script de validación local (T-11). La actualización automática de dependencias (Dependabot o equivalente del proveedor) se configura con R-10 | NFR-04 | 1 | T-11 |
+| T-40 | `npm audit` en el script de validación local (T-11) y Dependabot (actualizaciones semanales y alertas y PR de seguridad), ya que el repositorio está en GitHub | NFR-04 | 1 | T-11 |
 
 ## Fase 6: Lanzamiento
 
