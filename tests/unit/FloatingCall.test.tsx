@@ -18,6 +18,12 @@ describe("FloatingCall (FR-17)", () => {
     expect(html).toContain("translate-y-[150%]");
   });
 
+  it("es un botón redondo solo con ícono y conserva el texto para lectores de pantalla", () => {
+    expect(html).toContain("rounded-full");
+    expect(html).toMatch(/<span class="sr-only">[^<]+<\/span>/);
+    expect(html).toMatch(/aria-label="[^"]+"/);
+  });
+
   it("solo se muestra en móvil", () => {
     expect(html).toContain("md:hidden");
   });
