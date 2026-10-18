@@ -5,6 +5,31 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-13, hero
+
+### Decisiones del usuario
+- Construir el hero ya, con un espacio reservado hasta tener una foto con licencia (T-04).
+
+### Cambios
+- `src/components/Hero.tsx` (FR-02):
+  - H1 "Guineo verde recién cortado, acopiado en {ciudad}" y subtítulo con usos.
+  - CTA "Llamar para pedir" con `CallButton` y CTA secundario "Ver origen" hacia `#origen`. Ese ancla llega con T-17.
+  - Microcopy de precio por teléfono y garantía. Sin precio.
+  - En móvil el texto va primero (AC-01).
+- Espacio reservado de la foto: panel `hoja-claro` con ícono de hoja y el texto "Foto de guineo verde pendiente". Tiene la proporción final (4:5 en móvil, 16:10 en escritorio) para que agregar la foto no cause saltos de diseño (CLS).
+- `copy.json` y `copySchema`: bloque `hero`. El título exige el marcador `{ciudad}`.
+- `page.tsx`: la página provisional se reemplazó por `<main>` con `Hero`. El orden final es T-33.
+- Pruebas `tests/unit/Hero.test.tsx`: H1 con la ciudad, enlace `tel:`, CTA secundario y ningún precio.
+
+### Verificado
+- `npm run validate` pasa con 28 pruebas.
+
+### Abierto
+- Foto del hero (T-04): al llegar, agregar la imagen y su texto alternativo, y registrar la licencia.
+- Revisión visual a 360 px, pendiente (sin extensión de Chrome).
+
+---
+
 ## 2026-10-18: textos de interfaz en `copy.json` (principio P9)
 
 ### Decisiones del usuario
