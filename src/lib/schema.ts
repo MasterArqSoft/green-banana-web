@@ -122,6 +122,16 @@ export const copySchema = z.strictObject({
     note: text,
     imagePending: text,
   }),
+  // FR-03: exactamente cuatro elementos. El título puede usar {ciudad}.
+  trustBar: z
+    .array(
+      z.strictObject({
+        icon: z.enum(["camion", "telefono", "escudo", "mano"]),
+        title: text,
+        text,
+      }),
+    )
+    .length(4, "La franja de confianza lleva exactamente 4 elementos"),
 });
 
 export type Site = z.infer<typeof siteSchema>;

@@ -15,5 +15,27 @@
     "secondaryCta": "Ver origen",
     "note": "Te damos el precio por teléfono. Garantía de frescura de 24 horas.",
     "imagePending": "Foto de guineo verde pendiente"
-  }
+  },
+  "trustBar": [
+    {
+      "icon": "camion",
+      "title": "Acopio en {ciudad}",
+      "text": "Distribuimos a hogares y puntos de venta"
+    },
+    {
+      "icon": "telefono",
+      "title": "Precio por teléfono",
+      "text": "Te atendemos por llamada"
+    },
+    {
+      "icon": "escudo",
+      "title": "Garantía de frescura",
+      "text": "Reclamas en 24 horas con una foto"
+    },
+    {
+      "icon": "mano",
+      "title": "Seleccionado a mano",
+      "text": "Solo guineo firme y verde"
+    }
+  ]
 }
