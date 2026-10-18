@@ -5,6 +5,31 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-37 pruebas e2e y T-38 accesibilidad
+
+### Cambios
+- `@axe-core/playwright` 4.14.0.
+- `tests/e2e/calls.spec.ts` (T-37):
+  - todos los `tel:` de la página usan el número de `site.json` (AC-03);
+  - hay un botón de llamada en la barra superior, el hero, las 4 presentaciones, la cobertura, los negocios, el CTA final y el pie;
+  - ninguna de las 4 páginas muestra precios (AC-02);
+  - en escritorio, con teclado (AC-09): el primer Tab llega a "Llamar" con contorno de foco visible; el acordeón se abre con Enter y se cierra con Espacio; **todos** los enlaces y preguntas visibles se alcanzan con Tab.
+- `tests/e2e/a11y.spec.ts` (T-38): axe con etiquetas WCAG 2.0/2.1/2.2 A y AA en `/`, `/terminos`, `/privacidad` y `/garantia`, en móvil y escritorio. Un caso extra con todas las preguntas abiertas y el botón flotante visible.
+
+### Verificado
+- `npm run validate` pasa: 102 pruebas unitarias y 32 e2e (6 omitidas: las de móvil en escritorio y las de teclado en móvil).
+- **axe: 0 infracciones** en las 4 páginas y en los dos tamaños, contraste de color incluido.
+
+### Abierto
+- **Prueba con lector de pantalla (manual, parte de T-38).** Pendiente de hacer por una persona. Sugerencia: NVDA (gratis, Windows) con Chrome, y TalkBack en Android. Revisar:
+  1. Al entrar se lee el H1 y "Llamar para pedir al +57 300 000 0000".
+  2. La navegación por encabezados (tecla H en NVDA) recorre todas las secciones en orden.
+  3. Las preguntas frecuentes anuncian "contraído/expandido".
+  4. El botón flotante redondo se anuncia como "Llamar al +57…".
+  5. La franja de demo y el aviso de borrador legal se leen.
+
+---
+
 ## 2026-10-18: T-31, SEO
 
 ### Cambios
