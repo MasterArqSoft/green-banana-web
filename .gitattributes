@@ -1,0 +1,3 @@
+# Finales de línea LF en todo el repositorio (Prettier usa LF y el hook de Husky es un script sh)
+* text=auto eol=lf
+*.ico binary
