@@ -5,6 +5,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-23 testimonios y T-24 preguntas frecuentes
+
+### Cambios
+- **T-23** `src/components/Testimonials.tsx` (FR-12):
+  - Si `testimonials.json` está vacío, no renderiza nada (AC-11). Hoy está vacío.
+  - Con datos muestra cita, foto redonda, nombre y negocio o barrio.
+  - `testimonialsSchema`: 0 testimonios (sección oculta) o entre 3 y 5, cada uno con `authorized: true` obligatorio como constancia de autorización.
+- `src/lib/asset.ts`: `assetPath()` antepone `PAGES_BASE_PATH` a las rutas de `public/`. `next/image` no lo hace solo con un `src` de texto (docs de Next 16, basePath).
+- **T-24** `src/components/Faq.tsx` (FR-13):
+  - Acordeón con `<details>`/`<summary>` **nativos**: accesible por teclado y lector de pantalla y **sin JavaScript en el navegador**.
+  - Las 9 preguntas de `faq.json`, con chevrón que gira al abrir.
+  - JSON-LD `FAQPage`, con `<` escapado.
+  - **Cambio respecto al plan:** el plan preveía un componente cliente para el acordeón. Se cambió por el nativo, que da menos peso y cumple AC-09. Actualizados `03-plan.md` (§2, §3 y §8) y `CLAUDE.md`.
+- `copy.json` bloques `testimonials` y `faq`. `content.ts` carga `testimonials.json` y también le aplica la búsqueda de frases prohibidas.
+- Pruebas: `tests/unit/Testimonials.test.tsx` (oculto sin datos, visible con 3, esquema y `assetPath`) y `tests/unit/Faq.test.tsx` (9 `<details>`, preguntas y respuestas, JSON-LD válido y sin la FAQ de facturación).
+
+### Verificado
+- `npm run validate` pasa con 79 pruebas.
+
+### Abierto
+- Títulos "Testimonios" y "Preguntas frecuentes": nombres de sección del spec, sin copy propio definido.
+
+---
+
 ## 2026-10-18: T-21, para negocios
 
 ### Cambios
