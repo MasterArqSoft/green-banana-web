@@ -1,4 +1,5 @@
 import { Benefits } from "@/components/Benefits";
+import { Coverage } from "@/components/Coverage";
 import { FreshInfo } from "@/components/FreshInfo";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
@@ -19,6 +20,7 @@ export default function Home() {
       <Recipes />
       <Benefits />
       <HowItWorks />
+      <Coverage />
     </main>
   );
 }

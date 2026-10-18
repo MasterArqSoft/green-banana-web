@@ -5,6 +5,22 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-20, cobertura
+
+### Cambios
+- `src/components/Coverage.tsx` (FR-10): sección `#cobertura` con H2 "Cobertura".
+  - Dos tarjetas en una lista de definición: **Acopio** "Santa Marta, Magdalena" (de `site.json`) y **Distribución** "Solo en {zonas}, con reparto propio de la empresa, a hogares y puntos de venta". Las zonas salen de `zones.json`.
+  - Debajo, "¿Tu barrio o tu negocio no aparece? Llámanos y te decimos si llegamos." con `CallButton`.
+  - Sin horarios ni costos de envío (AC-04).
+- `src/lib/format.ts`: `formatList` ("A, B y C", es-CO). Al agregar zonas en R-03, la frase se ajusta sola.
+- `copy.json` bloque `coverage`; `copySchema` exige `{ciudad}` y `{zonas}`. El título "Cobertura" es el nombre de la sección en el spec.
+- Pruebas `tests/unit/Coverage.test.tsx` y `formatList` en `format.test.ts`.
+
+### Verificado
+- `npm run validate` pasa con 67 pruebas.
+
+---
+
 ## 2026-10-18: T-19, cómo funciona
 
 ### Cambios

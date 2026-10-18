@@ -165,6 +165,15 @@ export const copySchema = z.strictObject({
       .array(z.strictObject({ highlight: text, text }))
       .length(3, "Cómo funciona tiene 3 pasos"),
   }),
+  // FR-10. Sin horarios ni costos de envío: se informan por teléfono (AC-04).
+  coverage: z.strictObject({
+    title: text,
+    acopioLabel: text,
+    acopio: textWith("ciudad"),
+    distributionLabel: text,
+    distribution: textWith("zonas"),
+    notListed: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;

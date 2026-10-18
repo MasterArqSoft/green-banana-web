@@ -5,6 +5,13 @@ const longDate = new Intl.DateTimeFormat("es-CO", {
   timeZone: "UTC",
 });
 
+const conjunction = new Intl.ListFormat("es-CO", { type: "conjunction" });
+
+/** Lista legible: ["A", "B", "C"] → "A, B y C". */
+export function formatList(items: string[]): string {
+  return conjunction.format(items);
+}
+
 /** Fecha ISO legible: "2026-10-15" → "15 de octubre de 2026". */
 export function formatDate(isoDate: string): string {
   return longDate.format(new Date(isoDate));

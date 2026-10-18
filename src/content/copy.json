@@ -75,5 +75,13 @@
       },
       { "highlight": "Recibes", "text": "y pagas según lo acordado." }
     ]
+  },
+  "coverage": {
+    "title": "Cobertura",
+    "acopioLabel": "Acopio",
+    "acopio": "{ciudad}, {departamento}",
+    "distributionLabel": "Distribución",
+    "distribution": "Solo en {zonas}, con reparto propio de la empresa, a hogares y puntos de venta.",
+    "notListed": "¿Tu barrio o tu negocio no aparece? Llámanos y te decimos si llegamos."
   }
 }
