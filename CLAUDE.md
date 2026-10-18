@@ -26,7 +26,7 @@ No son fuente de verdad:
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). Léelo al empezar para retomar el contexto.
 
 ## Estado actual y comandos
-T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). Todavía no hay pruebas (llegan con T-08) ni script único de validación (T-11).
+T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. Todavía no hay pruebas (llegan con T-08) ni script único de validación (T-11).
 
 ```bash
 npm run dev            # servidor de desarrollo en http://localhost:3000
@@ -56,17 +56,18 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - Sin backend en Fase 1. Sin rutas de servidor, sin formularios, sin base de datos.
 
 ## Pendientes (no decidir por tu cuenta)
-- **Hosting:** pendiente de definir antes del primer despliegue (R-08). Opciones: Azure Static Web Apps o Cloudflare Pages.
+- **Hosting de producción:** pendiente de definir antes del primer despliegue a producción (R-08). Opciones: Azure Static Web Apps o Cloudflare Pages.
+- **Demo del POC/MVP:** GitHub Pages en https://masterarqsoft.github.io/green-banana-web/. `.github/workflows/pages.yml` la despliega en cada push a `main` con `PAGES_BASE_PATH` como `basePath`. Las rutas a `public/` escritas a mano (p. ej. `src` de imágenes) deben incluir ese prefijo, porque Next no lo agrega solo.
 - **CI/CD:** proveedor decidido: GitHub Actions (el repositorio es público en GitHub). La pipeline y los entornos se configuran en R-10.
 - **Roadmap de producción, antes de publicar:** datos reales (RP-01); origen y fotos reales (RP-02); validación jurídica del precio por teléfono, medios de pago y tiempo de entrega (RP-03); política de garantía (RP-04); procedimiento de PQR con constancia (RP-05). Hasta entonces usa valores ficticios marcados como `(FICTICIO)` o `[POR CONFIRMAR]`.
 
 ### Conflictos abiertos (recuérdaselos al usuario cuando pregunte por pendientes)
 Detalle en `spec/05-alcance-y-roadmap.md` §5. No los resuelvas por tu cuenta.
-- **D-09:** la demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages).
 - **D-11:** demo pública con datos ficticios. El build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), los datos ficticios quedan visibles y GitHub Pages no permite cabeceras propias (CSP, NFR-04).
 
 ## Reglas de trabajo
 - Responde siempre en español.
+- En commits y pull requests no agregues `Co-Authored-By: Claude` ni ninguna otra atribución a Claude: el usuario no quiere que Claude aparezca como colaborador en GitHub.
 - Antes de modificar, mover o eliminar archivos, pide confirmación.
 - No publiques precios, WhatsApp, analítica ni formularios en Fase 1: están en el roadmap.
 - Los datos legales, el número de contacto, el nombre comercial y el origen viven en archivos de contenido (`site.json`, etc.), nunca en componentes ni en código.
