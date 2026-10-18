@@ -5,6 +5,25 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-28, botón flotante de llamada
+
+### Cambios
+- `src/components/FloatingCall.tsx` (servidor) renderiza `CallButton` dentro de `FloatingCallVisibility.tsx` (`"use client"`, el único componente cliente).
+  - El componente cliente observa `#hero` (id nuevo en `Hero`) y `#pie` (id nuevo en `Footer`) con `IntersectionObserver`.
+  - El botón aparece cuando el hero sale de la pantalla y se esconde cuando entra el pie (FR-17).
+  - Solo en móvil (`md:hidden`), fijo abajo con margen de 16 px y respeto al área segura del teléfono (`env(safe-area-inset-bottom)`).
+  - Oculto, queda fuera de la pantalla y `inert` (sin foco ni lectura).
+  - Sin JavaScript queda oculto; los demás botones Llamar siguen disponibles.
+- En el layout, para todas las páginas.
+- Pruebas `tests/unit/FloatingCall.test.tsx`: enlace `tel:`, estado inicial oculto e inerte, y solo móvil. El comportamiento al hacer scroll queda para Playwright (T-37).
+
+### Verificado
+- `npm run validate` pasa con 89 pruebas.
+- Ningún archivo JS del navegador contiene datos de `site.json`; el contenido no viaja en el JavaScript del cliente.
+- **Peso inicial: JS+CSS 190 KB con gzip, HTML 15 KB y fuentes 85 KB, unos 290 KB de los 300 KB del presupuesto.** Margen muy justo: T-30 debe revisarlo antes de agregar las fotos (el hero tiene 120 KB propios, aunque las imágenes diferidas no cuentan en P5).
+
+---
+
 ## 2026-10-18: T-26, pie legal
 
 ### Cambios

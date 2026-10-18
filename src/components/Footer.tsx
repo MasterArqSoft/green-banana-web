@@ -15,7 +15,10 @@ export function Footer() {
   const linkClass = "underline underline-offset-4 hover:text-sol";
   return (
     // Sobre fondo carbón, el foco del teclado se dibuja en crema (WCAG 2.4.7).
-    <footer className="bg-carbon text-crema [&_:focus-visible]:outline-crema">
+    <footer
+      id="pie"
+      className="bg-carbon text-crema [&_:focus-visible]:outline-crema"
+    >
       <div className="contenedor flex flex-col gap-6 py-10 text-sm">
         <p className="font-display text-lg font-semibold">{site.brand}</p>
         <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
