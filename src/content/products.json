@@ -8,7 +8,6 @@
   {
     "id": "kg",
     "label": "Kilo",
-    "approxWeightG": 1000,
     "approxUnits": "4–5",
     "callLabel": "Llamar para precio"
   },

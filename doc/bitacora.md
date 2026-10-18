@@ -5,6 +5,28 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-15, presentaciones
+
+### Cambios
+- `src/components/ProductCards.tsx` (FR-04):
+  - Sección `#presentaciones` con una tarjeta por presentación de `products.json`: nombre, detalle de peso y unidades, y `CallButton` con su `callLabel` ("Llamar para precio"). Sin precio.
+  - Debajo, la nota de precio y envío por teléfono.
+  - En móvil la tarjeta es horizontal, con una miniatura cuadrada a la izquierda; en escritorio son 4 columnas con la imagen arriba.
+  - Espacio reservado 1:1 para la foto (T-04), decorativo (`aria-hidden`).
+- `src/lib/format.ts`: `formatWeight` da "220 g", "3 kg", "1,5 kg" o "18–20 kg" (formato es-CO).
+- `copy.json` bloque `products`: título, plantillas "~{peso} por unidad" y "~{unidades} unidades", y la nota.
+- `products.json`: se quitó `approxWeightG: 1000` del kilo. El spec solo muestra "~4–5 unidades", y el peso repetía el nombre "Kilo".
+- Pruebas `tests/unit/format.test.ts` y `tests/unit/ProductCards.test.tsx`: los 4 detalles exactos del spec, un enlace `tel:` por tarjeta, la nota y ningún precio.
+
+### Verificado
+- `npm run validate` pasa con 43 pruebas.
+
+### Abierto
+- **[POR CONFIRMAR] Título de la sección:** el spec no define un H2 para FR-04. Se usó "Presentaciones", que el usuario debe confirmar.
+- Fotos de las 4 tarjetas (T-04).
+
+---
+
 ## 2026-10-18: T-14, franja de confianza
 
 ### Cambios
