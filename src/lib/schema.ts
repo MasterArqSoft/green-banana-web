@@ -251,7 +251,7 @@ const legalPageSchema = z.strictObject({
 
 export const legalSchema = z.strictObject({
   // Aviso visible mientras el texto no tenga revisión jurídica (T-05, T-42).
-  draftNotice: text,
+  draftNotice: text.optional(),
   terminos: legalPageSchema,
   privacidad: legalPageSchema,
   garantia: legalPageSchema,

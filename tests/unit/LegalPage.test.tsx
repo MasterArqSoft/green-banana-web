@@ -11,7 +11,7 @@ describe("Páginas legales (FR-18)", () => {
     (page) => {
       const html = renderToStaticMarkup(<LegalPage page={page} />);
       expect(html).toContain(legal[page].title);
-      expect(html).toContain(legal.draftNotice);
+      expect(html).toContain(legal.draftNotice!);
       expect(html).not.toMatch(/\{\w+\}/);
       expect(html).not.toMatch(/<form|<input/);
     },

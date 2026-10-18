@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { findForbiddenClaims } from "@/lib/claims";
+import { findForbiddenClaims, findPendingMarkers } from "@/lib/claims";
 import siteJson from "@/content/site.json";
 import productsJson from "@/content/products.json";
 import zonesJson from "@/content/zones.json";
@@ -78,4 +78,26 @@ if (isProduction && site.phoneIsPlaceholder) {
     "Build de producción bloqueado: site.json tiene phoneIsPlaceholder: true. " +
       "Configura el número real (RP-01) antes de publicar.",
   );
+}
+
+// 00-constitution.md §4: nada ficticio ni pendiente al publicar (RP-01 a RP-05, T-03, T-05).
+// Fuera de producción estas marcas se ven a propósito en la demo.
+if (isProduction) {
+  const pending = findPendingMarkers({
+    site,
+    products,
+    zones,
+    faq,
+    recipes,
+    origin,
+    copy,
+    testimonials,
+    legal,
+  });
+  if (pending.length > 0) {
+    throw new Error(
+      `Build de producción bloqueado: quedan ${pending.length} datos ficticios o por confirmar:\n` +
+        pending.map((item) => `  ${item}`).join("\n"),
+    );
+  }
 }

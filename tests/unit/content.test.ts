@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import productsJson from "@/content/products.json";
 import siteJson from "@/content/site.json";
+import { findPendingMarkers } from "@/lib/claims";
 import { productsSchema, siteSchema } from "@/lib/schema";
 
 // Copia profunda para modificar el contenido sin tocar el import original.
@@ -46,5 +47,40 @@ describe("carga del contenido", () => {
     await expect(import("@/lib/content")).rejects.toThrow(
       "Build de producción bloqueado",
     );
+  });
+
+  it("bloquea producción mientras queden datos ficticios o por confirmar (T-39)", async () => {
+    vi.stubEnv("SITE_ENV", "production");
+    // Aun con el número real, quedan las demás marcas (FICTICIO), [POR CONFIRMAR]...
+    vi.doMock("@/content/site.json", async (original) => ({
+      default: {
+        ...((await original()) as { default: object }).default,
+        phoneIsPlaceholder: false,
+      },
+    }));
+    await expect(import("@/lib/content")).rejects.toThrow(
+      /quedan \d+ datos ficticios o por confirmar/,
+    );
+    vi.doUnmock("@/content/site.json");
+  });
+});
+
+describe("findPendingMarkers (T-39)", () => {
+  it("encuentra marcas de dato ficticio o pendiente con su ruta", () => {
+    const found = findPendingMarkers({
+      site: { brand: "Marca (FICTICIO)", url: "https://x.github.io/demo" },
+      faq: [{ answer: "Entre [4 y 7] días" }, { answer: "Listo" }],
+    });
+    expect(found).toEqual([
+      "site.brand: Marca (FICTICIO)",
+      "site.url: https://x.github.io/demo",
+      "faq[0].answer: Entre [4 y 7] días",
+    ]);
+  });
+
+  it("no marca contenido definitivo", () => {
+    expect(
+      findPendingMarkers({ site: { brand: "Marca", url: "https://marca.co" } }),
+    ).toEqual([]);
   });
 });
