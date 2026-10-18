@@ -25,12 +25,14 @@ export function LegalPage({ page }: { page: LegalPageKey }) {
         <h1 className="text-3xl font-semibold text-hoja md:text-4xl">
           {title}
         </h1>
-        <p
-          role="note"
-          className="mt-4 rounded-control bg-hoja-claro p-3 text-sm font-semibold"
-        >
-          {legal.draftNotice}
-        </p>
+        {legal.draftNotice && (
+          <p
+            role="note"
+            className="mt-4 rounded-control bg-hoja-claro p-3 text-sm font-semibold"
+          >
+            {legal.draftNotice}
+          </p>
+        )}
         {sections.map((section) => (
           <section key={section.heading} className="mt-8">
             <h2 className="text-xl font-semibold text-hoja">

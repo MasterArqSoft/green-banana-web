@@ -14,7 +14,37 @@ export const FORBIDDEN_CLAIMS = [
   "100 % garantizado",
   "100% garantizado",
   "cupos limitados",
+  "últimas unidades",
+  "quedan pocos",
+  "solo hoy",
+  "por tiempo limitado",
 ];
+
+// Marcas de dato ficticio o pendiente que no pueden llegar a producción.
+const PENDING_MARKER = /\(FICTICIO\)|\[[^\]]*\]/;
+
+/**
+ * Recorre el contenido y devuelve la ruta y el texto de cada valor con una marca
+ * "(FICTICIO)" o "[…]" (p. ej. "[POR CONFIRMAR]", "[4 y 7]"), y la URL de la demo.
+ */
+export function findPendingMarkers(content: Record<string, unknown>): string[] {
+  const found: string[] = [];
+  const walk = (value: unknown, path: string) => {
+    if (typeof value === "string") {
+      if (PENDING_MARKER.test(value) || value.includes("github.io")) {
+        found.push(`${path}: ${value.slice(0, 80)}`);
+      }
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) => walk(item, `${path}[${index}]`));
+    } else if (value && typeof value === "object") {
+      for (const [key, item] of Object.entries(value)) {
+        walk(item, path ? `${path}.${key}` : key);
+      }
+    }
+  };
+  walk(content, "");
+  return found;
+}
 
 // Minúsculas y sin tildes, para que "Cancer" o "CÁNCER" también se detecten.
 const normalize = (text: string) =>

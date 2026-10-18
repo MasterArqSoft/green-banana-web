@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Ícono propio del proyecto (T-39): guineo verde sobre fondo verde hoja. -->
+  <rect width="32" height="32" rx="7" fill="#2f6b3a"/>
+  <path d="M6 20.5c5.5 5 16.5 3.5 20-7.5.6-1.9-.2-3.6-1.4-3.8-1.3 4.6-5.3 9.3-12 10-2.9.3-5.1 0-6.6 1.3z" fill="#e8f3e6"/>
+  <path d="M24.6 9.2l1.6-2.4" stroke="#e8f3e6" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

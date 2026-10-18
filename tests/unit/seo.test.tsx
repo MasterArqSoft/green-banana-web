@@ -45,12 +45,16 @@ describe("sitemap y robots", () => {
 
   it("en producción permite rastrear y apunta al sitemap", async () => {
     vi.stubEnv("SITE_ENV", "production");
-    // En producción el número debe ser real; se simula para probar solo robots.
+    // En producción no puede haber datos ficticios; se simulan resueltos para probar solo robots.
     vi.doMock("@/content/site.json", async (original) => ({
       default: {
         ...((await original()) as { default: object }).default,
         phoneIsPlaceholder: false,
       },
+    }));
+    vi.doMock("@/lib/claims", async (original) => ({
+      ...(await original<typeof import("@/lib/claims")>()),
+      findPendingMarkers: () => [],
     }));
     const { default: robots } = await import("@/app/robots");
     expect(robots()).toMatchObject({
@@ -58,5 +62,6 @@ describe("sitemap y robots", () => {
       sitemap: `${site.url}/sitemap.xml`,
     });
     vi.doUnmock("@/content/site.json");
+    vi.doUnmock("@/lib/claims");
   });
 });

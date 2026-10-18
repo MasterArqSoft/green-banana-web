@@ -5,6 +5,52 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-39, revisión de textos, imágenes y lista legal
+
+### Resultado de la revisión
+
+| Criterio | Resultado |
+|---|---|
+| **P1, honestidad:** sin contadores, escasez ni ahorros | ✓ No hay. Se agregaron al bloqueo automático "últimas unidades", "quedan pocos", "solo hoy" y "por tiempo limitado". |
+| **P1, cifras con respaldo** | ⚠ Todas las cifras son del spec y están pendientes de confirmar con el negocio (T-03): pesos y unidades, vida útil, tiempos de receta y porcentaje de pintón. Las de FAQ, recetas y "Verde de verdad" se ven entre corchetes. **Las de presentaciones (220 g, 4–5, 13–15, 18–20 kg) se ven sin corchetes** (ver Abierto). |
+| **P3, salud** | ✓ Solo "fuente de almidón resistente, un tipo de fibra". Bloqueo automático activo desde T-46. |
+| **AC-02, sin precios** | ✓ Pruebas unitarias en cada sección y prueba e2e en las 4 páginas. |
+| **AC-07, sin contadores** | ✓ |
+| **AC-13, imágenes con licencia** | ✓ No hay fotos. El `favicon.ico` de la plantilla de Next.js **no era propio**: se reemplazó por `src/app/icon.svg`, dibujado para el proyecto. Íconos Lucide (ISC) y fuentes OFL registrados en `doc/creditos.md` (nuevo). |
+
+**Lista legal (`01-spec.md` §9):**
+
+| Ítem | Estado en el sitio |
+|---|---|
+| Identidad del vendedor | ✓ Pie y términos desde `site.json` (ficticios, RP-01) |
+| Precio total y envío por separado | ⚠ Por teléfono: se valida en RP-03 |
+| Medios de pago y tiempo de entrega | ⚠ No publicados: se evalúa en RP-03 (Q18) |
+| Peso, origen y usos | ✓ Presentaciones, origen y recetas (valores por confirmar, T-03 y RP-02) |
+| PQR con constancia | ⚠ Procedimiento pendiente: RP-05 |
+| Enlace visible a la SIC | ✓ Pie |
+| Exclusión de retracto en perecederos | ✓ Garantía y términos (AC-06) |
+| Garantía de calidad | ⚠ Política pendiente: RP-04 |
+| Datos personales (Ley 1581) | ⚠ Página en borrador: T-05 |
+| Sin afirmaciones de salud | ✓ Bloqueo automático |
+| Transporte de alimentos | — Proceso operativo, no aplica a la web |
+| Facturación electrónica | — R-09, fuera de Fase 1 |
+
+### Cambios
+- **Bloqueo de producción ampliado:** con `SITE_ENV=production`, el build falla si queda cualquier `(FICTICIO)`, `[…]` o la URL `github.io` en el contenido, y lista cada uno con su ruta (`findPendingMarkers`). Cumple `00-constitution.md` §4 ("sin valores ficticios al publicar"). **Hoy hay 27:** site 6, faq 4, recipes 5, origin 4, copy 3 y legal 5. La lista sirve como checklist de RP-01 a RP-05, T-03 y T-05.
+- `legal.draftNotice` ahora es opcional: se borra del JSON cuando el texto legal esté revisado.
+- `src/app/favicon.ico` (plantilla) → `src/app/icon.svg` (propio).
+- `doc/creditos.md`: registro de recursos y licencias; se versiona (excepción en `.gitignore`).
+- Pruebas: bloqueo de producción con datos pendientes y `findPendingMarkers`. La prueba de robots en producción simula el contenido resuelto.
+
+### Verificado
+- `npm run validate` pasa: 105 pruebas unitarias y 32 e2e.
+
+### Abierto
+- **[POR CONFIRMAR] Cifras de presentaciones sin corchetes:** el spec las marca como pendientes ("~[220] g", "~[4–5] unidades"...), pero en la página se ven como definitivas, porque son números en `products.json`. Decisión del usuario pendiente.
+- Prueba con lector de pantalla (T-38, manual).
+
+---
+
 ## 2026-10-18: T-37 pruebas e2e y T-38 accesibilidad
 
 ### Cambios
