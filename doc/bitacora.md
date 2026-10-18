@@ -5,6 +5,29 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-10, tokens de diseño, fuentes y layout base
+
+### Decisiones del usuario
+- **Color del botón Llamar: `#0F7A41`.** El `#128C4A` del spec daba 4,31:1 con texto blanco y no cumplía WCAG AA (4,5:1); el nuevo da 5,41:1.
+
+### Cambios
+- `src/app/globals.css`:
+  - Tokens de Tailwind 4: colores `hoja`, `hoja-claro`, `sol`, `carbon`, `crema` y `cta`; radios `control` (12 px) y `card` (16 px); `shadow-suave`.
+  - Fuentes `display` y `sans`.
+  - Utilidad `contenedor` (máximo 72rem, margen lateral de 16 px).
+  - Base: fondo crema, texto carbón, Fraunces en h1-h3, foco visible y `prefers-reduced-motion`.
+- `src/app/fonts.ts`: Fraunces e Inter con `next/font/google`, subconjunto latino y `display: swap`. Se autoalojan en `_next/static/media`, sin llamadas a Google desde el navegador.
+- `layout.tsx` aplica las fuentes; `DemoBanner` usa `bg-sol` y `text-carbon` (8,16:1); la página provisional usa los tokens.
+- `spec/02-content-spec.md` §5: nuevo color del CTA y regla "el amarillo sol nunca es color de texto". `CLAUDE.md`: guía de tokens.
+
+### Verificado
+- Contrastes medidos: carbón/crema 14,37; blanco/cta 5,41; blanco/hoja 6,39; hoja/crema 6,19; carbón/sol 8,16; sol/crema 1,76 (no apto para texto).
+- Build con `basePath`: las fuentes se precargan desde `/green-banana-web/_next/static/media/` (2 archivos latinos, ~85 KB).
+- Peso inicial medido: JS+CSS 578 KB sin comprimir (178 KB con gzip), HTML 2,4 KB con gzip y fuentes 85 KB. En total, unos 265 KB transferidos frente al presupuesto de 300 KB. Casi todo es el runtime de React/Next. Revisar en T-30, porque las secciones de la Fase 2 sumarán peso.
+- Pruebas, lint, typecheck y formato pasan.
+
+---
+
 ## 2026-10-18: T-08, enlace de llamada y pruebas unitarias
 
 ### Decisiones del usuario

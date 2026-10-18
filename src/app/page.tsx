@@ -1,10 +1,14 @@
-// Página provisional de T-07. La composición real de la landing es T-33.
+// Página provisional. La composición real de la landing es T-33.
 export default function Home() {
   return (
-    <main className="flex flex-1 items-center justify-center p-4">
-      <h1 className="text-2xl font-semibold">
+    <main className="contenedor flex flex-1 flex-col justify-center gap-4 py-16">
+      <h1 className="text-3xl font-semibold text-hoja">
         Landing Guineo Verde (en construcción)
       </h1>
+      <p className="max-w-prose">
+        Base visual lista: colores, tipografía y layout. Las secciones llegan
+        con la Fase 2.
+      </p>
     </main>
   );
 }

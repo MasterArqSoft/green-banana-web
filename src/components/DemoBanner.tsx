@@ -4,10 +4,7 @@ import { isProduction, site } from "@/lib/content";
 export function DemoBanner() {
   if (isProduction) return null;
   return (
-    <p
-      role="note"
-      className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-950"
-    >
+    <p role="note" className="bg-sol px-4 py-2 text-center text-sm text-carbon">
       {site.demoNotice}
     </p>
   );
