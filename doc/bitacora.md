@@ -5,6 +5,26 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-18, recetas
+
+### Cambios
+- `src/components/Recipes.tsx` (FR-07): sección `#recetas` con H2 "¿Qué cocinar con guineo verde?".
+  - Una tarjeta por receta de `recipes.json`: espacio reservado 3:2 para la foto (T-04), nombre, tiempo con ícono de reloj y descripción.
+  - Grilla de 1 columna en móvil, 2 en `sm` y 3 en `lg`.
+  - El texto "Tiempo de preparación:" solo lo leen los lectores de pantalla (`sr-only`).
+  - Sin enlaces externos, como pide el spec.
+- `copy.json` bloque `recipes` (título y `timeLabel`).
+- Pruebas `tests/unit/Recipes.test.tsx`.
+
+### Verificado
+- `npm run validate` pasa con 55 pruebas.
+
+### Abierto
+- Los tiempos entre corchetes ("[60–90] min", etc.) se muestran tal cual hasta confirmarlos.
+- Fotos de las 5 recetas (T-04).
+
+---
+
 ## 2026-10-18: T-17, origen y trazabilidad
 
 ### Cambios
