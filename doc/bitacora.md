@@ -5,6 +5,32 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-33, composición y revisión a 360 px (con Playwright)
+
+### Decisiones del usuario
+- Instalar Playwright (y Chromium, ~118 MB) para la revisión visual, porque la extensión de Chrome no conecta. Adelanta la base de T-37.
+
+### Cambios
+- `@playwright/test` 1.64.1 y Chromium headless.
+- `playwright.config.ts`: proyectos `movil-360` (360×640, táctil) y `escritorio` (1280×800). `webServer` sirve `out/` con `tests/e2e/server.mjs`, un servidor estático sin dependencias que resuelve `/terminos` → `terminos.html`, como GitHub Pages.
+- `tests/e2e/layout.spec.ts` (16 casos):
+  - orden de secciones FR-01 a FR-17;
+  - sin desborde horizontal en las 4 páginas;
+  - AC-01: H1 y "Llamar para pedir" visibles sin scroll a 360×640;
+  - FR-17: el botón flotante aparece tras el hero y se esconde en el pie;
+  - "Ver origen" no queda tapado por la barra fija.
+- Scripts: `test:e2e` (build + Playwright). `validate` ahora incluye `playwright test`. `.gitignore`: `test-results/` y `playwright-report/`.
+
+### Verificado
+- `npm run validate` pasa: 95 pruebas unitarias y 13 e2e (3 omitidas: las de móvil en escritorio).
+- Capturas a 360 px revisadas: sin desbordes; tipografía, tarjetas y contrastes correctos. La página mide unos 9.400 px de alto en móvil, sobre todo por los espacios reservados de fotos.
+
+### Abierto
+- **[POR CONFIRMAR] Botón Llamar duplicado en móvil:** la barra superior fija (FR-01) ya tiene "Llamar". El botón flotante (FR-17), de ancho completo, repite el mismo botón y tapa una franja del contenido mientras se hace scroll. Decisión del usuario pendiente.
+- La marca se recorta en móvil ("Guineo Verde Santa M…"), así que no se ve "(FICTICIO)"; la franja de demo sí lo aclara.
+
+---
+
 ## 2026-10-18: T-27, páginas legales (borrador)
 
 ### Cambios

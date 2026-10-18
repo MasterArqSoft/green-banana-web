@@ -48,3 +48,7 @@ next-env.d.ts
 # Informe de investigación: solo local. La bitácora sí se versiona.
 /doc/*
 !/doc/bitacora.md
+
+# Playwright
+/test-results/
+/playwright-report/
