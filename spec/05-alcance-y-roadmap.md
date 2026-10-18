@@ -1,0 +1,110 @@
+# 05 · Alcance Fase 1 y roadmap: Landing Guineo Verde
+
+**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** vigente
+
+Fuente de verdad del alcance. Si un spec contradice este documento, gana este documento y el spec se corrige (ver `00-constitution.md` §5).
+
+## 1. Modelo operativo de la Fase 1
+
+- **Naturaleza:** landing informativa que da a conocer la empresa de venta de guineo verde. No publica precios ni pedidos.
+- **Propósito:** dar a conocer el negocio, aumentar su visibilidad y apoyar las acciones de marketing.
+- **Etapa:** la Fase 1 es una prueba de concepto (POC) y un producto mínimo viable (MVP): una demostración funcional con datos ficticios que se mejora y amplía de forma progresiva.
+- **Acopio:** Santa Marta (Magdalena). Ahí llega el guineo verde, se almacena y se distribuye según la demanda.
+- **Distribución:** solo en Santa Marta, con reparto propio de la empresa, a personas naturales y a puntos de venta.
+- **Público objetivo:** personas naturales, tiendas, hoteles y otros puntos de venta.
+- **Precio:** se informa por teléfono. No aparece en la landing.
+- **Contacto:** llamada telefónica con número configurable en `site.json`.
+- **Datos ficticios en Fase 1:** nombre comercial, razón social, NIT, dirección, correo, número de contacto, origen y fotos. Se reemplazan en el roadmap de producción (RP-01 y RP-02).
+
+## 2. Dentro del alcance de la Fase 1
+
+| ID | Elemento | Notas |
+|---|---|---|
+| A-01 | Landing informativa | Empresa, propuesta de valor, garantía de frescura, recetas. Sin precios. |
+| A-02 | Cobertura | Acopio y distribución en Santa Marta. |
+| A-03 | Información legal | Identidad del vendedor, PQR, enlace SIC, exclusión de retracto para perecederos, aviso de privacidad (Ley 1581). Datos configurables con valores ficticios. |
+| A-04 | Contacto | Botón de llamada con número de `site.json`. Ficticio hasta RP-01. |
+| A-05 | No funcionales | Mobile-first, LCP ≤ 2.5 s, CLS ≤ 0.1, INP ≤ 200 ms, peso ≤ 300 KB, WCAG 2.2 AA, OWASP ASVS nivel 1. |
+| A-06 | Imágenes | Solo libres de derechos de autor o propias ficticias, hasta RP-02. |
+
+## 3. Fuera del alcance de la Fase 1
+
+| ID | Elemento | Destino |
+|---|---|---|
+| F-01 | Precios por kilo y por unidad en la landing | R-01 |
+| F-02 | Pedido por WhatsApp | R-02 |
+| F-03 | Carrito, pasarela de pago y pedidos en línea | R-04 |
+| F-04 | Harina y chips de guineo | R-05 |
+| F-05 | Distribución fuera de Santa Marta | R-03 |
+| F-06 | Formulario de pedido o captura de datos en la web | R-06 |
+| F-07 | Analítica de eventos | R-07 |
+| F-08 | Validación de latencia y límites del hosting | R-08 |
+| F-09 | Facturación electrónica | R-09 |
+
+## 4. Decisiones tomadas
+
+| Pregunta | Decisión |
+|---|---|
+| Q2 Distribución | Solo Santa Marta en la primera fase |
+| Q5 Reparto | Reparto propio de la empresa |
+| Q13 Público objetivo | Personas naturales, tiendas, hoteles y otros puntos de venta |
+| Canal de contacto | Llamada telefónica |
+| Precio | Se informa por teléfono, no se publica en la landing |
+| Framework | Next.js (exportación estática) + React + TypeScript |
+| Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
+| Demostración del POC/MVP | Publicación pública en GitHub con datos ficticios. Tiene conflictos abiertos (D-09 y D-11) |
+| Repositorio | GitHub, público (cuenta MasterArqSoft, `green-banana-web`), desde T-07 |
+| Proveedor de CI/CD (R-10) | GitHub Actions, por la regla "repositorio y pipeline en el mismo proveedor". Se configura cuando haya varios entornos |
+
+## 5. Riesgos y pendientes
+
+| # | Riesgo / pendiente | Acción |
+|---|---|---|
+| D-01 | Ley 1480 exige precio total cuando hay oferta. El precio se da por teléfono | RP-03, antes de producción |
+| D-02 | Número de contacto ficticio | RP-01. El build de producción no debe salir con el número ficticio |
+| D-03 | Origen ficticio | No mencionar origen real hasta RP-02 |
+| D-04 | Imágenes sin licencia verificada | Solo imágenes libres o propias hasta RP-02 |
+| D-05 | Precios de referencia SIPSA y Corabastos son de Bogotá | Se necesita referencia de Santa Marta para R-01 |
+| D-06 | Política de garantía sin definir (reposición, devolución del dinero o ambas) | RP-04, antes de producción |
+| D-07 | Procedimiento de PQR con constancia sin definir (correo o teléfono con número de radicado) | RP-05, antes de producción |
+| D-08 | Ley 1480 pide medios de pago y tiempo de entrega en la publicación; el copy dice que se informan por teléfono | Evaluar dentro de RP-03 [POR CONFIRMAR] |
+| D-09 | La demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages) | Pendiente de decidir con el usuario |
+| D-10 | Publicar el repositorio en GitHub adelanta R-10 | **Resuelto (2026-10-18):** repositorio público en GitHub desde T-07; CI/CD con GitHub Actions |
+| D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | Pendiente de decidir con el usuario |
+
+## 6. Roadmap
+
+| ID | Hito | Prerrequisito | Estado |
+|---|---|---|---|
+| R-01 | Precios por kilo y unidad, con precio total y envío separado | Referencia de Santa Marta (D-05) y RP-03 | Pendiente |
+| R-02 | Pedido por WhatsApp como flujo principal | Cuenta WhatsApp Business | Pendiente |
+| R-03 | Distribución fuera de Santa Marta | Capacidad de reparto validada | Pendiente |
+| R-04 | Carrito, pasarela de pago y pedidos en línea | Operación de pedidos estable | Pendiente |
+| R-05 | Harina y chips | Registro INVIMA | Pendiente |
+| R-06 | Formulario de pedido o contacto en la web | Consentimiento (Ley 1581) y decisión de canal | Pendiente |
+| R-07 | Analítica sin cookies (Plausible o Umami) | Decisión de herramienta | Pendiente |
+| R-08 | Decidir hosting (Azure Static Web Apps o Cloudflare Pages) con medición de latencia desde Colombia y límites del plan gratuito | Medición en preproducción; decisión antes del primer despliegue | Pendiente |
+| R-09 | Facturación electrónica | Proveedor | Pendiente |
+| R-10 | CI/CD y despliegue en varios entornos | Proveedor decidido: GitHub Actions (mismo proveedor que el repositorio). Falta configurar la pipeline y los entornos | Pendiente |
+
+## 7. Roadmap de producción (antes de publicar)
+
+| ID | Tarea | Preguntas | Estado |
+|---|---|---|---|
+| RP-01 | Reemplazar datos ficticios por reales en `site.json`: nombre comercial, razón social, NIT, dirección, correo, número de contacto y horario. Registrar y configurar dominio | Q1, Q6, Q7, Q9 | Pendiente |
+| RP-02 | Reemplazar origen ficticio (finca, asociación, municipio) y las imágenes por fotos reales de producto, productor y acopio | Q4, Q10 | Pendiente |
+| RP-03 | Definir y validar con asesor jurídico cómo se informa el precio total por teléfono (Ley 1480). Evaluar también si los medios de pago y el tiempo de entrega deben publicarse en la página [POR CONFIRMAR] | Q14, Q18 | Pendiente |
+| RP-04 | Definir la política de garantía: reposición del producto, devolución del dinero o ambas | Q16 | Pendiente |
+| RP-05 | Definir el procedimiento de PQR con constancia: correo electrónico o teléfono con número de radicado | Q17 | Pendiente |
+
+## 8. Trazabilidad con los specs
+
+| Documento | Versión | Ubicación |
+|---|---|---|
+| `00-constitution.md` | 1.3 | `spec/` |
+| `01-spec.md` | 1.3 | `spec/` |
+| `02-content-spec.md` | 1.3 | `spec/` |
+| `03-plan.md` | 1.3 | `spec/` |
+| `04-tasks.md` | 1.3 | `spec/` |
+| `05-alcance-y-roadmap.md` | 1.3 | `spec/` |
+| Versión original (respaldo) | 1.0 | `spec/_v1.0/` |
