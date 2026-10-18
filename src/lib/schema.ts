@@ -174,6 +174,8 @@ export const copySchema = z.strictObject({
     distribution: textWith("zonas"),
     notListed: text,
   }),
+  // FR-11. Sin formulario: el formulario B2B es el roadmap R-06.
+  business: z.strictObject({ title: text, text: textWith("ciudad") }),
 });
 
 export type Site = z.infer<typeof siteSchema>;

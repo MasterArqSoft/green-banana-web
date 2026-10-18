@@ -5,6 +5,22 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-21, para negocios
+
+### Cambios
+- `src/components/Business.tsx` (FR-11): sección `#negocios` sobre fondo verde hoja con texto blanco (6,39:1).
+  - Ícono de tienda, H2 "¿Tienes tienda, hotel o punto de venta?" y "Distribuimos en {ciudad} desde nuestro acopio. Llámanos y te contamos las condiciones."
+  - `CallButton` con borde blanco, para que se distinga del fondo (WCAG 1.4.11).
+  - El foco del teclado se dibuja en blanco en esta sección; el verde hoja por defecto no se vería.
+  - Sin formulario (R-06).
+- `copy.json` bloque `business`, con `{ciudad}` obligatorio.
+- Pruebas `tests/unit/Business.test.tsx`: textos, enlace `tel:` y ningún `<form>` ni campo de entrada.
+
+### Verificado
+- `npm run validate` pasa con 70 pruebas.
+
+---
+
 ## 2026-10-18: T-20, cobertura
 
 ### Cambios
