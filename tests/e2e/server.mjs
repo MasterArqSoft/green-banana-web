@@ -1,8 +1,10 @@
 // Servidor estático mínimo para probar la exportación de Next (carpeta out/) con
-// Playwright, sin dependencias. Resuelve /terminos → out/terminos.html, como GitHub Pages.
+// Playwright y Lighthouse, sin dependencias. Resuelve /terminos → out/terminos.html y
+// comprime con gzip, como GitHub Pages, para que las mediciones de peso sean realistas.
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
+import { createGzip } from "node:zlib";
 
 const root = join(process.cwd(), "out");
 const port = Number(process.env.PORT ?? 4173);
@@ -36,8 +38,15 @@ createServer((req, res) => {
     createReadStream(join(root, "404.html")).pipe(res);
     return;
   }
+  const type = types[extname(file)] ?? "application/octet-stream";
+  // Las fuentes woff2 e imágenes ya vienen comprimidas.
+  const compressible = /text|javascript|json|svg/.test(type);
+  const acceptsGzip = (req.headers["accept-encoding"] ?? "").includes("gzip");
+  const gzip = compressible && acceptsGzip;
   res.writeHead(200, {
-    "content-type": types[extname(file)] ?? "application/octet-stream",
+    "content-type": type,
+    ...(gzip && { "content-encoding": "gzip", vary: "accept-encoding" }),
   });
-  createReadStream(file).pipe(res);
+  const stream = createReadStream(file);
+  (gzip ? stream.pipe(createGzip()) : stream).pipe(res);
 }).listen(port, () => console.log(`out/ en http://localhost:${port}`));
