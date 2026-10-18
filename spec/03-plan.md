@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.3
+**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
 
 ## Índice
 1. Contexto arquitectónico

@@ -1,6 +1,6 @@
 # Tareas: Landing Guineo Verde
 
-**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.3
+**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
 
 Estimaciones en horas efectivas, para una persona con perfil fullstack senior. `[P]` = se puede hacer en paralelo con otras tareas de la misma fase. Referencias: FR/NFR/AC de `01-spec.md` y secciones de `03-plan.md`.
 
@@ -89,6 +89,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | T-38 | Auditoría de accesibilidad (axe) y prueba con lector de pantalla | NFR-02, AC-09 | 3 | T-33 |
 | T-39 | Revisión de copy contra P1 y P3, sin precios, sin imágenes sin licencia y la lista legal (spec §9) | AC-02, 07, 13 | 2 | T-33, T-27 |
 | T-40 | `npm audit` en el script de validación local (T-11) y Dependabot (actualizaciones semanales y alertas y PR de seguridad), ya que el repositorio está en GitHub | NFR-04 | 1 | T-11 |
+| T-49 | Eliminar las 5 vulnerabilidades altas de `braces` en dependencias de desarrollo (riesgo D-12). Opción preferida: reemplazar `eslint-config-next` por una configuración propia (typescript-eslint, eslint-plugin-react, react-hooks, jsx-a11y) sin `@next/eslint-plugin-next`, que es quien trae `fast-glob` → `micromatch` → `braces`; antes, verificar que ningún otro plugin traiga `braces`. Alternativas: `overrides` de npm (riesgoso, toda versión de `fast-glob` trae `braces`) o esperar el arreglo upstream. **Criterio de cierre:** `npm audit` completo sin altas ni críticas, el lint mantiene la cobertura de TypeScript, React, hooks y accesibilidad, y `validate` pasa a usar la auditoría completa | NFR-04 | 3 | T-40 |
 
 ## Fase 6: Lanzamiento
 
@@ -108,9 +109,9 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | 2. Componentes | 32 |
 | 3. Formulario y backend | 0 (en roadmap) |
 | 4. Legal y SEO | 9 |
-| 5. Calidad y seguridad | 16 |
+| 5. Calidad y seguridad | 19 |
 | 6. Lanzamiento | 7 |
-| **Total** | **~93 h** |
+| **Total** | **~96 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -126,6 +127,7 @@ Actualizado: 2026-10-18. Detalle de cada tarea en `doc/bitacora.md`.
 | **Hecha con contenido provisional** | T-04: fotos generadas con IA, se reemplazan en RP-02. T-27: páginas legales en borrador, esperan T-05 |
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
+| **Pendiente, técnica** | T-49 (vulnerabilidades de `braces` en desarrollo; no depende del usuario) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
 
 Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages, datos ficticios, sin indexar).

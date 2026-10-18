@@ -11,7 +11,7 @@ El objetivo es dar visibilidad al negocio y apoyar el marketing. La Fase 1 es un
 
 ## Fuente de verdad
 Lee antes de programar, en este orden:
-1. `spec/05-alcance-y-roadmap.md`: alcance, roadmap (R-01 a R-10), pendientes de producción (RP-01 a RP-05) y riesgos o conflictos (D-01 a D-11).
+1. `spec/05-alcance-y-roadmap.md`: alcance, roadmap (R-01 a R-10), pendientes de producción (RP-01 a RP-05) y riesgos o conflictos (D-01 a D-12). Specs en versión 1.4.
 2. `spec/00-constitution.md`: principios no negociables.
 3. `spec/01-spec.md`: requisitos funcionales (FR), no funcionales (NFR), criterios de aceptación (AC) y preguntas (Q1 a Q18).
 4. `spec/02-content-spec.md`: copy, FAQ, recetas y dirección visual.
@@ -98,7 +98,7 @@ Recuérdaselos al usuario cuando pregunte por pendientes. Detalle en `spec/05-al
 - **Hosting de producción (R-08):** Azure Static Web Apps o Cloudflare Pages. Bloquea T-32 (cabeceras de seguridad) y T-43.
 - **T-36:** Google Business Profile, con datos reales (RP-01).
 - **T-38, parte manual:** prueba con lector de pantalla (NVDA o TalkBack); la lista está en la bitácora.
-- **Riesgo `braces` [POR CONFIRMAR]:** `npm audit` completo muestra 5 altas de `braces` (solo lint, sin arreglo publicado). Se propuso aceptar el riesgo y validar con `audit:prod`; falta la confirmación del usuario.
+- **T-49, vulnerabilidades de `braces` (tarea técnica, no depende del usuario):** `npm audit` completo muestra 5 altas en dependencias de desarrollo (riesgo D-12). El usuario **no acepta el riesgo**: hay que eliminarlas. La opción preferida y el criterio de cierre están en `spec/04-tasks.md`. Mientras tanto, `validate` usa `audit:prod`.
 - **Conflicto D-11 (parcial):** la demo en GitHub Pages no permite cabeceras propias (CSP, NFR-04).
 
 ## Reglas de trabajo

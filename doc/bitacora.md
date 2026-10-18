@@ -5,6 +5,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: specs 1.4 y tarea T-49
+
+### Decisiones del usuario
+- **Subir los specs a la versión 1.4**, por todos los ajustes de esta sesión.
+- **No aceptar el riesgo de `braces`:** debe resolverse y queda como tarea.
+
+### Cambios
+- Los seis specs pasan a `Versión: 1.4`, con `Alcance vigente: 05 v1.4`. En `05` §8, la tabla de trazabilidad queda en 1.4, con un resumen de los cambios de la versión.
+- `05` §5: nuevo riesgo **D-12** (5 vulnerabilidades altas de `braces` en desarrollo, sin versión corregida; no se acepta, se resuelve en T-49).
+- `04-tasks.md`: nueva **T-49** en la Fase 5 (3 h, depende de T-40).
+  - **Opción preferida:** reemplazar `eslint-config-next` por una configuración propia sin `@next/eslint-plugin-next`, el único que trae `fast-glob` 3.3.1 → `micromatch` → `braces`.
+  - **Criterio de cierre:** `npm audit` completo sin altas ni críticas, lint con la misma cobertura y `validate` con la auditoría completa.
+  - Se actualizaron las horas de la Fase 5 (16 → 19) y el total (~93 → ~96), y el estado de avance ("Pendiente, técnica: T-49").
+- `CLAUDE.md`: T-49 en pendientes, en lugar del riesgo "por confirmar"; D-01 a D-12 y specs 1.4.
+
+### Investigación para T-49
+Dependencias de `eslint-config-next` 16.4.2:
+- `typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`, `eslint-plugin-import` y resolvers;
+- `@next/eslint-plugin-next`, que fija `fast-glob` 3.3.1.
+
+`fast-glob` 3.3.3 (la última) también depende de `micromatch` 4.0.8 → `braces` ^3.0.3, así que un `override` no lo resuelve. Falta verificar que `eslint-plugin-import` y sus resolvers no traigan `braces`.
+
+---
+
 ## 2026-10-18: resumen de la sesión y alineación de la documentación
 
 Primera sesión del proyecto: de los specs sin código a la demo publicada.
@@ -42,7 +66,7 @@ Primera sesión del proyecto: de los specs sin código a la demo publicada.
 - R-08: hosting de producción, que bloquea T-32 y T-43.
 - T-36: Google Business Profile.
 - T-38 manual: lector de pantalla.
-- Confirmar si se acepta el riesgo de `braces` (T-40).
+- Riesgo de `braces`: no aceptado; queda como tarea T-49.
 - Conflicto D-11: sin cabeceras de seguridad en la demo.
 
 ### Alineación de la documentación (esta entrada)
@@ -52,7 +76,7 @@ Primera sesión del proyecto: de los specs sin código a la demo publicada.
   - se agregaron el stack con versiones y la regla de no descartar cambios sin commit.
 - `README.md`: demo, stack, todos los comandos, edición de contenido y despliegue.
 - `spec/04-tasks.md`: nueva sección "Estado de avance" (hechas, provisionales, parciales y pendientes).
-- Las versiones de los specs siguen en 1.3, aunque tuvieron muchos ajustes en esta sesión. [POR CONFIRMAR] si se sube la versión (p. ej. a 1.4) en `05` §8.
+- Versiones de los specs: resuelto en la entrada siguiente (1.4).
 
 ---
 
@@ -84,7 +108,7 @@ Primera sesión del proyecto: de los specs sin código a la demo publicada.
 - `npm audit` completo: **5 altas**, todas por `braces` (GHSA-vfj7-8cjw-p6xm, DoS por patrones muy anidados), vía `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces` 3.0.3.
 - **No hay versión corregida:** 3.0.3 es la última publicada, y `npm audit fix --force` bajaría a `eslint-config-next@14`, incompatible con Next 16.
 - **Impacto:** solo en el lint durante el desarrollo, con patrones fijos del proyecto. No llega al sitio publicado (`npm audit --omit=dev`: 0).
-- **Decisión:** la validación sigue usando `audit:prod`. Dependabot avisará cuando haya arreglo. [POR CONFIRMAR con el usuario: aceptación del riesgo]
+- **Decisión del usuario: no se acepta el riesgo.** Se resuelve en la tarea T-49 (riesgo D-12). Mientras tanto, la validación usa `audit:prod`.
 - Versiones mayores pendientes, sin aplicar: ESLint 10, TypeScript 7, @types/node 26. Dependabot las propondrá una por una para evaluarlas.
 
 ### Verificado

@@ -1,6 +1,6 @@
 # 05 · Alcance Fase 1 y roadmap: Landing Guineo Verde
 
-**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** vigente
+**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** vigente
 
 Fuente de verdad del alcance. Si un spec contradice este documento, gana este documento y el spec se corrige (ver `00-constitution.md` §5).
 
@@ -70,6 +70,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | D-08 | Ley 1480 pide medios de pago y tiempo de entrega en la publicación; el copy dice que se informan por teléfono | Evaluar dentro de RP-03 [POR CONFIRMAR] |
 | D-09 | La demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages) | **Resuelto (2026-10-18):** GitHub Pages solo para la demo del POC/MVP. El hosting de producción sigue en R-08 |
 | D-10 | Publicar el repositorio en GitHub adelanta R-10 | **Resuelto (2026-10-18):** repositorio público en GitHub desde T-07; CI/CD con GitHub Actions |
+| D-12 | `npm audit` completo: 5 vulnerabilidades altas de `braces` (GHSA-vfj7-8cjw-p6xm) en dependencias de desarrollo, vía `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces` 3.0.3. No hay versión corregida | **No se acepta el riesgo** (decisión del usuario, 2026-10-18): resolver en T-49 |
 | D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | **Parcialmente resuelto (2026-10-18):** el bloqueo solo actúa con `SITE_ENV=production`, que define únicamente la pipeline de producción; fuera de producción se muestra una franja de aviso de datos ficticios (`demoNotice`). Sigue abierto: la demo en GitHub Pages no tiene cabeceras propias (CSP, NFR-04) |
 
 ## 6. Roadmap
@@ -101,10 +102,20 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 
 | Documento | Versión | Ubicación |
 |---|---|---|
-| `00-constitution.md` | 1.3 | `spec/` |
-| `01-spec.md` | 1.3 | `spec/` |
-| `02-content-spec.md` | 1.3 | `spec/` |
-| `03-plan.md` | 1.3 | `spec/` |
-| `04-tasks.md` | 1.3 | `spec/` |
-| `05-alcance-y-roadmap.md` | 1.3 | `spec/` |
+| `00-constitution.md` | 1.4 | `spec/` |
+| `01-spec.md` | 1.4 | `spec/` |
+| `02-content-spec.md` | 1.4 | `spec/` |
+| `03-plan.md` | 1.4 | `spec/` |
+| `04-tasks.md` | 1.4 | `spec/` |
+| `05-alcance-y-roadmap.md` | 1.4 | `spec/` |
 | Versión original (respaldo) | 1.0 | `spec/_v1.0/` |
+
+**Cambios de la versión 1.4 (2026-10-18):**
+- Alcance alineado: POC/MVP y reparto a personas naturales y puntos de venta (Q15).
+- Nuevas RP-04 (garantía) y RP-05 (PQR); RP-03 ampliada con medios de pago y tiempo de entrega.
+- Preguntas Q15 a Q18 y riesgos D-06 a D-12.
+- Decisiones: demo en GitHub Pages, repositorio en GitHub y CI/CD con GitHub Actions.
+- `04-tasks.md`: sección de estado de avance y nueva T-49.
+- Ajustes técnicos en el plan: copy en `copy.json`, acordeón nativo, `srcset`, SEO y presupuesto medido con gzip.
+
+El detalle de cada cambio está en `doc/bitacora.md`.

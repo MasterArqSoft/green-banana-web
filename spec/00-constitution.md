@@ -1,6 +1,6 @@
 # Constitución del proyecto: Landing Guineo Verde
 
-**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** Borrador para aprobación
+**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador para aprobación
 
 ## Índice
 1. Propósito

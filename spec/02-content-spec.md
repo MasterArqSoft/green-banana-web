@@ -1,6 +1,6 @@
 # Spec de contenido y diseño: Landing Guineo Verde
 
-**Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.3
+**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
 
 Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. Los textos van en español de Colombia, tono cercano y regional, sin exageraciones. **La landing no publica precios ni pedidos en la Fase 1.** El copy de esta sección se implementa en `src/content/copy.json` (un bloque por sección); los datos del negocio siguen en `site.json` y los demás archivos de contenido.
 
