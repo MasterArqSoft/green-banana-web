@@ -2,7 +2,9 @@ import { Benefits } from "@/components/Benefits";
 import { Business } from "@/components/Business";
 import { Coverage } from "@/components/Coverage";
 import { Faq } from "@/components/Faq";
+import { FinalCta } from "@/components/FinalCta";
 import { FreshInfo } from "@/components/FreshInfo";
+import { Guarantee } from "@/components/Guarantee";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Origin } from "@/components/Origin";
@@ -27,6 +29,8 @@ export default function Home() {
       <Business />
       <Testimonials />
       <Faq />
+      <Guarantee />
+      <FinalCta />
     </main>
   );
 }

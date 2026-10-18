@@ -93,5 +93,13 @@
   },
   "faq": {
     "title": "Preguntas frecuentes"
+  },
+  "guarantee": {
+    "title": "Si llega maltratado, lo reponemos",
+    "text": "Tienes 24 horas desde la entrega para llamarnos o escribirnos al correo de contacto con una foto del producto y del recibo. Lo reponemos en el siguiente despacho o te devolvemos el dinero [POR CONFIRMAR política, RP-04].",
+    "legalNote": "Por tratarse de un producto perecedero, no aplica el derecho de retracto. Esta garantía es adicional a tus derechos como consumidor."
+  },
+  "finalCta": {
+    "title": "Llámanos y hablamos de tu pedido"
   }
 }

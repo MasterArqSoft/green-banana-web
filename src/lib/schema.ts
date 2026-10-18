@@ -203,6 +203,10 @@ export const copySchema = z.strictObject({
   testimonials: z.strictObject({ title: text }),
   // FR-13. Las preguntas y respuestas vienen de faq.json.
   faq: z.strictObject({ title: text }),
+  // FR-14. La política definitiva es RP-04; legalNote es la exclusión de retracto (Ley 1480).
+  guarantee: z.strictObject({ title: text, text, legalNote: text }),
+  // FR-15.
+  finalCta: z.strictObject({ title: text }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
