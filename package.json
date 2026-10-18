@@ -11,6 +11,8 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run audit:prod",
     "prepare": "husky"
   },
   "dependencies": {
@@ -35,7 +37,7 @@
     "vitest": "^5.0.5"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,mjs}": [
+    "*.{ts,tsx,mts,js,mjs}": [
       "eslint --fix",
       "prettier --write"
     ],
