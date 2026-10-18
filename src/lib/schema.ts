@@ -39,6 +39,11 @@ function uniqueIds<T extends { id: string }>(items: T[], ctx: z.RefinementCtx) {
 
 export const siteSchema = z.strictObject({
   brand: text,
+  // URL pública del sitio, sin "/" final (canónica, sitemap, Open Graph). Hoy, la demo
+  // en GitHub Pages; el dominio propio llega con RP-01.
+  url: z
+    .url({ protocol: /^https$/ })
+    .refine((value) => !value.endsWith("/"), "Sin / al final"),
   phone,
   // true mientras el número sea ficticio. Bloquea el build de producción (riesgo R5).
   phoneIsPlaceholder: z.boolean(),
@@ -125,6 +130,13 @@ const textWith = (placeholder: string) =>
 
 // Copy de la interfaz por sección (principio P9). Cada sección agrega su bloque al construirse.
 export const copySchema = z.strictObject({
+  // NFR-03 y 02-content-spec.md §7.
+  seo: z.strictObject({
+    title: textWith("marca"),
+    description: text,
+    keywords: z.array(text).min(1),
+    ogImageAlt: text,
+  }),
   // Franja visible fuera de producción (decisión D-11).
   demoNotice: text,
   callButton: z.strictObject({

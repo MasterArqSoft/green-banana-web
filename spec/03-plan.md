@@ -220,7 +220,7 @@ default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'u
 | JavaScript | Componente cliente (`'use client'`) solo para el botón flotante; el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
 | CSS | Tailwind con purga; CSS crítico en línea |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
-| SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
+| SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt`. La URL base es `url` en `site.json`. Fuera de producción (demo con datos ficticios, D-11) la página lleva `noindex` y `robots.txt` bloquea el rastreo; con `SITE_ENV=production` se permite y se publica el sitemap |
 | Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB |
 
 ## 9. Analítica (roadmap R-07, fuera de Fase 1)

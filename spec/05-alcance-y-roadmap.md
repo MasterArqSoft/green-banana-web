@@ -91,7 +91,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 
 | ID | Tarea | Preguntas | Estado |
 |---|---|---|---|
-| RP-01 | Reemplazar datos ficticios por reales en `site.json`: nombre comercial, razón social, NIT, dirección, correo, número de contacto y horario. Registrar y configurar dominio | Q1, Q6, Q7, Q9 | Pendiente |
+| RP-01 | Reemplazar datos ficticios por reales en `site.json`: nombre comercial, razón social, NIT, dirección, correo, número de contacto y horario. Registrar y configurar dominio, y actualizar `url` en `site.json` (canónica, sitemap y Open Graph) | Q1, Q6, Q7, Q9 | Pendiente |
 | RP-02 | Reemplazar origen ficticio (finca, asociación, municipio) y las imágenes por fotos reales de producto, productor y acopio | Q4, Q10 | Pendiente |
 | RP-03 | Definir y validar con asesor jurídico cómo se informa el precio total por teléfono (Ley 1480). Evaluar también si los medios de pago y el tiempo de entrega deben publicarse en la página [POR CONFIRMAR] | Q14, Q18 | Pendiente |
 | RP-04 | Definir la política de garantía: reposición del producto, devolución del dinero o ambas | Q16 | Pendiente |

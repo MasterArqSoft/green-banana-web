@@ -6,6 +6,7 @@ import { FinalCta } from "@/components/FinalCta";
 import { FreshInfo } from "@/components/FreshInfo";
 import { Guarantee } from "@/components/Guarantee";
 import { Hero } from "@/components/Hero";
+import { LocalBusinessJsonLd } from "@/components/LocalBusinessJsonLd";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Origin } from "@/components/Origin";
 import { ProductCards } from "@/components/ProductCards";
@@ -31,6 +32,7 @@ export default function Home() {
       <Faq />
       <Guarantee />
       <FinalCta />
+      <LocalBusinessJsonLd />
     </main>
   );
 }

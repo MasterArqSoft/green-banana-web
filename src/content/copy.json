@@ -1,4 +1,15 @@
 {
+  "seo": {
+    "title": "Guineo verde en {ciudad} | {marca}",
+    "description": "Guineo verde seleccionado a mano, acopiado en {ciudad}. Llámanos para precio y distribución a hogares y negocios.",
+    "keywords": [
+      "guineo verde",
+      "guineo verde Santa Marta",
+      "banano verde para sancocho",
+      "distribuidor guineo verde Magdalena"
+    ],
+    "ogImageAlt": "{marca}: guineo verde acopiado en {ciudad}"
+  },
   "demoNotice": "Demostración: los datos de empresa y contacto son ficticios.",
   "callButton": {
     "label": "Llamar",

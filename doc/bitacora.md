@@ -5,6 +5,29 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-31, SEO
+
+### Cambios
+- `site.json`: nuevo `url` (hoy `https://masterarqsoft.github.io/green-banana-web`), validado como https y sin `/` final. El dominio propio llega con RP-01, que ahora lo menciona en `05`.
+- `copy.json` bloque `seo`, con los textos de `02-content-spec.md` §7: título "Guineo verde en {ciudad} | {marca}", descripción, palabras clave y texto alternativo de la imagen para redes.
+- `src/lib/seo.ts`: `absoluteUrl`, `seoTitle`, `seoDescription` y `ogImage`.
+- `layout.tsx` (metadatos): canónica, `hreflang="es-CO"`, Open Graph (`es_CO`, `website`), Twitter `summary_large_image` y robots. Cada página legal tiene su propia canónica.
+- `src/app/og.png/route.tsx`: imagen para redes de 1200 × 630 generada en el build (fondo verde hoja, marca en amarillo y el H1). Es provisional hasta tener la foto del hero. **Se descartó la convención `opengraph-image`**: exportaba un archivo sin extensión y una URL sin el prefijo de la demo.
+- `src/app/robots.ts` y `src/app/sitemap.ts`, con `dynamic = "force-static"` (obligatorio con `output: "export"`).
+- `LocalBusinessJsonLd` en la página principal: nombre, URL, teléfono, correo, dirección y zonas, sin precios. Junto con `FAQPage` (T-24) cubre los datos estructurados de NFR-03.
+- **Decisión: la demo no se indexa.** Fuera de producción, `<meta name="robots" content="noindex, nofollow">` y `robots.txt` con `Disallow: /`, para que Google no publique la empresa ficticia (D-11). Con `SITE_ENV=production` se permite el rastreo y se enlaza el sitemap. Plan §8 actualizado.
+- Pruebas `tests/unit/seo.test.tsx`: URL absolutas, título, LocalBusiness sin precios, sitemap, y robots fuera y dentro de producción.
+
+### Verificado
+- `npm run validate` pasa: 102 pruebas unitarias, 13 e2e y presupuesto de 266,4 KB.
+- Build con `basePath`: `og:image` = `https://masterarqsoft.github.io/green-banana-web/og.png` (PNG 1200 × 630, 54 KB, revisado a ojo) y canónicas correctas.
+
+### Abierto
+- Ficha de Google Business Profile (T-36), cuando haya datos reales (RP-01).
+- Cambiar la imagen para redes por un recorte de la foto del hero (T-04).
+
+---
+
 ## 2026-10-18: T-30, rendimiento y presupuesto de peso
 
 ### Cambios

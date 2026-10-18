@@ -3,15 +3,41 @@ import { DemoBanner } from "@/components/DemoBanner";
 import { FloatingCall } from "@/components/FloatingCall";
 import { Footer } from "@/components/Footer";
 import { TopBar } from "@/components/TopBar";
-import { site } from "@/lib/content";
+import { copy, isProduction, site } from "@/lib/content";
+import { absoluteUrl, ogImage, seoDescription, seoTitle } from "@/lib/seo";
 import { fraunces, inter } from "./fonts";
 import "./globals.css";
 
-// Importar el contenido aquí hace que cada build lo valide (T-09). El SEO completo es T-31.
+// Importar el contenido aquí hace que cada build lo valide (T-09).
+// SEO (T-31, NFR-03): textos de copy.json; URL de site.json. La demo no se indexa (D-11).
 export const metadata: Metadata = {
-  title: `Guineo verde en Santa Marta | ${site.brand}`,
-  description:
-    "Landing informativa de guineo verde. Acopio y distribución en Santa Marta.",
+  // Todas las URL se arman absolutas con absoluteUrl(), que ya incluye el prefijo de la demo.
+  metadataBase: new URL(site.url),
+  title: seoTitle(),
+  description: seoDescription(),
+  keywords: copy.seo.keywords,
+  alternates: {
+    canonical: absoluteUrl("/"),
+    languages: { "es-CO": absoluteUrl("/") },
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: site.brand,
+    title: seoTitle(),
+    description: seoDescription(),
+    url: absoluteUrl("/"),
+    images: [ogImage()],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: seoTitle(),
+    description: seoDescription(),
+    images: [ogImage()],
+  },
+  robots: isProduction
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
