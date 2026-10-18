@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PHONE_E164_CO } from "@/lib/tel";
 
 // Esquemas del contenido editable (spec/03-plan.md §5). Se validan en cada build
 // desde src/lib/content.ts: un dato inválido o faltante rompe la compilación.
@@ -6,11 +7,11 @@ import { z } from "zod";
 
 const text = z.string().trim().min(1, "No puede estar vacío");
 
-// Teléfono colombiano en formato E.164: +57 y 10 dígitos.
+// Teléfono colombiano en formato E.164: +57 y 10 dígitos (misma regla que src/lib/tel.ts).
 const phone = z
   .string()
   .regex(
-    /^\+57\d{10}$/,
+    PHONE_E164_CO,
     "Debe tener formato E.164 colombiano: +57 y 10 dígitos",
   );
 

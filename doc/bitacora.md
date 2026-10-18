@@ -5,6 +5,34 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-08, enlace de llamada y pruebas unitarias
+
+### Decisiones del usuario
+- Herramienta de pruebas unitarias: **Vitest**.
+
+### Cambios
+- `src/lib/tel.ts`:
+  - `telHref(phone)` devuelve `"tel:+573000000000"`.
+  - `formatPhone(phone)` devuelve `"+57 300 000 0000"`.
+  - Ambas lanzan un error si el número no es E.164 colombiano.
+  - La regla `PHONE_E164_CO` vive aquí y `schema.ts` la reutiliza, así no hay dos expresiones regulares distintas.
+- `vitest` 5.0.5 y `vitest.config.mts` (alias `@/` con `resolve.tsconfigPaths`; extensión `.mts` para evitar el aviso de configuración CommonJS de Vite 8).
+- `@types/node` de `^20` a `^24`, igual al Node que se usa en local y en GitHub Actions. Vitest 5 no instala con los tipos de Node 20.
+- Scripts `test` (`vitest run`) y `test:watch`.
+- Pruebas:
+  - `tests/unit/tel.test.ts`: enlace, formato y 6 números inválidos.
+  - `tests/unit/content.test.ts`: rechazo de precio (AC-02), de teléfono sin E.164 y de dato legal vacío; carga válida fuera de producción; bloqueo con `SITE_ENV=production` (riesgo R5). Cubre el pendiente de T-09.
+- `spec/03-plan.md` §4: `tests/unit` (Vitest) y `tests/e2e` (Playwright). `CLAUDE.md`: comandos de pruebas y uso de `tel.ts`.
+
+### Verificado
+- `npm test`: 14 pruebas pasan. También funcionan las ejecuciones de un solo archivo y de una sola prueba por nombre.
+- `lint`, `typecheck`, `build` y `format:check` pasan.
+
+### Abierto
+- `npm audit` sigue con las vulnerabilidades altas de dependencias de desarrollo (ver T-07).
+
+---
+
 ## 2026-10-18: T-09, esquemas Zod y contenido
 
 ### Decisiones del usuario

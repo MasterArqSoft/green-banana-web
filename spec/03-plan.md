@@ -109,7 +109,7 @@ landing-guineo-verde/
 │  ├─ lib/               # tel.ts, schema.ts (analytics.ts entra con R-07)
 │  └─ styles/
 ├─ public/               # fuentes autoalojadas, favicon, robots.txt
-├─ tests/                # e2e (Playwright) y unitarios
+├─ tests/                # unit/ (Vitest) y e2e/ (Playwright)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
 └─ (archivo de CI/CD según proveedor; pendiente, R-10)
 ```
