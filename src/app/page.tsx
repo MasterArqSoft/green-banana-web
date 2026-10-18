@@ -1,4 +1,5 @@
 import { Benefits } from "@/components/Benefits";
+import { Business } from "@/components/Business";
 import { Coverage } from "@/components/Coverage";
 import { FreshInfo } from "@/components/FreshInfo";
 import { Hero } from "@/components/Hero";
@@ -21,6 +22,7 @@ export default function Home() {
       <Benefits />
       <HowItWorks />
       <Coverage />
+      <Business />
     </main>
   );
 }

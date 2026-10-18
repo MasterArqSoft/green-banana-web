@@ -83,5 +83,9 @@
     "distributionLabel": "Distribución",
     "distribution": "Solo en {zonas}, con reparto propio de la empresa, a hogares y puntos de venta.",
     "notListed": "¿Tu barrio o tu negocio no aparece? Llámanos y te decimos si llegamos."
+  },
+  "business": {
+    "title": "¿Tienes tienda, hotel o punto de venta?",
+    "text": "Distribuimos en {ciudad} desde nuestro acopio. Llámanos y te contamos las condiciones."
   }
 }
