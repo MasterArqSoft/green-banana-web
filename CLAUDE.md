@@ -26,7 +26,7 @@ No son fuente de verdad:
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). Léelo al empezar para retomar el contexto.
 
 ## Estado actual y comandos
-T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. Todavía no hay pruebas (llegan con T-08) ni script único de validación (T-11).
+T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. T-08 hecho: `src/lib/tel.ts` con pruebas unitarias (Vitest). Falta el script único de validación (T-11) y Playwright.
 
 ```bash
 npm run dev            # servidor de desarrollo en http://localhost:3000
@@ -34,8 +34,11 @@ npm run build          # exportación estática en out/
 npm run lint           # ESLint
 npm run typecheck      # next typegen && tsc --noEmit (genera los tipos de rutas como LayoutProps)
 npm run format         # Prettier (escribe); format:check solo verifica
+npm test               # pruebas unitarias (Vitest, tests/unit/**/*.test.ts); test:watch en modo vigilancia
+npx vitest run tests/unit/tel.test.ts            # un solo archivo
+npx vitest run tests/unit/tel.test.ts -t "formatPhone"   # una sola prueba por nombre
 ```
-Cuando existan, documenta aquí `test`, cómo correr una sola prueba unitaria, Playwright y el script de T-11.
+Cuando existan, documenta aquí Playwright y el script de T-11.
 
 **Next.js 16 cambia APIs respecto a versiones anteriores** (ver `AGENTS.md`). Antes de usar una API de Next, consulta la guía en `node_modules/next/dist/docs/`. Con `output: "export"` no se pueden usar `cacheComponents`/PPR, `headers`, `redirects`, `rewrites`, Server Actions, Route Handlers con Request ni el optimizador de imágenes por defecto (`images.unoptimized: true`).
 
@@ -45,12 +48,12 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - **Contenido separado del código:** los datos viven en `src/content/*.json` (`site`, `products`, `zones`, `faq`, `recipes`, `origin`). Zod los valida en el build (`src/lib/schema.ts`); un dato legal faltante rompe la compilación.
 - **Salvaguarda del número ficticio:** `site.json` tiene `phoneIsPlaceholder`. Si es `true` y el build tiene `SITE_ENV=production`, el build falla (riesgo R5, D-02). Sin esa variable (local y demo) se muestra `DemoBanner` con `site.demoNotice`.
 - **Acceso al contenido:** importa siempre desde `@/lib/content` (`site`, `products`, `zones`, `faq`, `recipes`, `origin`, `isProduction`), nunca los JSON directamente; ahí se validan. Solo desde componentes de servidor.
-- **Enlace de llamada:** el `tel:` solo se genera en `src/lib/tel.ts`, a partir de `site.phone` (E.164). Todos los botones Llamar (`CallButton`, `FloatingCall`, etc.) lo usan; ningún componente arma el número por su cuenta.
+- **Enlace de llamada:** el `tel:` solo se genera con `telHref(site.phone)` de `src/lib/tel.ts`, y el número visible con `formatPhone(site.phone)` ("+57 300 000 0000"). La regla E.164 (`PHONE_E164_CO`) vive ahí y la reutiliza el esquema. Todos los botones Llamar (`CallButton`, `FloatingCall`, etc.) lo usan; ningún componente arma el número por su cuenta.
 - **JavaScript mínimo:** solo dos componentes cliente (`'use client'`): el acordeón de FAQ y el botón flotante de llamar. Todo lo demás se renderiza en el build.
 - **Rutas (App Router):** `src/app/page.tsx` (landing) y las páginas legales `terminos/`, `privacidad/` y `garantia/`. No hay carpeta `api/` en Fase 1 (R-06).
 - **Sin precios en el modelo de datos:** `products.json` no tiene campos de precio; `pricePerKg` y `priceTotal` llegan con R-01.
 - **Presupuesto de rendimiento:** HTML+CSS+JS inicial ≤ 300 KB, imagen del hero ≤ 120 KB, fuentes autoalojadas (máximo 2 familias, `font-display: swap`), ningún script de terceros.
-- **Pruebas:** unitarias y e2e (Playwright) en `tests/`.
+- **Pruebas:** unitarias con Vitest en `tests/unit/` (alias `@/` resuelto por `vitest.config.mts`); e2e con Playwright en `tests/e2e/` (T-37). Para probar el bloqueo de producción se usa `vi.stubEnv("SITE_ENV", "production")` + `vi.resetModules()` y se reimporta `@/lib/content`.
 
 ## Decisiones técnicas (cerradas)
 - Next.js con exportación estática (`output: 'export'`), React, TypeScript y Tailwind CSS.
