@@ -5,6 +5,20 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-14, franja de confianza
+
+### Cambios
+- `src/components/TrustBar.tsx` (FR-03): cuatro elementos en una franja `hoja-claro`, 2 columnas en móvil y 4 en escritorio, con íconos Lucide (camión, teléfono, escudo y mano) en verde hoja.
+- `copy.json` bloque `trustBar`: textos de `02-content-spec.md` §2, con "Acopio en {ciudad}". `copy.json` solo elige el ícono por nombre; el mapa nombre → ícono está en el componente.
+- `copySchema`: exactamente 4 elementos e íconos válidos.
+- `page.tsx`: `TrustBar` debajo del `Hero`.
+- Pruebas `tests/unit/TrustBar.test.tsx`: 4 elementos, ciudad rellenada, ningún precio y esquema que rechaza 3 elementos.
+
+### Verificado
+- `npm run validate` pasa con 32 pruebas.
+
+---
+
 ## 2026-10-18: T-13, hero
 
 ### Decisiones del usuario
