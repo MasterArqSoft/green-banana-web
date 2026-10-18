@@ -139,6 +139,13 @@ export const copySchema = z.strictObject({
     units: textWith("unidades"),
     note: text,
   }),
+  // FR-05 "Verde de verdad".
+  freshInfo: z.strictObject({
+    title: text,
+    text,
+    tipLabel: text,
+    tip: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;

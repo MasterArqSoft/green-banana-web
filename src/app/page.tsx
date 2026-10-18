@@ -1,3 +1,4 @@
+import { FreshInfo } from "@/components/FreshInfo";
 import { Hero } from "@/components/Hero";
 import { ProductCards } from "@/components/ProductCards";
 import { TrustBar } from "@/components/TrustBar";
@@ -9,6 +10,7 @@ export default function Home() {
       <Hero />
       <TrustBar />
       <ProductCards />
+      <FreshInfo />
     </main>
   );
 }

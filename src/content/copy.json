@@ -43,5 +43,11 @@
     "unitWeight": "~{peso} por unidad",
     "units": "~{unidades} unidades",
     "note": "El precio se informa por teléfono. El costo de envío también se informa antes de confirmar."
+  },
+  "freshInfo": {
+    "title": "Para cocinar, no para madurar",
+    "text": "Cortamos el guineo en su punto verde para que aguante la cocción y no se deshaga en la olla. Si lo guardas en un lugar fresco y seco, dura entre [4 y 7] días [POR CONFIRMAR con el proveedor].",
+    "tipLabel": "Consejo",
+    "tip": "No lo refrigeres si no quieres que la cáscara se oscurezca."
   }
 }
