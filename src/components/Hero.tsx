@@ -23,7 +23,6 @@ export function Hero() {
         <p className="text-lg">{hero.subtitle}</p>
         <div className="flex flex-wrap gap-3">
           <CallButton label={hero.primaryCta} />
-          {/* La sección de origen llega con T-17. */}
           <a
             href="#origen"
             className="inline-flex min-h-12 items-center justify-center rounded-control border-2 border-hoja px-6 font-semibold text-hoja transition-colors hover:bg-hoja-claro"

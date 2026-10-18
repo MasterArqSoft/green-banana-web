@@ -146,6 +146,14 @@ export const copySchema = z.strictObject({
     tipLabel: text,
     tip: text,
   }),
+  // FR-06. Los datos del productor y del lote vienen de origin.json (ficticios hasta RP-02).
+  origin: z.strictObject({
+    title: textWith("municipio").and(textWith("ciudad")),
+    text: textWith("productor").and(textWith("municipio")),
+    steps: z.array(text).length(3, "El esquema de origen tiene 3 pasos"),
+    batch: textWith("codigo").and(textWith("fecha")),
+    imagePending: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
