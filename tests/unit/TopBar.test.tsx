@@ -2,14 +2,14 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { CallButton } from "@/components/CallButton";
 import { TopBar } from "@/components/TopBar";
-import { site } from "@/lib/content";
+import { copy, site } from "@/lib/content";
 import { formatPhone, telHref } from "@/lib/tel";
 
 describe("CallButton", () => {
   it("enlaza al número de site.json (AC-03)", () => {
     const html = renderToStaticMarkup(<CallButton />);
     expect(html).toContain(`href="${telHref(site.phone)}"`);
-    expect(html).toContain(">Llamar</a>");
+    expect(html).toContain(`>${copy.callButton.label}</a>`);
   });
 
   it("usa el texto recibido y lo incluye en el nombre accesible", () => {
@@ -23,6 +23,7 @@ describe("CallButton", () => {
 });
 
 describe("TopBar (FR-01)", () => {
+  // Los textos salen de copy.json; aquí se comprueba el resultado ya rellenado.
   const html = renderToStaticMarkup(<TopBar />);
 
   it("muestra la empresa, el acopio y el número", () => {

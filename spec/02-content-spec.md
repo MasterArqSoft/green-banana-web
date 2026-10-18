@@ -2,7 +2,7 @@
 
 **Versión:** 1.3 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.3
 
-Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. Los textos van en español de Colombia, tono cercano y regional, sin exageraciones. **La landing no publica precios ni pedidos en la Fase 1.**
+Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. Los textos van en español de Colombia, tono cercano y regional, sin exageraciones. **La landing no publica precios ni pedidos en la Fase 1.** El copy de esta sección se implementa en `src/content/copy.json` (un bloque por sección); los datos del negocio siguen en `site.json` y los demás archivos de contenido.
 
 ## Índice
 1. Voz y tono
@@ -100,7 +100,7 @@ Solo con testimonios reales y autorizados. Formato: foto, nombre, negocio o barr
 - **Botón:** Llamar
 
 ### Aviso de demostración (D-11)
-Franja fina arriba de la página, solo fuera de producción: *Demostración: los datos de empresa y contacto son ficticios.* El texto vive en `site.json` (`demoNotice`).
+Franja fina arriba de la página, solo fuera de producción: *Demostración: los datos de empresa y contacto son ficticios.* El texto vive en `copy.json` (`demoNotice`).
 
 ### FR-16 Pie
 Razón social: [FICTICIA, Q6] · NIT: [FICTICIO, Q6] · Dirección: [FICTICIA, Q6] · Teléfono: [número de contacto, Q7] · Correo: [FICTICIO, Q6]

@@ -1,0 +1,11 @@
+{
+  "demoNotice": "Demostración: los datos de empresa y contacto son ficticios.",
+  "callButton": {
+    "label": "Llamar",
+    "accessibleName": "{texto} al {telefono}"
+  },
+  "topBar": {
+    "acopio": "Acopio en {ciudad}",
+    "phone": "Llámanos: {telefono}"
+  }
+}

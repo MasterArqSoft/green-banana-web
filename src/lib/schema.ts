@@ -51,8 +51,6 @@ export const siteSchema = z.strictObject({
   }),
   sicUrl: z.url({ protocol: /^https$/ }),
   acopio: z.strictObject({ city: text, department: text }),
-  // Franja visible fuera de producción (decisión D-11).
-  demoNotice: text,
 });
 
 export const presentationSchema = z.strictObject({
@@ -96,9 +94,31 @@ export const originSchema = z.strictObject({
   batch: z.strictObject({ code: text, cutDate: z.iso.date() }),
 });
 
+// Texto con un marcador obligatorio, p. ej. "Acopio en {ciudad}" (se rellena con src/lib/template.ts).
+const textWith = (placeholder: string) =>
+  text.includes(`{${placeholder}}`, {
+    message: `Debe incluir el marcador {${placeholder}}`,
+  });
+
+// Copy de la interfaz por sección (principio P9). Cada sección agrega su bloque al construirse.
+export const copySchema = z.strictObject({
+  // Franja visible fuera de producción (decisión D-11).
+  demoNotice: text,
+  callButton: z.strictObject({
+    label: text,
+    // Nombre para lectores de pantalla; debe empezar con {texto} (WCAG 2.5.3).
+    accessibleName: textWith("texto").and(textWith("telefono")),
+  }),
+  topBar: z.strictObject({
+    acopio: textWith("ciudad"),
+    phone: textWith("telefono"),
+  }),
+});
+
 export type Site = z.infer<typeof siteSchema>;
 export type Presentation = z.infer<typeof presentationSchema>;
 export type Zone = z.infer<typeof zonesSchema>[number];
 export type FaqItem = z.infer<typeof faqSchema>[number];
 export type Recipe = z.infer<typeof recipesSchema>[number];
 export type Origin = z.infer<typeof originSchema>;
+export type Copy = z.infer<typeof copySchema>;
