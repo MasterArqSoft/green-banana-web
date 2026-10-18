@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Sitio 100 % estático (spec/03-plan.md §1): `next build` genera la carpeta `out/`.
   output: "export",
+  // La demo en GitHub Pages vive en /green-banana-web (lo define el workflow pages.yml).
+  // En local queda vacío y el sitio se sirve en la raíz.
+  basePath: process.env.PAGES_BASE_PATH ?? "",
   // La exportación estática no admite el optimizador de imágenes por defecto.
   // Los formatos AVIF/WebP y `srcset` se resuelven en T-30.
   images: {

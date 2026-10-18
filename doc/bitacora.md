@@ -5,6 +5,26 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: demo en GitHub Pages
+
+### Decisiones del usuario
+- La demo del POC/MVP se publica en **GitHub Pages**: https://masterarqsoft.github.io/green-banana-web/. Resuelve D-09. El hosting de producción sigue pendiente (R-08).
+
+### Cambios
+- `.github/workflows/pages.yml`: en cada push a `main` (o a mano) instala, construye con `basePath` y despliega `out/` en Pages. Primer workflow de GitHub Actions; la pipeline completa sigue en R-10.
+- `next.config.ts`: `basePath` desde `PAGES_BASE_PATH` (vacío en local).
+- GitHub Pages activado con origen "GitHub Actions" (`gh api`).
+- `spec/05-alcance-y-roadmap.md`: D-09 resuelto y URL de la demo en §4. `CLAUDE.md`: demo y nota sobre el prefijo en rutas de `public/`.
+
+### Verificado
+- El build con `PAGES_BASE_PATH=/green-banana-web` genera rutas `/green-banana-web/_next/...`.
+
+### Abierto
+- D-11: modo demo, datos ficticios visibles y GitHub Pages sin cabeceras propias (CSP).
+- Commits con `Co-Authored-By: Claude` todavía en el historial (pendiente de reescritura por el usuario).
+
+---
+
 ## 2026-10-18: T-07, proyecto base y repositorio en GitHub
 
 ### Decisiones del usuario
@@ -22,6 +42,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - `.gitattributes` con finales de línea LF: tu git usa `autocrlf`, y sin esto `format:check` y el hook fallarían en un clon nuevo.
   - No se versionan `.claude/skills/` (skills de terceros; se reinstalan desde `skills-lock.json`) ni el informe de investigación de `doc/` (solo local). `doc/bitacora.md` sí se versiona.
   - Commits con el correo personal del usuario (decisión suya, queda público).
+  - El usuario no quiere que Claude aparezca como colaborador: regla en `CLAUDE.md`, sin línea `Co-Authored-By`. Los commits `T-07` y `Bitácora: detalle de T-07` aún la tienen; quitarla exige reescribir el historial y hacer push forzado (pendiente de que el usuario lo autorice o lo ejecute).
 - **Specs:** D-10 resuelto y nuevas decisiones en `05` §4; R-10 con proveedor GitHub Actions en `05`, `03` §6 y §10, y `04`; T-07 incluye el repositorio remoto.
 - **`CLAUDE.md`:** comandos, restricciones de Next.js 16 con exportación estática; CI/CD decidido.
 

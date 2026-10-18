@@ -52,7 +52,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Precio | Se informa por teléfono, no se publica en la landing |
 | Framework | Next.js (exportación estática) + React + TypeScript |
 | Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
-| Demostración del POC/MVP | Publicación pública en GitHub con datos ficticios. Tiene conflictos abiertos (D-09 y D-11) |
+| Demostración del POC/MVP | Publicación pública en GitHub Pages (https://masterarqsoft.github.io/green-banana-web/) con datos ficticios, desplegada por GitHub Actions en cada push a `main`. Conflicto abierto: D-11 |
 | Repositorio | GitHub, público (cuenta MasterArqSoft, `green-banana-web`), desde T-07 |
 | Proveedor de CI/CD (R-10) | GitHub Actions, por la regla "repositorio y pipeline en el mismo proveedor". Se configura cuando haya varios entornos |
 
@@ -68,7 +68,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | D-06 | Política de garantía sin definir (reposición, devolución del dinero o ambas) | RP-04, antes de producción |
 | D-07 | Procedimiento de PQR con constancia sin definir (correo o teléfono con número de radicado) | RP-05, antes de producción |
 | D-08 | Ley 1480 pide medios de pago y tiempo de entrega en la publicación; el copy dice que se informan por teléfono | Evaluar dentro de RP-03 [POR CONFIRMAR] |
-| D-09 | La demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages) | Pendiente de decidir con el usuario |
+| D-09 | La demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages) | **Resuelto (2026-10-18):** GitHub Pages solo para la demo del POC/MVP. El hosting de producción sigue en R-08 |
 | D-10 | Publicar el repositorio en GitHub adelanta R-10 | **Resuelto (2026-10-18):** repositorio público en GitHub desde T-07; CI/CD con GitHub Actions |
 | D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | Pendiente de decidir con el usuario |
 
