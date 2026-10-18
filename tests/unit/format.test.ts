@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatWeight } from "@/lib/format";
+import { formatDate, formatList, formatWeight } from "@/lib/format";
 
 describe("formatWeight", () => {
   it.each([
@@ -18,5 +18,12 @@ describe("formatDate", () => {
   it("escribe la fecha en español de Colombia sin correrla de día", () => {
     expect(formatDate("2026-10-15")).toBe("15 de octubre de 2026");
     expect(formatDate("2026-01-01")).toBe("1 de enero de 2026");
+  });
+});
+
+describe("formatList", () => {
+  it("une los elementos con comas e «y»", () => {
+    expect(formatList(["Santa Marta"])).toBe("Santa Marta");
+    expect(formatList(["A", "B", "C"])).toBe("A, B y C");
   });
 });
