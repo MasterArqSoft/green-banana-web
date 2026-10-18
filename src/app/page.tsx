@@ -1,6 +1,7 @@
 import { Benefits } from "@/components/Benefits";
 import { FreshInfo } from "@/components/FreshInfo";
 import { Hero } from "@/components/Hero";
+import { HowItWorks } from "@/components/HowItWorks";
 import { Origin } from "@/components/Origin";
 import { ProductCards } from "@/components/ProductCards";
 import { Recipes } from "@/components/Recipes";
@@ -17,6 +18,7 @@ export default function Home() {
       <Origin />
       <Recipes />
       <Benefits />
+      <HowItWorks />
     </main>
   );
 }

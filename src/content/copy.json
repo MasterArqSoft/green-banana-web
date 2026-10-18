@@ -64,5 +64,16 @@
   "benefits": {
     "title": "Lo que aporta",
     "text": "El guineo verde es fuente de almidón resistente, un tipo de fibra. Es un alimento de cocina tradicional y no sustituye la orientación de un profesional de la salud."
+  },
+  "howItWorks": {
+    "title": "Cómo funciona",
+    "steps": [
+      { "highlight": "Llama", "text": "y cuéntanos qué necesitas." },
+      {
+        "highlight": "Confirmamos",
+        "text": "la presentación, el precio y la zona por teléfono."
+      },
+      { "highlight": "Recibes", "text": "y pagas según lo acordado." }
+    ]
   }
 }
