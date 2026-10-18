@@ -5,7 +5,9 @@ import zonesJson from "@/content/zones.json";
 import faqJson from "@/content/faq.json";
 import recipesJson from "@/content/recipes.json";
 import originJson from "@/content/origin.json";
+import copyJson from "@/content/copy.json";
 import {
+  copySchema,
   faqSchema,
   originSchema,
   productsSchema,
@@ -34,6 +36,7 @@ export const zones = parse(zonesSchema, zonesJson, "zones.json");
 export const faq = parse(faqSchema, faqJson, "faq.json");
 export const recipes = parse(recipesSchema, recipesJson, "recipes.json");
 export const origin = parse(originSchema, originJson, "origin.json");
+export const copy = parse(copySchema, copyJson, "copy.json");
 
 // Solo la pipeline de producción define SITE_ENV=production (decisión D-11).
 // El build local y el de la demo en GitHub Pages trabajan con datos ficticios.

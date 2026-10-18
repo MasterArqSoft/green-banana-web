@@ -1,6 +1,7 @@
 import { CallButton } from "@/components/CallButton";
-import { site } from "@/lib/content";
+import { copy, site } from "@/lib/content";
 import { formatPhone } from "@/lib/tel";
+import { fill } from "@/lib/template";
 
 // Barra superior (FR-01): empresa, zona de acopio, número y botón Llamar.
 // Fija arriba en móvil; en escritorio se desplaza con la página.
@@ -13,10 +14,10 @@ export function TopBar() {
             {site.brand}
           </p>
           <p className="text-xs md:text-sm">
-            Acopio en {site.acopio.city}
+            {fill(copy.topBar.acopio, { ciudad: site.acopio.city })}
             <span aria-hidden="true"> · </span>
             <span className="whitespace-nowrap">
-              Llámanos: {formatPhone(site.phone)}
+              {fill(copy.topBar.phone, { telefono: formatPhone(site.phone) })}
             </span>
           </p>
         </div>

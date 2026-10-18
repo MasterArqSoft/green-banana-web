@@ -5,6 +5,24 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: textos de interfaz en `copy.json` (principio P9)
+
+### Decisiones del usuario
+- **Opción A:** todo el copy de la interfaz vive en un archivo de contenido, no en los componentes, para que el negocio cambie textos sin tocar código.
+
+### Cambios
+- `src/content/copy.json`: un bloque por sección. Por ahora `demoNotice` (movido desde `site.json`), `callButton` (`label` y `accessibleName`) y `topBar` (`acopio` y `phone`).
+- `src/lib/template.ts`: `fill()` reemplaza marcadores como `{ciudad}` o `{telefono}` con datos de `site.json`, y falla si falta un valor.
+- `src/lib/schema.ts`: `copySchema`, estricto. Exige que cada texto con datos incluya su marcador; por ejemplo, rechaza "Acopio en Santa Marta" escrito a mano.
+- `CallButton`, `TopBar` y `DemoBanner` toman sus textos de `copy`. Ya no queda texto escrito en los componentes, tampoco en el `aria-label`.
+- Pruebas `tests/unit/template.test.ts`: `fill` y el esquema de `copy.json`.
+- Specs: `03-plan.md` §3, §4 y §5 (archivo `copy.json` y regla de marcadores); `02-content-spec.md` indica dónde se implementa el copy. `CLAUDE.md`: regla "ningún componente escribe texto propio".
+
+### Verificado
+- `npm run validate` pasa con 24 pruebas.
+
+---
+
 ## 2026-10-18: T-12, barra superior y botón de llamada
 
 ### Decisiones del usuario
@@ -28,7 +46,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - **Sin revisión visual a 360 px:** la extensión de Chrome no estaba conectada. Queda para revisión del usuario o para T-33.
 
 ### Abierto
-- Los textos cortos de interfaz ("Llamar", "Acopio en", "Llámanos:") están en los componentes. P9 dice que el copy vive en archivos de datos. [POR CONFIRMAR] si se mueve a un archivo de contenido antes de construir el resto de secciones.
+- Los textos cortos de interfaz ("Llamar", "Acopio en", "Llámanos:") estaban en los componentes. Resuelto en la entrada siguiente (`copy.json`).
 
 ---
 

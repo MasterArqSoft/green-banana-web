@@ -82,8 +82,9 @@ flowchart TB
       D4[faq.json]
       D5[recipes.json]
       D6[origin.json: lote vigente]
+      D7[copy.json: textos de interfaz por sección]
     end
-    D1 & D2 & D3 & D4 & D5 & D6 -->|Build + validación Zod| P
+    D1 & D2 & D3 & D4 & D5 & D6 & D7 -->|Build + validación Zod| P
 ```
 
 **Flujo del botón de llamada**
@@ -104,7 +105,7 @@ sequenceDiagram
 landing-guineo-verde/
 ├─ src/
 │  ├─ components/        # TopBar, Hero, TrustBar, ProductCards, Origin, Recipes, Faq, Coverage, CallButton, FloatingCall, Footer...
-│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin
+│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy
 │  ├─ app/               # Next.js (App Router): layout.tsx, page.tsx, terminos/, privacidad/, garantia/
 │  ├─ lib/               # tel.ts, schema.ts (analytics.ts entra con R-07)
 │  └─ styles/
@@ -137,7 +138,6 @@ type Site = {
   legal: { razonSocial: string; nit: string; direccion: string; correo: string };  // ficticios en Fase 1 (Q6); el teléfono del pie es `phone`
   // brand: Q1. phone: Q7. Sin campos de precio en Fase 1.
   sicUrl: string;                // enlace visible a la SIC
-  demoNotice: string;            // franja de aviso de datos ficticios; nunca se muestra en producción (D-11)
   acopio: { city: string; department: string };   // "Santa Marta", "Magdalena"
 };
 
@@ -148,7 +148,9 @@ type Zone = {
 };
 ```
 
-Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content.ts`; los objetos son estrictos, así que un campo no previsto (por ejemplo, un precio) también rompe la compilación. Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. "Producción" es el build con `SITE_ENV=production`, que solo usa la pipeline de producción; el build local y el de la demo no lo definen (D-11). `faq`, `recipes` y `origin` siguen el copy de `02-content-spec.md`. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
+Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content.ts`; los objetos son estrictos, así que un campo no previsto (por ejemplo, un precio) también rompe la compilación. Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. "Producción" es el build con `SITE_ENV=production`, que solo usa la pipeline de producción; el build local y el de la demo no lo definen (D-11). `faq`, `recipes` y `origin` siguen el copy de `02-content-spec.md`.
+
+**Textos de interfaz (`copy.json`, principio P9).** Títulos, subtítulos, botones y microcopy de cada sección viven en `src/content/copy.json`, con un bloque por sección que se agrega al construirla. Los componentes no escriben texto propio. Un texto que combina datos usa marcadores, p. ej. `"Acopio en {ciudad}"`, que rellena `src/lib/template.ts` con datos de `site.json`; el esquema exige que cada marcador esté presente. La franja de demo (`demoNotice`, D-11) también vive aquí. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
 
 ## 6. Roadmap técnico (fuera de la Fase 1)
 
