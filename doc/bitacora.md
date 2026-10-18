@@ -5,6 +5,24 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-16, "Verde de verdad"
+
+### Decisiones del usuario
+- Se mantiene "Presentaciones" como título de la sección FR-04.
+
+### Cambios
+- `src/components/FreshInfo.tsx` (FR-05): sección `#verde-de-verdad` con H2 "Para cocinar, no para madurar", texto de vida útil y conservación, y un recuadro "Consejo" con ícono de bombillo. En escritorio van en dos columnas.
+- `copy.json` bloque `freshInfo`, con el texto de `02-content-spec.md` copiado tal cual, incluidos "[4 y 7]" y "[POR CONFIRMAR con el proveedor]". Quedan pendientes de T-03, igual que en la FAQ.
+- Pruebas `tests/unit/FreshInfo.test.tsx`.
+
+### Verificado
+- `npm run validate` pasa con 46 pruebas.
+
+### Abierto
+- T-03: confirmar la vida útil con el proveedor. Al resolverlo, actualizar `freshInfo.text` y la FAQ 3.
+
+---
+
 ## 2026-10-18: T-15, presentaciones
 
 ### Cambios
@@ -22,7 +40,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - `npm run validate` pasa con 43 pruebas.
 
 ### Abierto
-- **[POR CONFIRMAR] Título de la sección:** el spec no define un H2 para FR-04. Se usó "Presentaciones", que el usuario debe confirmar.
+- Título de la sección: el spec no define un H2 para FR-04. Se usó "Presentaciones" y el usuario lo confirmó.
 - Fotos de las 4 tarjetas (T-04).
 
 ---
