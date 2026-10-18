@@ -5,6 +5,28 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-26, pie legal
+
+### Cambios
+- `src/components/Footer.tsx` (FR-16, AC-05), en el layout para que aparezca en todas las páginas. Fondo carbón con texto crema (14,37:1). Incluye:
+  - Marca y lista de definición con razón social, NIT y dirección de `site.json`.
+  - Teléfono enlazado con `telHref` y correo con `mailto:`.
+  - Enlaces legales con `next/link`: Términos (`/terminos`), Privacidad (`/privacidad`) y Garantía (`/#garantia`), más el enlace **visible** a la Superintendencia de Industria y Comercio (`site.sicUrl`).
+  - La línea de PQR tal como está en el spec: "[POR CONFIRMAR, RP-05]".
+  - Foco del teclado en crema (el verde hoja daría 2,26:1 sobre carbón).
+- `copy.json` bloque `footer`: solo las etiquetas; los datos están en `site.json`.
+- Pruebas `tests/unit/Footer.test.tsx`: identidad del vendedor, `tel:`, `mailto:`, SIC, PQR y enlaces legales.
+
+### Verificado
+- `npm run validate` pasa con 86 pruebas.
+- Build con `basePath`: los enlaces salen como `/green-banana-web/terminos`, `/green-banana-web/privacidad` y `/green-banana-web#garantia`.
+
+### Abierto
+- `/terminos` y `/privacidad` dan 404 hasta T-27, que necesita el texto legal de T-05.
+- RP-05: procedimiento de PQR con constancia.
+
+---
+
 ## 2026-10-18: T-25 garantía y T-47 CTA final
 
 ### Cambios

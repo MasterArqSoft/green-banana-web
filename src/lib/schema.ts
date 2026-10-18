@@ -207,6 +207,24 @@ export const copySchema = z.strictObject({
   guarantee: z.strictObject({ title: text, text, legalNote: text }),
   // FR-15.
   finalCta: z.strictObject({ title: text }),
+  // FR-16. Los datos legales vienen de site.json; aquí solo las etiquetas.
+  footer: z.strictObject({
+    labels: z.strictObject({
+      razonSocial: text,
+      nit: text,
+      direccion: text,
+      telefono: text,
+      correo: text,
+    }),
+    navLabel: text,
+    links: z.strictObject({
+      terminos: text,
+      privacidad: text,
+      garantia: text,
+    }),
+    pqr: text,
+    sic: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
