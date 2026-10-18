@@ -1,0 +1,47 @@
+[
+  {
+    "id": "diferencia-platano",
+    "question": "¿Cuál es la diferencia entre guineo verde, banano y plátano verde?",
+    "answer": "El guineo verde es el banano cortado verde para cocinar. El plátano verde (hartón) es otra variedad, más grande y de sabor distinto."
+  },
+  {
+    "id": "unidades-por-kilo",
+    "question": "¿Cuántas unidades trae un kilo?",
+    "answer": "Entre [4 y 5], según el tamaño."
+  },
+  {
+    "id": "conservacion",
+    "question": "¿Cuánto dura y cómo lo conservo?",
+    "answer": "Entre [4 y 7] días en un lugar fresco y seco. Sin refrigerar."
+  },
+  {
+    "id": "pelar",
+    "question": "¿Cómo lo pelo sin mancharme?",
+    "answer": "Haz un corte a lo largo de la cáscara y pélalo con las manos húmedas, o hiérvelo con cáscara."
+  },
+  {
+    "id": "pinton",
+    "question": "¿Puede llegar pintón?",
+    "answer": "Puede haber piezas con un tono amarillo suave. Si más de [X] por ciento llega pintón, lo reponemos."
+  },
+  {
+    "id": "zonas",
+    "question": "¿A qué zonas llegan?",
+    "answer": "Acopiamos en Santa Marta y distribuimos a hogares y puntos de venta de la ciudad. Consulta por teléfono si llegamos a tu zona."
+  },
+  {
+    "id": "precio",
+    "question": "¿Cuánto cuesta?",
+    "answer": "El precio se informa por teléfono. [POR CONFIRMAR validación jurídica en RP-03]"
+  },
+  {
+    "id": "garantia",
+    "question": "¿Qué pasa si llega maltratado?",
+    "answer": "Garantía de 24 horas con reposición."
+  },
+  {
+    "id": "negocios",
+    "question": "¿Venden para tiendas, hoteles o restaurantes? ¿Y a personas naturales?",
+    "answer": "Sí, a todos. Llámanos y te contamos las condiciones según tu caso."
+  }
+]

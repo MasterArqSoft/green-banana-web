@@ -70,7 +70,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | D-08 | Ley 1480 pide medios de pago y tiempo de entrega en la publicación; el copy dice que se informan por teléfono | Evaluar dentro de RP-03 [POR CONFIRMAR] |
 | D-09 | La demo pública en GitHub no encaja con las opciones de hosting de R-08 (Azure Static Web Apps o Cloudflare Pages) | **Resuelto (2026-10-18):** GitHub Pages solo para la demo del POC/MVP. El hosting de producción sigue en R-08 |
 | D-10 | Publicar el repositorio en GitHub adelanta R-10 | **Resuelto (2026-10-18):** repositorio público en GitHub desde T-07; CI/CD con GitHub Actions |
-| D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | Pendiente de decidir con el usuario |
+| D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | **Parcialmente resuelto (2026-10-18):** el bloqueo solo actúa con `SITE_ENV=production`, que define únicamente la pipeline de producción; fuera de producción se muestra una franja de aviso de datos ficticios (`demoNotice`). Sigue abierto: la demo en GitHub Pages no tiene cabeceras propias (CSP, NFR-04) |
 
 ## 6. Roadmap
 

@@ -123,7 +123,7 @@ No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 type Presentation = {
   id: 'unit' | 'kg' | 'bag' | 'box';
   label: string;
-  approxWeightG?: number;        // peso por unidad o total
+  approxWeightG?: number | [number, number];  // peso por unidad o total; rango [mín, máx] p. ej. la caja
   approxUnits?: string;          // "4–5"
   callLabel: string;             // "Llamar para precio"
 };
@@ -132,11 +132,12 @@ type Presentation = {
 type Site = {
   brand: string;                 // [POR CONFIRMAR nombre comercial]
   phone: string;                 // E.164 con "+": "+573000000000" (FICTICIO en desarrollo)
-  phoneIsPlaceholder: boolean;   // true mientras el número sea ficticio; el build muestra aviso
+  phoneIsPlaceholder: boolean;   // true mientras el número sea ficticio; bloquea el build con SITE_ENV=production
   schedule: string;              // [POR CONFIRMAR horario]
   legal: { razonSocial: string; nit: string; direccion: string; correo: string };  // ficticios en Fase 1 (Q6); el teléfono del pie es `phone`
   // brand: Q1. phone: Q7. Sin campos de precio en Fase 1.
   sicUrl: string;                // enlace visible a la SIC
+  demoNotice: string;            // franja de aviso de datos ficticios; nunca se muestra en producción (D-11)
   acopio: { city: string; department: string };   // "Santa Marta", "Magdalena"
 };
 
@@ -147,7 +148,7 @@ type Zone = {
 };
 ```
 
-Los esquemas se validan en build (Zod). Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
+Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content.ts`; los objetos son estrictos, así que un campo no previsto (por ejemplo, un precio) también rompe la compilación. Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. "Producción" es el build con `SITE_ENV=production`, que solo usa la pipeline de producción; el build local y el de la demo no lo definen (D-11). `faq`, `recipes` y `origin` siguen el copy de `02-content-spec.md`. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
 
 ## 6. Roadmap técnico (fuera de la Fase 1)
 

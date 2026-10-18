@@ -1,0 +1,28 @@
+[
+  {
+    "id": "unit",
+    "label": "Guineo suelto",
+    "approxWeightG": 220,
+    "callLabel": "Llamar para precio"
+  },
+  {
+    "id": "kg",
+    "label": "Kilo",
+    "approxWeightG": 1000,
+    "approxUnits": "4–5",
+    "callLabel": "Llamar para precio"
+  },
+  {
+    "id": "bag",
+    "label": "Bolsa familiar",
+    "approxWeightG": 3000,
+    "approxUnits": "13–15",
+    "callLabel": "Llamar para precio"
+  },
+  {
+    "id": "box",
+    "label": "Caja para negocios",
+    "approxWeightG": [18000, 20000],
+    "callLabel": "Llamar para precio"
+  }
+]

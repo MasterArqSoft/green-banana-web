@@ -26,13 +26,13 @@ No son fuente de verdad:
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). Léelo al empezar para retomar el contexto.
 
 ## Estado actual y comandos
-T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. Todavía no hay pruebas (llegan con T-08) ni script único de validación (T-11).
+T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. Todavía no hay pruebas (llegan con T-08) ni script único de validación (T-11).
 
 ```bash
 npm run dev            # servidor de desarrollo en http://localhost:3000
 npm run build          # exportación estática en out/
 npm run lint           # ESLint
-npm run typecheck      # tsc --noEmit
+npm run typecheck      # next typegen && tsc --noEmit (genera los tipos de rutas como LayoutProps)
 npm run format         # Prettier (escribe); format:check solo verifica
 ```
 Cuando existan, documenta aquí `test`, cómo correr una sola prueba unitaria, Playwright y el script de T-11.
@@ -43,7 +43,8 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 
 ## Arquitectura (resumen de `spec/03-plan.md`)
 - **Contenido separado del código:** los datos viven en `src/content/*.json` (`site`, `products`, `zones`, `faq`, `recipes`, `origin`). Zod los valida en el build (`src/lib/schema.ts`); un dato legal faltante rompe la compilación.
-- **Salvaguarda del número ficticio:** `site.json` tiene `phoneIsPlaceholder`. Si es `true` en el build de producción, el build debe fallar (riesgo R5, D-02).
+- **Salvaguarda del número ficticio:** `site.json` tiene `phoneIsPlaceholder`. Si es `true` y el build tiene `SITE_ENV=production`, el build falla (riesgo R5, D-02). Sin esa variable (local y demo) se muestra `DemoBanner` con `site.demoNotice`.
+- **Acceso al contenido:** importa siempre desde `@/lib/content` (`site`, `products`, `zones`, `faq`, `recipes`, `origin`, `isProduction`), nunca los JSON directamente; ahí se validan. Solo desde componentes de servidor.
 - **Enlace de llamada:** el `tel:` solo se genera en `src/lib/tel.ts`, a partir de `site.phone` (E.164). Todos los botones Llamar (`CallButton`, `FloatingCall`, etc.) lo usan; ningún componente arma el número por su cuenta.
 - **JavaScript mínimo:** solo dos componentes cliente (`'use client'`): el acordeón de FAQ y el botón flotante de llamar. Todo lo demás se renderiza en el build.
 - **Rutas (App Router):** `src/app/page.tsx` (landing) y las páginas legales `terminos/`, `privacidad/` y `garantia/`. No hay carpeta `api/` en Fase 1 (R-06).
@@ -63,7 +64,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 
 ### Conflictos abiertos (recuérdaselos al usuario cuando pregunte por pendientes)
 Detalle en `spec/05-alcance-y-roadmap.md` §5. No los resuelvas por tu cuenta.
-- **D-11:** demo pública con datos ficticios. El build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), los datos ficticios quedan visibles y GitHub Pages no permite cabeceras propias (CSP, NFR-04).
+- **D-11 (parcial):** la demo en GitHub Pages no permite cabeceras propias (CSP, NFR-04). El modo demo y el aviso de datos ficticios ya están resueltos.
 
 ## Reglas de trabajo
 - Responde siempre en español.

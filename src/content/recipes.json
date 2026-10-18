@@ -1,0 +1,32 @@
+[
+  {
+    "id": "sancocho",
+    "name": "Sancocho",
+    "time": "[60–90] min",
+    "description": "El guineo espesa el caldo y le da cuerpo."
+  },
+  {
+    "id": "cayeye",
+    "name": "Cayeye",
+    "time": "[30] min",
+    "description": "Puré de guineo verde con queso costeño y mantequilla, típico del Magdalena."
+  },
+  {
+    "id": "guineitos",
+    "name": "Guineítos hervidos o en escabeche",
+    "time": "[15–20] min",
+    "description": "Se hierven hasta que un tenedor entre fácil. Acompañan pescado o carnes."
+  },
+  {
+    "id": "patacon",
+    "name": "Patacón de guineo",
+    "time": "[20] min",
+    "description": "Más pequeño y suave que el de plátano hartón."
+  },
+  {
+    "id": "chips-horneados",
+    "name": "Chips horneados",
+    "time": "[25] min",
+    "description": "Láminas finas, aceite y sal al horno."
+  }
+]
