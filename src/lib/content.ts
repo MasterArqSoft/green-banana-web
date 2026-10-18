@@ -8,9 +8,11 @@ import recipesJson from "@/content/recipes.json";
 import originJson from "@/content/origin.json";
 import copyJson from "@/content/copy.json";
 import testimonialsJson from "@/content/testimonials.json";
+import legalJson from "@/content/legal.json";
 import {
   copySchema,
   faqSchema,
+  legalSchema,
   originSchema,
   productsSchema,
   recipesSchema,
@@ -40,6 +42,7 @@ export const faq = parse(faqSchema, faqJson, "faq.json");
 export const recipes = parse(recipesSchema, recipesJson, "recipes.json");
 export const origin = parse(originSchema, originJson, "origin.json");
 export const copy = parse(copySchema, copyJson, "copy.json");
+export const legal = parse(legalSchema, legalJson, "legal.json");
 export const testimonials = parse(
   testimonialsSchema,
   testimonialsJson,
@@ -57,6 +60,7 @@ const forbidden = findForbiddenClaims(
     origin,
     copy,
     testimonials,
+    legal,
   ]),
 );
 if (forbidden.length > 0) {

@@ -28,5 +28,6 @@ describe("Footer (FR-16, AC-05)", () => {
     expect(html).toContain("PQR");
     expect(html).toContain('href="/terminos"');
     expect(html).toContain('href="/privacidad"');
+    expect(html).toContain('href="/garantia"');
   });
 });

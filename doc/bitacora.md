@@ -5,6 +5,29 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-27, páginas legales (borrador)
+
+### Cambios
+- Rutas `src/app/terminos`, `src/app/privacidad` y `src/app/garantia` (FR-18). Cada una tiene su `metadata` y usa `src/components/LegalPage.tsx`: H1, aviso de borrador visible y secciones con H2.
+- `src/content/legal.json` con el texto de las tres páginas y el aviso "Borrador pendiente de revisión jurídica [POR CONFIRMAR, T-05]". Los párrafos usan marcadores (`{razonSocial}`, `{nit}`, `{direccion}`, `{correo}`, `{telefono}`, `{ciudad}`) que se rellenan con `site.json`. `legalSchema` lo valida y la búsqueda de frases prohibidas también lo revisa.
+- **Texto redactado como borrador por Claude**, no tomado del spec. Hay que revisarlo con el asesor jurídico (T-05, T-42). Cubre:
+  - Términos: identidad del vendedor, precio por teléfono (RP-03), exclusión de retracto según la Ley 1480, art. 47 (AC-06), garantía y PQR (RP-05).
+  - Privacidad: responsable, sitio sin formularios ni cookies, datos de la llamada [POR CONFIRMAR] y derechos según la Ley 1581.
+  - Garantía: 24 horas con foto (RP-04) y perecedero.
+- El enlace "Garantía" del pie ahora va a `/garantia` (antes `/#garantia`).
+- Pruebas `tests/unit/LegalPage.test.tsx`: las tres páginas con título, aviso y sin marcadores sin rellenar ni formularios; términos con identidad y retracto; privacidad con la Ley 1581; esquema.
+
+### Verificado
+- `npm run validate` pasa con 95 pruebas. El build genera `/terminos`, `/privacidad` y `/garantia`.
+
+### Abierto
+- Revisión jurídica del texto (T-05). Puntos que debe revisar el asesor:
+  - "No recoge datos personales": el hosting puede registrar direcciones IP.
+  - El uso de los datos de la llamada.
+- En las páginas legales el botón flotante no aparece, porque no tienen `#hero`.
+
+---
+
 ## 2026-10-18: T-28, botón flotante de llamada
 
 ### Cambios
