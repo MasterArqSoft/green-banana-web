@@ -14,7 +14,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Resumen
+8. Resumen y estado de avance
 9. Roadmap (fuera de la Fase 1)
 10. Roadmap de producción (RP)
 
@@ -115,6 +115,20 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
 **Estimaciones:** orientativas, sin considerar tiempo de espera de terceros (revisión jurídica, producción de fotos).
+
+## Estado de avance
+
+Actualizado: 2026-10-18. Detalle de cada tarea en `doc/bitacora.md`.
+
+| Estado | Tareas |
+|---|---|
+| **Hecha** | T-01; T-07, T-08, T-09, T-10, T-11; T-12 a T-21, T-23, T-24, T-25, T-28, T-33, T-46, T-47; T-26, T-31; T-30, T-37, T-39, T-40 |
+| **Hecha con contenido provisional** | T-04: fotos generadas con IA, se reemplazan en RP-02. T-27: páginas legales en borrador, esperan T-05 |
+| **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
+| **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
+| **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+
+Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages, datos ficticios, sin indexar).
 
 ---
 

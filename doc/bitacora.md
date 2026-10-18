@@ -1,7 +1,58 @@
 # Bitácora del proyecto
 
 Registro de lo que se hace en cada sesión: decisiones, cambios y archivos tocados. La entrada más reciente va arriba.
-No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-alcance-y-roadmap.md` primero). Los pendientes vigentes viven en `spec/05-alcance-y-roadmap.md` §5 y §7.
+No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-alcance-y-roadmap.md` primero). Los pendientes vigentes viven en `spec/05-alcance-y-roadmap.md` §5 y §7, y el estado de cada tarea en `spec/04-tasks.md` ("Estado de avance").
+
+---
+
+## 2026-10-18: resumen de la sesión y alineación de la documentación
+
+Primera sesión del proyecto: de los specs sin código a la demo publicada.
+
+### Qué se hizo, en orden
+1. **`CLAUDE.md` y specs alineados con el alcance** (`05`): incoherencias corregidas, POC/MVP, reparto a hogares y puntos de venta (Q15), nuevas RP-04 y RP-05 y preguntas Q16 a Q18.
+2. **Bitácora en el repositorio:** el contexto vive en Git, no en la memoria local de Claude.
+3. **T-07 a T-11 (Fase 1):** Next.js 16 con exportación estática, repositorio público en GitHub, demo en GitHub Pages, Zod, `tel.ts`, Vitest, tokens de diseño y `npm run validate`.
+4. **Fase 2 completa:** las 14 secciones, el pie, el botón flotante y la composición revisada a 360 px. Decisiones del camino:
+   - copy en `copy.json` con marcadores;
+   - botón Llamar `#0F7A41` por contraste;
+   - acordeón nativo sin JavaScript;
+   - botón flotante compacto.
+5. **Legal y SEO:** pie legal, páginas legales en borrador, metadatos, `sitemap.xml` y `robots.txt` (la demo no se indexa) y JSON-LD.
+6. **Calidad:**
+   - presupuesto de peso automático;
+   - Lighthouse local;
+   - Playwright con 32 pruebas e2e;
+   - axe sin infracciones;
+   - revisión de textos con bloqueo de frases prohibidas y de datos ficticios en producción;
+   - Dependabot.
+7. **Fotos:** 12 generadas con ChatGPT, 3 recortadas por plátano hartón; AVIF, WebP y `srcset`.
+8. **Historial sin atribución a Claude:** reescrito por el usuario.
+
+### Estado al cierre
+- `npm run validate` pasa: 160 pruebas unitarias, 32 e2e, presupuesto de 267 KB de 300 y 0 vulnerabilidades en producción.
+- Lighthouse móvil: Rendimiento 90-96, Accesibilidad 100, Buenas prácticas 100 y SEO 100.
+- Estado por tarea: `spec/04-tasks.md` → "Estado de avance".
+- Build de producción bloqueado por **31 datos ficticios o por confirmar**: es el checklist para publicar.
+
+### Pendientes del usuario
+- RP-01 a RP-05.
+- T-03: confirmaciones del proveedor.
+- T-05: texto legal.
+- R-08: hosting de producción, que bloquea T-32 y T-43.
+- T-36: Google Business Profile.
+- T-38 manual: lector de pantalla.
+- Confirmar si se acepta el riesgo de `braces` (T-40).
+- Conflicto D-11: sin cabeceras de seguridad en la demo.
+
+### Alineación de la documentación (esta entrada)
+- `CLAUDE.md` reorganizado:
+  - se quitó lo obsoleto (demo "por publicar", RP-01 a RP-03, ruta `og.png`, hero con "espacio reservado", 265 KB, riesgo de `braces` como "aceptado" sin confirmación, "Empieza por la Fase 1");
+  - el estado larguísimo se reemplazó por un resumen y la referencia a `04-tasks.md`;
+  - se agregaron el stack con versiones y la regla de no descartar cambios sin commit.
+- `README.md`: demo, stack, todos los comandos, edición de contenido y despliegue.
+- `spec/04-tasks.md`: nueva sección "Estado de avance" (hechas, provisionales, parciales y pendientes).
+- Las versiones de los specs siguen en 1.3, aunque tuvieron muchos ajustes en esta sesión. [POR CONFIRMAR] si se sube la versión (p. ej. a 1.4) en `05` §8.
 
 ---
 
