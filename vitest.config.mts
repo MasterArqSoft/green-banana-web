@@ -4,6 +4,6 @@ export default defineConfig({
   // Resuelve el alias "@/..." de tsconfig.json.
   resolve: { tsconfigPaths: true },
   test: {
-    include: ["tests/unit/**/*.test.ts"],
+    include: ["tests/unit/**/*.test.{ts,tsx}"],
   },
 });

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DemoBanner } from "@/components/DemoBanner";
+import { TopBar } from "@/components/TopBar";
 import { site } from "@/lib/content";
 import { fraunces, inter } from "./fonts";
 import "./globals.css";
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col font-sans">
         <DemoBanner />
+        <TopBar />
         {children}
       </body>
     </html>
