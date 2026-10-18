@@ -5,6 +5,19 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: historial sin atribución a Claude
+
+### Cambios
+- El usuario ejecutó en su terminal `git filter-branch` sobre `main` para borrar la línea `Co-Authored-By: Claude` de todos los commits; luego `git push --force-with-lease` y borró el respaldo `refs/original`. El modo automático de Claude Code bloquea esos comandos, así que los corre el usuario.
+- Cambiaron los hash de todos los commits (el último pasó de `e3a47c1` a `6bfd67f`).
+
+### Verificado
+- 0 commits con la línea, tanto en local como en `origin/main`.
+- La API de colaboradores de GitHub solo muestra `MasterArqSoft`.
+- El despliegue de la demo para `6bfd67f` terminó bien. `/`, `/terminos`, el hero móvil y `og.jpg` responden 200.
+
+---
+
 ## 2026-10-18: T-40, dependencias
 
 ### Cambios
@@ -691,7 +704,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ### Abierto
 - D-11: modo demo, datos ficticios visibles y GitHub Pages sin cabeceras propias (CSP).
-- Commits con `Co-Authored-By: Claude` todavía en el historial (pendiente de reescritura por el usuario).
+- Commits con `Co-Authored-By: Claude` en el historial: resuelto (ver entrada "historial sin atribución a Claude").
 
 ---
 
@@ -712,7 +725,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - `.gitattributes` con finales de línea LF: tu git usa `autocrlf`, y sin esto `format:check` y el hook fallarían en un clon nuevo.
   - No se versionan `.claude/skills/` (skills de terceros; se reinstalan desde `skills-lock.json`) ni el informe de investigación de `doc/` (solo local). `doc/bitacora.md` sí se versiona.
   - Commits con el correo personal del usuario (decisión suya, queda público).
-  - El usuario no quiere que Claude aparezca como colaborador: regla en `CLAUDE.md`, sin línea `Co-Authored-By`. Los commits `T-07` y `Bitácora: detalle de T-07` aún la tienen; quitarla exige reescribir el historial y hacer push forzado (pendiente de que el usuario lo autorice o lo ejecute).
+  - El usuario no quiere que Claude aparezca como colaborador: regla en `CLAUDE.md`, sin línea `Co-Authored-By`. Los commits `T-07` y `Bitácora: detalle de T-07` la tenían; el usuario reescribió el historial más adelante (ver entrada "historial sin atribución a Claude").
 - **Specs:** D-10 resuelto y nuevas decisiones en `05` §4; R-10 con proveedor GitHub Actions en `05`, `03` §6 y §10, y `04`; T-07 incluye el repositorio remoto.
 - **`CLAUDE.md`:** comandos, restricciones de Next.js 16 con exportación estática; CI/CD decidido.
 
