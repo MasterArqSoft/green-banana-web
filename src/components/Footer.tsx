@@ -47,7 +47,6 @@ export function Footer() {
         </dl>
         <nav aria-label={footer.navLabel}>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {/* Las páginas de términos y privacidad llegan con T-27. */}
             <li>
               <Link href="/terminos" className={linkClass}>
                 {footer.links.terminos}
@@ -59,7 +58,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/#garantia" className={linkClass}>
+              <Link href="/garantia" className={linkClass}>
                 {footer.links.garantia}
               </Link>
             </li>

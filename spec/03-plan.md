@@ -106,7 +106,7 @@ sequenceDiagram
 landing-guineo-verde/
 ├─ src/
 │  ├─ components/        # TopBar, Hero, TrustBar, ProductCards, Origin, Recipes, Faq, Coverage, CallButton, FloatingCall, Footer...
-│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy
+│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal
 │  ├─ app/               # Next.js (App Router): layout.tsx, page.tsx, terminos/, privacidad/, garantia/
 │  ├─ lib/               # tel.ts, schema.ts (analytics.ts entra con R-07)
 │  └─ styles/

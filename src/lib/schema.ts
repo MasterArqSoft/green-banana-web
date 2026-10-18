@@ -227,6 +227,24 @@ export const copySchema = z.strictObject({
   }),
 });
 
+// Páginas legales (FR-18). Los párrafos pueden usar {razonSocial}, {nit}, {direccion},
+// {correo}, {telefono} y {ciudad}, que se rellenan con site.json. Borrador hasta T-05.
+const legalPageSchema = z.strictObject({
+  title: text,
+  description: text,
+  sections: z
+    .array(z.strictObject({ heading: text, paragraphs: z.array(text).min(1) }))
+    .min(1),
+});
+
+export const legalSchema = z.strictObject({
+  // Aviso visible mientras el texto no tenga revisión jurídica (T-05, T-42).
+  draftNotice: text,
+  terminos: legalPageSchema,
+  privacidad: legalPageSchema,
+  garantia: legalPageSchema,
+});
+
 export type Site = z.infer<typeof siteSchema>;
 export type Presentation = z.infer<typeof presentationSchema>;
 export type Zone = z.infer<typeof zonesSchema>[number];
@@ -235,3 +253,7 @@ export type Recipe = z.infer<typeof recipesSchema>[number];
 export type Origin = z.infer<typeof originSchema>;
 export type Testimonial = z.infer<typeof testimonialsSchema>[number];
 export type Copy = z.infer<typeof copySchema>;
+export type LegalPageKey = Exclude<
+  keyof z.infer<typeof legalSchema>,
+  "draftNotice"
+>;

@@ -1,0 +1,87 @@
+{
+  "draftNotice": "Borrador pendiente de revisión jurídica [POR CONFIRMAR, T-05]. Este texto no es definitivo.",
+  "terminos": {
+    "title": "Términos y condiciones",
+    "description": "Condiciones de venta de guineo verde en {ciudad}.",
+    "sections": [
+      {
+        "heading": "Quién vende",
+        "paragraphs": [
+          "{razonSocial}, NIT {nit}, con domicilio en {direccion}. Teléfono {telefono}. Correo {correo}."
+        ]
+      },
+      {
+        "heading": "Precios y pedidos",
+        "paragraphs": [
+          "Este sitio es informativo. El precio total y el costo de envío se informan por teléfono, por separado, antes de confirmar el pedido [POR CONFIRMAR validación jurídica en RP-03]."
+        ]
+      },
+      {
+        "heading": "Derecho de retracto",
+        "paragraphs": [
+          "Por tratarse de un producto perecedero, no aplica el derecho de retracto (Ley 1480 de 2011, artículo 47)."
+        ]
+      },
+      {
+        "heading": "Garantía",
+        "paragraphs": [
+          "Las condiciones de la garantía de frescura están en la política de garantía. Esta garantía es adicional a tus derechos como consumidor."
+        ]
+      },
+      {
+        "heading": "Peticiones, quejas y reclamos (PQR)",
+        "paragraphs": [
+          "Canal y forma de entregar la constancia [POR CONFIRMAR, RP-05]. También puedes acudir a la Superintendencia de Industria y Comercio."
+        ]
+      }
+    ]
+  },
+  "privacidad": {
+    "title": "Política de tratamiento de datos personales",
+    "description": "Cómo tratamos los datos personales (Ley 1581 de 2012).",
+    "sections": [
+      {
+        "heading": "Responsable",
+        "paragraphs": [
+          "{razonSocial}, NIT {nit}, con domicilio en {direccion}. Correo {correo}."
+        ]
+      },
+      {
+        "heading": "Qué datos recoge este sitio",
+        "paragraphs": [
+          "Este sitio no tiene formularios ni usa cookies de analítica o publicidad. No recoge datos personales."
+        ]
+      },
+      {
+        "heading": "Datos que compartes por teléfono",
+        "paragraphs": [
+          "Si nos llamas, usamos tu nombre, teléfono y dirección solo para atender tu pedido. Finalidades, tiempo de conservación y procedimiento para ejercer tus derechos [POR CONFIRMAR, T-05]."
+        ]
+      },
+      {
+        "heading": "Tus derechos",
+        "paragraphs": [
+          "Puedes conocer, actualizar, rectificar y solicitar la supresión de tus datos, según la Ley 1581 de 2012, escribiendo a {correo}."
+        ]
+      }
+    ]
+  },
+  "garantia": {
+    "title": "Política de garantía",
+    "description": "Garantía de frescura del guineo verde.",
+    "sections": [
+      {
+        "heading": "Si llega maltratado",
+        "paragraphs": [
+          "Tienes 24 horas desde la entrega para llamarnos al {telefono} o escribirnos a {correo} con una foto del producto y del recibo. Lo reponemos en el siguiente despacho o te devolvemos el dinero [POR CONFIRMAR política, RP-04]."
+        ]
+      },
+      {
+        "heading": "Producto perecedero",
+        "paragraphs": [
+          "Por tratarse de un producto perecedero, no aplica el derecho de retracto. Esta garantía es adicional a tus derechos como consumidor."
+        ]
+      }
+    ]
+  }
+}
