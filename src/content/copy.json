@@ -7,5 +7,13 @@
   "topBar": {
     "acopio": "Acopio en {ciudad}",
     "phone": "Llámanos: {telefono}"
+  },
+  "hero": {
+    "title": "Guineo verde recién cortado, acopiado en {ciudad}",
+    "subtitle": "Para sancocho, cayeye y patacón. Firme, seleccionado a mano.",
+    "primaryCta": "Llamar para pedir",
+    "secondaryCta": "Ver origen",
+    "note": "Te damos el precio por teléfono. Garantía de frescura de 24 horas.",
+    "imagePending": "Foto de guineo verde pendiente"
   }
 }

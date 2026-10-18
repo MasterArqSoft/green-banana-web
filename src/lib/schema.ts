@@ -113,6 +113,15 @@ export const copySchema = z.strictObject({
     acopio: textWith("ciudad"),
     phone: textWith("telefono"),
   }),
+  // FR-02. imagePending se muestra mientras no haya foto con licencia (T-04).
+  hero: z.strictObject({
+    title: textWith("ciudad"),
+    subtitle: text,
+    primaryCta: text,
+    secondaryCta: text,
+    note: text,
+    imagePending: text,
+  }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
