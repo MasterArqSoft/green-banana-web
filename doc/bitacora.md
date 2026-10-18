@@ -5,6 +5,33 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-12, barra superior y botón de llamada
+
+### Decisiones del usuario
+- Avanzar con la Fase 2 mientras consigue las imágenes. Se necesitan 11 fotos: hero 1, presentaciones 4, origen 1 y recetas 5. La de Open Graph sale del hero.
+
+### Cambios
+- `lucide-react` (íconos, licencia ISC), como sugiere `02-content-spec.md` §5.
+- `src/components/CallButton.tsx`, botón reutilizable para todos los "Llamar":
+  - `href` desde `telHref(site.phone)`.
+  - Nombre accesible "Llamar al +57 300 000 0000", que empieza con el texto visible (WCAG 2.5.3).
+  - Alto mínimo de 44-48 px, fondo `cta` y `hoja` al pasar el mouse.
+- `src/components/TopBar.tsx` (FR-01): marca, "Acopio en Santa Marta" y "Llámanos: +57 300 000 0000" (desde `site.json`), más el botón Llamar. Fija arriba en móvil (`sticky`) y estática desde `md`. La marca se recorta con puntos suspensivos si no cabe.
+- `layout.tsx`: la barra va en el layout para que también aparezca en las páginas legales.
+- Pruebas `tests/unit/TopBar.test.tsx`:
+  - `CallButton` usa el número de `site.json` y el texto recibido.
+  - `TopBar` muestra empresa, acopio y número, tiene el enlace `tel:` y no muestra precios.
+  - `vitest.config.mts` ahora incluye `.test.tsx`.
+
+### Verificado
+- `npm run validate` pasa con 19 pruebas. Desplegado en la demo.
+- **Sin revisión visual a 360 px:** la extensión de Chrome no estaba conectada. Queda para revisión del usuario o para T-33.
+
+### Abierto
+- Los textos cortos de interfaz ("Llamar", "Acopio en", "Llámanos:") están en los componentes. P9 dice que el copy vive en archivos de datos. [POR CONFIRMAR] si se mueve a un archivo de contenido antes de construir el resto de secciones.
+
+---
+
 ## 2026-10-18: T-11, script único de validación
 
 ### Cambios
