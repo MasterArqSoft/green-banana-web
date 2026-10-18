@@ -221,7 +221,7 @@ default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'u
 | CSS | Tailwind con purga; CSS crítico en línea |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
 | SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
-| Presupuesto | HTML+CSS+JS inicial ≤ 300 KB; imagen del hero ≤ 120 KB |
+| Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB |
 
 ## 9. Analítica (roadmap R-07, fuera de Fase 1)
 

@@ -13,7 +13,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && playwright test && npm run audit:prod",
+    "budget": "node scripts/budget.mjs",
+    "lighthouse": "node scripts/lighthouse.mjs",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run budget && playwright test && npm run audit:prod",
     "prepare": "husky"
   },
   "dependencies": {

@@ -5,6 +5,32 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-30, rendimiento y presupuesto de peso
+
+### Cambios
+- **Fuentes:** Fraunces con peso fijo 600 (el único que usan los títulos): 18 KB frente a 36,5 KB del variable. Inter sigue variable: Google entrega el mismo archivo de 48 KB aunque se pidan solo 400 y 600. Total precargado: 85 → 65 KB.
+- **Accesibilidad:** en `Coverage`, el ícono estaba dentro del `<div>` de la `<dl>`, fuera de `<dt>`/`<dd>` (Lighthouse: `definition-list`, `dlitem`). Ahora va dentro del `<dt>`.
+- `scripts/budget.mjs` y `npm run budget`: suma por página, con gzip como el hosting, el HTML y los JS, CSS y fuentes que referencia. Falla si supera 300 KB. Se agregó a `validate`.
+- `scripts/lighthouse.mjs` y `npm run lighthouse`: Lighthouse 13.5.0 (npx) con el Chromium de Playwright y umbral ≥ 90 en las cuatro categorías (AC-08). No está en `validate` porque es lento y descarga Lighthouse.
+- `tests/e2e/server.mjs` ahora comprime con gzip, como GitHub Pages. Sin eso, Lighthouse medía 668 KB y un LCP de 4,8 s irreales.
+- Plan §8: el presupuesto se mide transferido con gzip, incluidas las fuentes precargadas.
+
+### Probado y descartado
+- **Webpack en lugar de Turbopack:** 191 KB frente a 190 KB de JS+CSS. Sin ganancia.
+- **`experimental.inlineCss`:** el LCP solo bajaba de 2,7 a 2,6 s y el HTML pasaba de 14,5 a 29,2 KB gzip (el CSS queda duplicado en la carga de React). Revertido, con nota en `next.config.ts`.
+
+### Verificado
+- Presupuesto: inicio 265,0 KB (HTML 14,5 · JS 180,3 · CSS 5,2 · fuentes 65,0); páginas legales unos 250 KB.
+- Lighthouse móvil (Moto G simulado, 4G lenta): Rendimiento 93-96, Accesibilidad 100, Buenas prácticas 100, SEO 100. LCP de laboratorio 2,6-2,8 s, CLS 0 y TBT 80-180 ms. El LCP es el H1 (texto); el tiempo de pintado observado es de solo ~0,25 s, y el resto es la simulación de red con la descarga de la fuente.
+- `npm run validate` pasa.
+
+### Abierto
+- La meta LCP ≤ 2,5 s (NFR-01) es de campo (p75 de usuarios reales). Se mide tras el lanzamiento. Si en campo no se cumple, la opción es `font-display: optional` para Fraunces, que el plan hoy fija en `swap` [POR CONFIRMAR].
+- El runtime de React y Next.js (~180 KB) deja ~35 KB de margen para el resto de la Fase 1. Las fotos de las secciones inferiores deben cargarse en diferido (`loading="lazy"`) para no contar.
+- Cuando lleguen las fotos (T-04): convertirlas a AVIF/WebP, hero ≤ 120 KB con `fetchpriority="high"` y el resto en diferido.
+
+---
+
 ## 2026-10-18: botón flotante compacto
 
 ### Decisiones del usuario

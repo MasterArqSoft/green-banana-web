@@ -39,15 +39,16 @@ export function Coverage() {
       </h2>
       <dl className="mt-6 grid gap-4 md:grid-cols-2">
         {items.map(({ icon: Icon, label, value }) => (
+          // Dentro de <dl>, cada grupo solo puede contener <dt> y <dd>: el ícono va en el <dt>.
           <div
             key={label}
-            className="flex gap-4 rounded-card bg-white p-5 shadow-suave"
+            className="flex flex-col gap-1 rounded-card bg-white p-5 shadow-suave"
           >
-            <Icon aria-hidden="true" className="size-8 shrink-0 text-hoja" />
-            <div>
-              <dt className="font-semibold text-hoja">{label}</dt>
-              <dd>{value}</dd>
-            </div>
+            <dt className="flex items-center gap-3 font-semibold text-hoja">
+              <Icon aria-hidden="true" className="size-8 shrink-0" />
+              {label}
+            </dt>
+            <dd className="pl-11">{value}</dd>
           </div>
         ))}
       </dl>
