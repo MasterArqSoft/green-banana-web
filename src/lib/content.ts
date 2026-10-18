@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { findForbiddenClaims } from "@/lib/claims";
 import siteJson from "@/content/site.json";
 import productsJson from "@/content/products.json";
 import zonesJson from "@/content/zones.json";
@@ -37,6 +38,16 @@ export const faq = parse(faqSchema, faqJson, "faq.json");
 export const recipes = parse(recipesSchema, recipesJson, "recipes.json");
 export const origin = parse(originSchema, originJson, "origin.json");
 export const copy = parse(copySchema, copyJson, "copy.json");
+
+// P1 y P3: ninguna frase prohibida en el contenido publicado.
+const forbidden = findForbiddenClaims(
+  JSON.stringify([site, products, zones, faq, recipes, origin, copy]),
+);
+if (forbidden.length > 0) {
+  throw new Error(
+    `Contenido con frases prohibidas (P1, P3): ${forbidden.join(", ")}`,
+  );
+}
 
 // Solo la pipeline de producción define SITE_ENV=production (decisión D-11).
 // El build local y el de la demo en GitHub Pages trabajan con datos ficticios.

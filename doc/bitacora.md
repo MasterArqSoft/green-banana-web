@@ -5,6 +5,24 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-46, beneficios y bloqueo de frases prohibidas
+
+### Cambios
+- `src/components/Benefits.tsx` (FR-08): sección `#beneficios` con H2 "Lo que aporta" y la formulación permitida por P3: "fuente de almidón resistente, un tipo de fibra...", con la aclaración de que no sustituye la orientación de un profesional de la salud.
+- `src/lib/claims.ts`: lista de frases prohibidas.
+  - P3: diabetes, cáncer, pérdida de peso, perder peso, bajar de peso, adelgazar.
+  - P1 y voz y tono: "el mejor", "100 % garantizado", "cupos limitados".
+  - Se buscan sin tildes ni mayúsculas.
+- `src/lib/content.ts`: busca esas frases en **todo** el contenido (site, products, zones, faq, recipes, origin y copy) durante el build, y falla si encuentra alguna.
+- `copy.json` bloque `benefits`.
+- Pruebas: `tests/unit/Benefits.test.tsx` (sección, detección de frases y formulación permitida) y la carga del contenido en `content.test.ts`.
+
+### Verificado
+- `npm run validate` pasa con 60 pruebas.
+- Prueba manual: con "controla la diabetes" en `copy.json`, el build falla con "Contenido con frases prohibidas (P1, P3): diabetes". El archivo se restauró.
+
+---
+
 ## 2026-10-18: T-18, recetas
 
 ### Cambios
