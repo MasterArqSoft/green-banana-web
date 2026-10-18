@@ -5,6 +5,27 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-17, origen y trazabilidad
+
+### Cambios
+- `src/components/Origin.tsx` (FR-06): sección `#origen`, destino del botón "Ver origen" del hero, sobre fondo `hoja-claro`. Incluye:
+  - H2 "De {municipio} a {ciudad}" y texto con productor, municipio y departamento de `origin.json`, más la ciudad de acopio de `site.json`.
+  - Esquema en 3 pasos (Finca → Acopio en Santa Marta → Tu casa o tu negocio), en vertical en móvil y horizontal desde `sm`.
+  - Lote vigente con fecha de corte ("Lote LOTE-0000 (FICTICIO) · Cortado el 15 de octubre de 2026").
+  - Espacio reservado 3:2 para la foto del productor o del acopio (T-04).
+  - `scroll-mt-20`, para que al saltar al ancla la barra fija no tape el título.
+- `src/lib/format.ts`: `formatDate` en español de Colombia, con UTC para que la fecha no se corra un día.
+- `copy.json` bloque `origin` y `copySchema`: marcadores obligatorios y exactamente 3 pasos.
+- Pruebas `tests/unit/Origin.test.tsx` y `formatDate` en `format.test.ts`.
+
+### Verificado
+- `npm run validate` pasa con 51 pruebas.
+
+### Abierto
+- Origen real (finca, municipio, lote) y foto: RP-02. No mencionar Urabá ni Zona Bananera hasta confirmarlo (Q4).
+
+---
+
 ## 2026-10-18: T-16, "Verde de verdad"
 
 ### Decisiones del usuario

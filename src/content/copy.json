@@ -49,5 +49,12 @@
     "text": "Cortamos el guineo en su punto verde para que aguante la cocción y no se deshaga en la olla. Si lo guardas en un lugar fresco y seco, dura entre [4 y 7] días [POR CONFIRMAR con el proveedor].",
     "tipLabel": "Consejo",
     "tip": "No lo refrigeres si no quieres que la cáscara se oscurezca."
+  },
+  "origin": {
+    "title": "De {municipio} a {ciudad}",
+    "text": "Trabajamos con {productor} en {municipio}, {departamento}. Recibimos el guineo en nuestro acopio de {ciudad} y de allí lo distribuimos. Cada lote lleva su fecha de corte.",
+    "steps": ["Finca", "Acopio en {ciudad}", "Tu casa o tu negocio"],
+    "batch": "Lote {codigo} · Cortado el {fecha}",
+    "imagePending": "Foto del productor o del acopio pendiente"
   }
 }
