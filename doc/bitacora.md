@@ -5,6 +5,25 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-25 garantía y T-47 CTA final
+
+### Cambios
+- `src/components/Guarantee.tsx` (FR-14): sección `#garantia` en un recuadro con borde verde hoja y escudo. Incluye:
+  - H2 "Si llega maltratado, lo reponemos".
+  - Texto del reclamo en 24 horas con foto, copiado tal cual del spec, incluido "[POR CONFIRMAR política, RP-04]".
+  - La aclaración legal: "no aplica el derecho de retracto" en perecederos (Ley 1480, art. 47) y que la garantía es adicional a los derechos del consumidor.
+- `src/components/FinalCta.tsx` (FR-15): franja `hoja-claro` centrada con H2 "Llámanos y hablamos de tu pedido" y `CallButton`. Se eligió `hoja-claro` y no `sol` porque el botón verde sobre amarillo queda por debajo de 3:1 de contraste de borde.
+- `copy.json` bloques `guarantee` y `finalCta`.
+- Pruebas `tests/unit/Guarantee.test.tsx`: 24 horas, exclusión de retracto, y título con enlace `tel:` en el CTA final.
+
+### Verificado
+- `npm run validate` pasa con 82 pruebas.
+
+### Abierto
+- RP-04: política definitiva de garantía (reposición, devolución o ambas).
+
+---
+
 ## 2026-10-18: T-23 testimonios y T-24 preguntas frecuentes
 
 ### Cambios
