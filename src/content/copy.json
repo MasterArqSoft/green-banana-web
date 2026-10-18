@@ -101,5 +101,22 @@
   },
   "finalCta": {
     "title": "Llámanos y hablamos de tu pedido"
+  },
+  "footer": {
+    "labels": {
+      "razonSocial": "Razón social",
+      "nit": "NIT",
+      "direccion": "Dirección",
+      "telefono": "Teléfono",
+      "correo": "Correo"
+    },
+    "navLabel": "Enlaces legales",
+    "links": {
+      "terminos": "Términos",
+      "privacidad": "Privacidad",
+      "garantia": "Garantía"
+    },
+    "pqr": "PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].",
+    "sic": "Superintendencia de Industria y Comercio"
   }
 }
