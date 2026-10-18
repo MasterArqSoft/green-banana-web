@@ -13,10 +13,11 @@ describe("ProductCards (FR-04)", () => {
   });
 
   it("muestra el detalle de peso y unidades del spec", () => {
-    expect(html).toContain("~220 g por unidad");
-    expect(html).toContain("~4–5 unidades");
-    expect(html).toContain("3 kg · ~13–15 unidades");
-    expect(html).toContain("18–20 kg");
+    // Entre corchetes mientras estén sin confirmar (T-03), como en el spec.
+    expect(html).toContain("~[220] g por unidad");
+    expect(html).toContain("~[4–5] unidades");
+    expect(html).toContain("3 kg · ~[13–15] unidades");
+    expect(html).toContain("[18–20] kg");
   });
 
   it("cada tarjeta tiene el botón de llamada al número de site.json", () => {

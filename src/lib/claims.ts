@@ -25,7 +25,8 @@ const PENDING_MARKER = /\(FICTICIO\)|\[[^\]]*\]/;
 
 /**
  * Recorre el contenido y devuelve la ruta y el texto de cada valor con una marca
- * "(FICTICIO)" o "[…]" (p. ej. "[POR CONFIRMAR]", "[4 y 7]"), y la URL de la demo.
+ * "(FICTICIO)" o "[…]" (p. ej. "[POR CONFIRMAR]", "[4 y 7]"), la URL de la demo y los
+ * `pendingConfirmation` no vacíos de products.json.
  */
 export function findPendingMarkers(content: Record<string, unknown>): string[] {
   const found: string[] = [];
@@ -35,6 +36,9 @@ export function findPendingMarkers(content: Record<string, unknown>): string[] {
         found.push(`${path}: ${value.slice(0, 80)}`);
       }
     } else if (Array.isArray(value)) {
+      if (path.endsWith(".pendingConfirmation") && value.length > 0) {
+        found.push(`${path}: ${value.join(", ")}`);
+      }
       value.forEach((item, index) => walk(item, `${path}[${index}]`));
     } else if (value && typeof value === "object") {
       for (const [key, item] of Object.entries(value)) {

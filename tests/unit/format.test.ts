@@ -14,6 +14,13 @@ describe("formatWeight", () => {
   });
 });
 
+describe("formatWeight con cifra pendiente", () => {
+  it("pone la cifra entre corchetes y deja la unidad afuera", () => {
+    expect(formatWeight(220, true)).toBe("[220] g");
+    expect(formatWeight([18000, 20000], true)).toBe("[18–20] kg");
+  });
+});
+
 describe("formatDate", () => {
   it("escribe la fecha en español de Colombia sin correrla de día", () => {
     expect(formatDate("2026-10-15")).toBe("15 de octubre de 2026");

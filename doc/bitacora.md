@@ -5,6 +5,22 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: cifras de presentaciones marcadas como pendientes
+
+### Decisiones del usuario
+- **Opción A:** mientras el proveedor no las confirme (T-03), las cifras de las presentaciones se muestran entre corchetes, igual que el resto de los valores pendientes.
+
+### Cambios
+- `products.json`: cada presentación tiene `pendingConfirmation` con los campos sin confirmar (unidad y caja: peso; kilo y bolsa: unidades). Los 3 kg de la bolsa no se marcan, porque el spec no los marca.
+- `formatWeight(gramos, pendiente)` y `markPending()` en `format.ts`; `ProductCards` muestra exactamente lo del spec: "~[220] g por unidad", "~[4–5] unidades", "3 kg · ~[13–15] unidades" y "[18–20] kg".
+- `findPendingMarkers` cuenta un `pendingConfirmation` no vacío: el build de producción falla hasta confirmarlas y borrar el campo. **Ahora hay 31 pendientes.**
+- Pruebas actualizadas y nuevas: detalle con corchetes, `formatWeight` pendiente y conteo de pendientes de productos.
+
+### Verificado
+- `npm run validate` pasa: 107 pruebas unitarias y 32 e2e.
+
+---
+
 ## 2026-10-18: T-39, revisión de textos, imágenes y lista legal
 
 ### Resultado de la revisión
@@ -46,7 +62,7 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - `npm run validate` pasa: 105 pruebas unitarias y 32 e2e.
 
 ### Abierto
-- **[POR CONFIRMAR] Cifras de presentaciones sin corchetes:** el spec las marca como pendientes ("~[220] g", "~[4–5] unidades"...), pero en la página se ven como definitivas, porque son números en `products.json`. Decisión del usuario pendiente.
+- Cifras de presentaciones sin corchetes: resuelto en la entrada siguiente.
 - Prueba con lector de pantalla (T-38, manual).
 
 ---

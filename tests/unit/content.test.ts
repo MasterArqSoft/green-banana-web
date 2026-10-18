@@ -78,6 +78,14 @@ describe("findPendingMarkers (T-39)", () => {
     ]);
   });
 
+  it("cuenta las cifras de productos sin confirmar", () => {
+    expect(
+      findPendingMarkers({
+        products: [{ id: "unit", pendingConfirmation: ["approxWeightG"] }],
+      }),
+    ).toEqual(["products[0].pendingConfirmation: approxWeightG"]);
+  });
+
   it("no marca contenido definitivo", () => {
     expect(
       findPendingMarkers({ site: { brand: "Marca", url: "https://marca.co" } }),
