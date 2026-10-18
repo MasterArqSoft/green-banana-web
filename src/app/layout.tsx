@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DemoBanner } from "@/components/DemoBanner";
+import { FloatingCall } from "@/components/FloatingCall";
 import { Footer } from "@/components/Footer";
 import { TopBar } from "@/components/TopBar";
 import { site } from "@/lib/content";
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <TopBar />
         {children}
         <Footer />
+        <FloatingCall />
       </body>
     </html>
   );

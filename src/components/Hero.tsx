@@ -10,6 +10,7 @@ export function Hero() {
   const { hero } = copy;
   return (
     <section
+      id="hero"
       aria-labelledby="hero-titulo"
       className="contenedor grid gap-8 py-8 md:grid-cols-2 md:items-center md:py-16"
     >
