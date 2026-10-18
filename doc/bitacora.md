@@ -5,6 +5,27 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: T-49, ESLint sin `braces`
+
+### Cambios
+- Se desinstaló **`eslint-config-next`**: 221 paquetes menos.
+- Se agregaron como dependencias directas, en versión exacta y en las mismas versiones que ya traía, `typescript-eslint` 8.71.2, `eslint-plugin-react` 7.37.5, `eslint-plugin-react-hooks` 7.1.1, `eslint-plugin-jsx-a11y` 6.10.2, `eslint-plugin-import` 2.32.0 y `globals` 16.4.0.
+- `eslint.config.mjs` propio:
+  - TypeScript recommended, React recommended y `jsx-runtime`, Hooks recommended, **jsx-a11y recommended completo** y `import/no-anonymous-default-export`;
+  - globals de navegador y Node, `react.version: detect` y Prettier al final;
+  - los mismos ajustes que hacía `eslint-config-next` (`prop-types` off, `no-unused-vars` y `no-unused-expressions` como aviso).
+- **Cobertura:** 89 reglas activas en `.tsx` (eslint 4, TypeScript 20, React 17, Hooks 16, **jsx-a11y 31**, import 1). Antes eran solo 6 de accesibilidad. Se pierden únicamente las reglas `@next/next/*`, pensadas para `<Script>`, `pages/` y fuentes de Google en `<head>`, que en este sitio estático no aplican.
+- `package.json`: `audit:prod` → **`audit:deps`** (`npm audit --audit-level=high`, completo), y `validate` lo usa.
+- Docs: `CLAUDE.md` (stack, regla de no reinstalar `eslint-config-next`, comandos y pendientes), plan §7, `04` (T-49 hecha) y `05` (D-12 resuelto).
+
+### Verificado
+- `npm ls braces micromatch fast-glob`: vacío. **`npm audit` completo: 0 vulnerabilidades.**
+- `npm run lint` sobre el proyecto: sin avisos.
+- Prueba con un componente roto a propósito: detecta un hook condicional, `click-events-have-key-events`, `no-static-element-interactions`, `alt-text`, `anchor-is-valid` y variables sin uso.
+- `npm run validate` pasa: 160 pruebas unitarias, 32 e2e, presupuesto de 266,8 KB y auditoría completa limpia.
+
+---
+
 ## 2026-10-18: specs 1.4 y tarea T-49
 
 ### Decisiones del usuario
@@ -66,7 +87,7 @@ Primera sesión del proyecto: de los specs sin código a la demo publicada.
 - R-08: hosting de producción, que bloquea T-32 y T-43.
 - T-36: Google Business Profile.
 - T-38 manual: lector de pantalla.
-- Riesgo de `braces`: no aceptado; queda como tarea T-49.
+- Riesgo de `braces`: no aceptado; resuelto en T-49 (0 vulnerabilidades).
 - Conflicto D-11: sin cabeceras de seguridad en la demo.
 
 ### Alineación de la documentación (esta entrada)

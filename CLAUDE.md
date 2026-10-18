@@ -29,7 +29,9 @@ No son fuente de verdad:
 ## Estado actual
 Fases 1 y 2 completas; de las Fases 4 y 5, todo lo que no depende de datos o decisiones del usuario. El estado por tarea está en `spec/04-tasks.md` (sección "Estado de avance"). Lo que falta depende del usuario (ver "Pendientes").
 
-Stack: Next.js 16.4 (App Router, Turbopack, exportación estática), React 19.3, TypeScript, Tailwind CSS 4, Zod 4, ESLint + Prettier, Husky + lint-staged, Vitest 5, Playwright 1.64 + axe, sharp.
+Stack: Next.js 16.4 (App Router, Turbopack, exportación estática), React 19.3, TypeScript, Tailwind CSS 4, Zod 4, ESLint 9 + Prettier, Husky + lint-staged, Vitest 5, Playwright 1.64 + axe, sharp.
+
+**ESLint sin `eslint-config-next` (T-49):** `eslint.config.mjs` arma la configuración con typescript-eslint, eslint-plugin-react, react-hooks, jsx-a11y (recommended completo) e import, todos en versión exacta. **No vuelvas a instalar `eslint-config-next` ni `@next/eslint-plugin-next`**: traen `braces` con vulnerabilidades altas sin arreglo (riesgo D-12).
 
 ## Comandos
 ```bash
@@ -38,8 +40,8 @@ npm run build          # exportación estática en out/
 npm run lint           # ESLint
 npm run typecheck      # next typegen && tsc --noEmit (genera los tipos de rutas como LayoutProps)
 npm run format         # Prettier (escribe); format:check solo verifica
-npm run validate       # TODO junto: format:check, lint, typecheck, test, build, budget, playwright test y audit:prod. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
-npm run audit:prod     # npm audit solo de dependencias de producción, falla con altas o críticas
+npm run validate       # TODO junto: format:check, lint, typecheck, test, build, budget, playwright test y audit:deps. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
+npm run audit:deps     # npm audit completo (producción y desarrollo), falla con altas o críticas
 npm run budget         # peso inicial por página (gzip) ≤ 300 KB; requiere out/ construido
 npm run lighthouse     # Lighthouse móvil, 4 categorías ≥ 90 (AC-08); requiere out/; no está en validate (lento). Fuera de producción omite is-crawlable (la demo es noindex)
 npm run images         # genera public/images/ desde fotos-originales/ (originales fuera de Git)
@@ -75,7 +77,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - **Sin precios en el modelo de datos:** `products.json` no tiene campos de precio; `pricePerKg` y `priceTotal` llegan con R-01.
 - **Presupuesto de rendimiento:** peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas; lo mide `npm run budget`), imagen del hero ≤ 120 KB, ningún script de terceros. Hoy: 267 KB, de los que ~180 KB son el runtime de React y Next.js, que no baja. Lighthouse móvil: Rendimiento 90-96 según la corrida, el resto 100. Hay poco margen: cada sección nueva, foto sin `srcset` o `"use client"` lo reduce.
 - **Pruebas:** unitarias con Vitest en `tests/unit/` (`.test.ts` y `.test.tsx`; los componentes se prueban con `renderToStaticMarkup` de `react-dom/server`, sin DOM; alias `@/` resuelto por `vitest.config.mts`); e2e con Playwright en `tests/e2e/`. Para probar producción se usa `vi.stubEnv("SITE_ENV", "production")` + `vi.resetModules()` y se reimporta `@/lib/content`.
-- **Dependencias:** Dependabot (`.github/dependabot.yml`) abre PR semanales (menores y parches agrupados, mayores por separado) y PR de seguridad automáticos. Antes de fusionar un PR de Dependabot, corre `npm run validate`. Las mayores pendientes (ESLint 10, TypeScript 7, @types/node 26) se evalúan una por una: pueden romper `eslint-config-next`. `unrs-resolver` tiene su script de instalación denegado en `allowScripts` (el binario ya viene incluido).
+- **Dependencias:** Dependabot (`.github/dependabot.yml`) abre PR semanales (menores y parches agrupados, mayores por separado) y PR de seguridad automáticos. Antes de fusionar un PR de Dependabot, corre `npm run validate`. Las mayores pendientes (ESLint 10, TypeScript 7, @types/node 26) se evalúan una por una: pueden romper los plugins de ESLint. `unrs-resolver` tiene su script de instalación denegado en `allowScripts` (el binario ya viene incluido).
 
 ## Decisiones técnicas (cerradas)
 - Next.js con exportación estática (`output: 'export'`), React, TypeScript y Tailwind CSS.
@@ -98,7 +100,6 @@ Recuérdaselos al usuario cuando pregunte por pendientes. Detalle en `spec/05-al
 - **Hosting de producción (R-08):** Azure Static Web Apps o Cloudflare Pages. Bloquea T-32 (cabeceras de seguridad) y T-43.
 - **T-36:** Google Business Profile, con datos reales (RP-01).
 - **T-38, parte manual:** prueba con lector de pantalla (NVDA o TalkBack); la lista está en la bitácora.
-- **T-49, vulnerabilidades de `braces` (tarea técnica, no depende del usuario):** `npm audit` completo muestra 5 altas en dependencias de desarrollo (riesgo D-12). El usuario **no acepta el riesgo**: hay que eliminarlas. La opción preferida y el criterio de cierre están en `spec/04-tasks.md`. Mientras tanto, `validate` usa `audit:prod`.
 - **Conflicto D-11 (parcial):** la demo en GitHub Pages no permite cabeceras propias (CSP, NFR-04).
 
 ## Reglas de trabajo
