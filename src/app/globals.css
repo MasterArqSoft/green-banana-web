@@ -1,18 +1,66 @@
 @import "tailwindcss";
 
-/* Tokens provisionales. La paleta y la tipografía de spec/02-content-spec.md §5 se definen en T-10. */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Tokens de diseño (spec/02-content-spec.md §5). Los componentes usan estos nombres
+ * (bg-crema, text-carbon, bg-cta, font-display, rounded-card...) y nunca colores sueltos.
+ * Contrastes medidos (WCAG 2.2 AA): carbón/crema 14,37; blanco/cta 5,41; blanco/hoja 6,39;
+ * carbón/sol 8,16. El amarillo sol sobre crema da 1,76: solo como fondo o acento, nunca texto.
+ */
+@theme {
+  --color-hoja: #2f6b3a;
+  --color-hoja-claro: #e8f3e6;
+  --color-sol: #f2b705;
+  --color-carbon: #1f2a24;
+  --color-crema: #fffbf2;
+  --color-cta: #0f7a41;
+
+  --radius-control: 0.75rem; /* 12 px: botones y campos */
+  --radius-card: 1rem; /* 16 px: tarjetas */
+
+  --shadow-suave: 0 4px 16px rgb(31 42 36 / 0.08);
 }
 
+/* Las variables de fuente las define next/font en <html> (src/app/fonts.ts). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Contenedor de página: mobile-first con margen lateral de 16 px. */
+@utility contenedor {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-crema);
+    color: var(--color-carbon);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  /* Foco visible al navegar con teclado (WCAG 2.4.7). */
+  :focus-visible {
+    outline: 3px solid var(--color-hoja);
+    outline-offset: 2px;
+  }
+}
+
+/* Movimiento mínimo y respeto a la preferencia del sistema (spec §5). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

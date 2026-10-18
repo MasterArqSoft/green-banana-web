@@ -140,8 +140,8 @@ Cada tarjeta: foto, nombre, tiempo, 2 líneas. Las recetas completas, si se publ
 
 | Elemento | Propuesta |
 |---|---|
-| Paleta | Verde hoja `#2F6B3A` (primario), verde claro `#E8F3E6` (fondos), amarillo sol `#F2B705` (acento), carbón `#1F2A24` (texto), blanco cálido `#FFFBF2` (fondo base) |
-| CTA primario | Botón de llamada en verde oscuro `#128C4A` con texto blanco (validar contraste ≥ 4,5:1). Verde WhatsApp `#25D366` queda reservado para el roadmap R-02 |
+| Paleta | Verde hoja `#2F6B3A` (primario), verde claro `#E8F3E6` (fondos), amarillo sol `#F2B705` (acento), carbón `#1F2A24` (texto), blanco cálido `#FFFBF2` (fondo base). El amarillo sol nunca se usa como color de texto (contraste 1,76:1 sobre el fondo base); sí como fondo con texto carbón (8,16:1) |
+| CTA primario | Botón de llamada en verde oscuro `#0F7A41` con texto blanco (contraste 5,41:1). El `#128C4A` original daba 4,31:1 y no cumplía WCAG AA; se cambió el 2026-10-18. Verde WhatsApp `#25D366` queda reservado para el roadmap R-02 |
 | Tipografía | Títulos: una serif o display con carácter (p. ej. Fraunces). Cuerpo: sans legible (p. ej. Inter). Autoalojadas, con `font-display: swap`. |
 | Forma | Esquinas redondeadas 12–16 px, sombras suaves, mucho espacio en blanco |
 | Iconos | Línea simple, un solo set (p. ej. Lucide) |

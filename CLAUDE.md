@@ -26,7 +26,7 @@ No son fuente de verdad:
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). Léelo al empezar para retomar el contexto.
 
 ## Estado actual y comandos
-T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. T-08 hecho: `src/lib/tel.ts` con pruebas unitarias (Vitest). Falta el script único de validación (T-11) y Playwright.
+T-07 hecho: proyecto Next.js 16.4 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS 4, ESLint + Prettier, pre-commit con Husky + lint-staged. Repositorio público en GitHub (`MasterArqSoft/green-banana-web`). En Git Bash de Windows, para probar el build con prefijo usa `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`. T-09 hecho: contenido en `src/content/*.json` validado con Zod. T-08 hecho: `src/lib/tel.ts` con pruebas unitarias (Vitest). T-10 hecho: tokens de diseño en `src/app/globals.css` y fuentes en `src/app/fonts.ts`. Falta el script único de validación (T-11) y Playwright.
 
 ```bash
 npm run dev            # servidor de desarrollo en http://localhost:3000
@@ -49,6 +49,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - **Salvaguarda del número ficticio:** `site.json` tiene `phoneIsPlaceholder`. Si es `true` y el build tiene `SITE_ENV=production`, el build falla (riesgo R5, D-02). Sin esa variable (local y demo) se muestra `DemoBanner` con `site.demoNotice`.
 - **Acceso al contenido:** importa siempre desde `@/lib/content` (`site`, `products`, `zones`, `faq`, `recipes`, `origin`, `isProduction`), nunca los JSON directamente; ahí se validan. Solo desde componentes de servidor.
 - **Enlace de llamada:** el `tel:` solo se genera con `telHref(site.phone)` de `src/lib/tel.ts`, y el número visible con `formatPhone(site.phone)` ("+57 300 000 0000"). La regla E.164 (`PHONE_E164_CO`) vive ahí y la reutiliza el esquema. Todos los botones Llamar (`CallButton`, `FloatingCall`, etc.) lo usan; ningún componente arma el número por su cuenta.
+- **Diseño:** usa solo los tokens de `globals.css`: colores `hoja`, `hoja-claro`, `sol`, `carbon`, `crema`, `cta` (botón Llamar); `font-display` (Fraunces, ya aplicada a h1-h3) y `font-sans` (Inter); `rounded-control` (12 px), `rounded-card` (16 px), `shadow-suave`; utilidad `contenedor` para el ancho de página. `sol` nunca como color de texto. Nada de colores hex sueltos en componentes.
 - **JavaScript mínimo:** solo dos componentes cliente (`'use client'`): el acordeón de FAQ y el botón flotante de llamar. Todo lo demás se renderiza en el build.
 - **Rutas (App Router):** `src/app/page.tsx` (landing) y las páginas legales `terminos/`, `privacidad/` y `garantia/`. No hay carpeta `api/` en Fase 1 (R-06).
 - **Sin precios en el modelo de datos:** `products.json` no tiene campos de precio; `pricePerKg` y `priceTotal` llegan con R-01.
