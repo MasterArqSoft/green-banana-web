@@ -64,6 +64,11 @@ export const presentationSchema = z.strictObject({
   approxWeightG: approxWeightG.optional(),
   approxUnits: text.optional(),
   callLabel: text,
+  // Cifras aún sin confirmar con el proveedor (T-03): se muestran entre corchetes y
+  // bloquean el build de producción. Se borra el campo al confirmarlas.
+  pendingConfirmation: z
+    .array(z.enum(["approxWeightG", "approxUnits"]))
+    .optional(),
 });
 
 export const productsSchema = z

@@ -1,16 +1,21 @@
 import { Leaf } from "lucide-react";
 import { CallButton } from "@/components/CallButton";
 import { copy, products } from "@/lib/content";
-import { formatWeight } from "@/lib/format";
+import { formatWeight, markPending } from "@/lib/format";
 import type { Presentation } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
 // Detalle de cada presentación según 02-content-spec.md §2 (FR-04):
 // "~220 g por unidad", "~4–5 unidades", "3 kg · ~13–15 unidades", "18–20 kg".
+// Las cifras sin confirmar van entre corchetes, como en el spec: "~[220] g por unidad".
 function detail(product: Presentation): string {
+  const pending = product.pendingConfirmation ?? [];
   const parts: string[] = [];
   if (product.approxWeightG !== undefined) {
-    const weight = formatWeight(product.approxWeightG);
+    const weight = formatWeight(
+      product.approxWeightG,
+      pending.includes("approxWeightG"),
+    );
     parts.push(
       product.id === "unit"
         ? fill(copy.products.unitWeight, { peso: weight })
@@ -18,7 +23,14 @@ function detail(product: Presentation): string {
     );
   }
   if (product.approxUnits) {
-    parts.push(fill(copy.products.units, { unidades: product.approxUnits }));
+    parts.push(
+      fill(copy.products.units, {
+        unidades: markPending(
+          product.approxUnits,
+          pending.includes("approxUnits"),
+        ),
+      }),
+    );
   }
   return parts.join(" · ");
 }
