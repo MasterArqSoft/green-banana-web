@@ -1,0 +1,18 @@
+{
+  "brand": "Guineo Verde Santa Marta (FICTICIO)",
+  "phone": "+573000000000",
+  "phoneIsPlaceholder": true,
+  "schedule": "[POR CONFIRMAR horario]",
+  "legal": {
+    "razonSocial": "Razón social de ejemplo S.A.S. (FICTICIO)",
+    "nit": "000.000.000-0 (FICTICIO)",
+    "direccion": "Dirección de ejemplo, Santa Marta (FICTICIO)",
+    "correo": "contacto.ficticio@example.com"
+  },
+  "sicUrl": "https://www.sic.gov.co",
+  "acopio": {
+    "city": "Santa Marta",
+    "department": "Magdalena"
+  },
+  "demoNotice": "Demostración: los datos de empresa y contacto son ficticios."
+}

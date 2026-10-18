@@ -1,0 +1,9 @@
+{
+  "producer": "Finca de ejemplo (FICTICIO)",
+  "municipality": "Municipio de ejemplo (FICTICIO)",
+  "department": "Departamento de ejemplo (FICTICIO)",
+  "batch": {
+    "code": "LOTE-0000 (FICTICIO)",
+    "cutDate": "2026-10-15"
+  }
+}

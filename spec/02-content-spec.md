@@ -99,6 +99,9 @@ Solo con testimonios reales y autorizados. Formato: foto, nombre, negocio o barr
 - **Título:** Llámanos y hablamos de tu pedido
 - **Botón:** Llamar
 
+### Aviso de demostración (D-11)
+Franja fina arriba de la página, solo fuera de producción: *Demostración: los datos de empresa y contacto son ficticios.* El texto vive en `site.json` (`demoNotice`).
+
 ### FR-16 Pie
 Razón social: [FICTICIA, Q6] · NIT: [FICTICIO, Q6] · Dirección: [FICTICIA, Q6] · Teléfono: [número de contacto, Q7] · Correo: [FICTICIO, Q6]
 *Todos estos datos se leen de `site.json`. No se escriben en la página.*
