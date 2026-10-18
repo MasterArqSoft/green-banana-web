@@ -87,5 +87,11 @@
   "business": {
     "title": "¿Tienes tienda, hotel o punto de venta?",
     "text": "Distribuimos en {ciudad} desde nuestro acopio. Llámanos y te contamos las condiciones."
+  },
+  "testimonials": {
+    "title": "Testimonios"
+  },
+  "faq": {
+    "title": "Preguntas frecuentes"
   }
 }

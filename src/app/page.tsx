@@ -1,12 +1,14 @@
 import { Benefits } from "@/components/Benefits";
 import { Business } from "@/components/Business";
 import { Coverage } from "@/components/Coverage";
+import { Faq } from "@/components/Faq";
 import { FreshInfo } from "@/components/FreshInfo";
 import { Hero } from "@/components/Hero";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Origin } from "@/components/Origin";
 import { ProductCards } from "@/components/ProductCards";
 import { Recipes } from "@/components/Recipes";
+import { Testimonials } from "@/components/Testimonials";
 import { TrustBar } from "@/components/TrustBar";
 
 // Composición de la landing. El orden final de las secciones es T-33.
@@ -23,6 +25,8 @@ export default function Home() {
       <HowItWorks />
       <Coverage />
       <Business />
+      <Testimonials />
+      <Faq />
     </main>
   );
 }

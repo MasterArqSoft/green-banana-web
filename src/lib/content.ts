@@ -7,6 +7,7 @@ import faqJson from "@/content/faq.json";
 import recipesJson from "@/content/recipes.json";
 import originJson from "@/content/origin.json";
 import copyJson from "@/content/copy.json";
+import testimonialsJson from "@/content/testimonials.json";
 import {
   copySchema,
   faqSchema,
@@ -14,6 +15,7 @@ import {
   productsSchema,
   recipesSchema,
   siteSchema,
+  testimonialsSchema,
   zonesSchema,
 } from "@/lib/schema";
 
@@ -38,10 +40,24 @@ export const faq = parse(faqSchema, faqJson, "faq.json");
 export const recipes = parse(recipesSchema, recipesJson, "recipes.json");
 export const origin = parse(originSchema, originJson, "origin.json");
 export const copy = parse(copySchema, copyJson, "copy.json");
+export const testimonials = parse(
+  testimonialsSchema,
+  testimonialsJson,
+  "testimonials.json",
+);
 
 // P1 y P3: ninguna frase prohibida en el contenido publicado.
 const forbidden = findForbiddenClaims(
-  JSON.stringify([site, products, zones, faq, recipes, origin, copy]),
+  JSON.stringify([
+    site,
+    products,
+    zones,
+    faq,
+    recipes,
+    origin,
+    copy,
+    testimonials,
+  ]),
 );
 if (forbidden.length > 0) {
   throw new Error(

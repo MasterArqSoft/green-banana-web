@@ -43,7 +43,7 @@ flowchart LR
 | Curva para tu perfil | Baja | Baja (ya usas React) | Nula (ya usas Angular) | Nula (.NET) |
 | Idoneidad para landing | **Alta** | Media-alta | Baja | Baja |
 
-**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita al acordeón de FAQ y al botón flotante. Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
+**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita al botón flotante (el acordeón de FAQ usa `<details>` nativo, sin JavaScript). Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
 
 ### D2. Hosting
 
@@ -72,7 +72,7 @@ Fase 1: llamada telefónica (`tel:`). No hay backend. El formulario B2B, el endp
 flowchart TB
     subgraph Cliente
       P[Páginas Next.js exportadas a HTML estático]
-      I1[Componente cliente: Acordeón FAQ]
+      I1[Acordeón FAQ: details/summary nativo, sin JS]
       I2[Componente cliente: Botón flotante Llamar]
     end
     subgraph Datos de contenido
@@ -83,8 +83,9 @@ flowchart TB
       D5[recipes.json]
       D6[origin.json: lote vigente]
       D7[copy.json: textos de interfaz por sección]
+      D8[testimonials.json: vacío hasta tener testimonios reales]
     end
-    D1 & D2 & D3 & D4 & D5 & D6 & D7 -->|Build + validación Zod| P
+    D1 & D2 & D3 & D4 & D5 & D6 & D7 & D8 -->|Build + validación Zod| P
 ```
 
 **Flujo del botón de llamada**
@@ -216,7 +217,7 @@ default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'u
 | HTML estático | Todo el contenido renderizado en build |
 | Imágenes | AVIF/WebP, `srcset`, `width` y `height` explícitos, `loading="lazy"` fuera del primer viewport, imagen del hero con `fetchpriority="high"` |
 | Fuentes | Autoalojadas, subconjunto latino, máximo 2 familias, `font-display: swap` |
-| JavaScript | Componentes cliente (`'use client'`) solo para acordeón FAQ y botón flotante; el resto se renderiza en build |
+| JavaScript | Componente cliente (`'use client'`) solo para el botón flotante; el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
 | CSS | Tailwind con purga; CSS crítico en línea |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
 | SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |

@@ -87,6 +87,29 @@ export const recipesSchema = z
   .min(1)
   .superRefine(uniqueIds);
 
+// FR-12: solo testimonios reales y autorizados. Vacío (la sección no se publica, AC-11)
+// o de 3 a 5 testimonios.
+export const testimonialsSchema = z
+  .array(
+    z.strictObject({
+      name: text,
+      // Negocio o barrio.
+      context: text,
+      text,
+      // Ruta en public/, p. ej. "/images/testimonios/ana.webp".
+      photo: z.string().startsWith("/"),
+      photoAlt: text,
+      // Constancia de que la persona autorizó publicar su testimonio y su foto.
+      authorized: z.literal(true),
+    }),
+  )
+  .refine(
+    (items) => items.length === 0 || (items.length >= 3 && items.length <= 5),
+    {
+      message: "Deben ser 0 testimonios (sección oculta) o entre 3 y 5",
+    },
+  );
+
 export const originSchema = z.strictObject({
   producer: text,
   municipality: text,
@@ -176,6 +199,10 @@ export const copySchema = z.strictObject({
   }),
   // FR-11. Sin formulario: el formulario B2B es el roadmap R-06.
   business: z.strictObject({ title: text, text: textWith("ciudad") }),
+  // FR-12. Solo se usa si testimonials.json tiene testimonios reales.
+  testimonials: z.strictObject({ title: text }),
+  // FR-13. Las preguntas y respuestas vienen de faq.json.
+  faq: z.strictObject({ title: text }),
 });
 
 export type Site = z.infer<typeof siteSchema>;
@@ -184,4 +211,5 @@ export type Zone = z.infer<typeof zonesSchema>[number];
 export type FaqItem = z.infer<typeof faqSchema>[number];
 export type Recipe = z.infer<typeof recipesSchema>[number];
 export type Origin = z.infer<typeof originSchema>;
+export type Testimonial = z.infer<typeof testimonialsSchema>[number];
 export type Copy = z.infer<typeof copySchema>;
