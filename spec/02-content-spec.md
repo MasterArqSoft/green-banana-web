@@ -141,7 +141,7 @@ Cada tarjeta: foto, nombre, tiempo, 2 líneas. Las recetas completas, si se publ
 | Elemento | Propuesta |
 |---|---|
 | Paleta | Verde hoja `#2F6B3A` (primario), verde claro `#E8F3E6` (fondos), amarillo sol `#F2B705` (acento), carbón `#1F2A24` (texto), blanco cálido `#FFFBF2` (fondo base). El amarillo sol nunca se usa como color de texto (contraste 1,76:1 sobre el fondo base); sí como fondo con texto carbón (8,16:1) |
-| CTA primario | Botón de llamada en verde oscuro `#0F7A41` con texto blanco (contraste 5,41:1). El `#128C4A` original daba 4,31:1 y no cumplía WCAG AA; se cambió el 2026-10-18. Verde WhatsApp `#25D366` queda reservado para el roadmap R-02 |
+| CTA primario | Botón de llamada en **amarillo sol `#F2B705` con texto carbón** (contraste 8,16:1; al pasar el mouse `#E0A800`, 6,91:1). El amarillo es el acento exclusivo del CTA, para que se distinga de los verdes de la marca (revisión UX del 2026-10-18, patrón "Trust + Conversion"). Historial: `#128C4A` (4,31:1, no cumplía WCAG AA) → `#0F7A41` verde con texto blanco → amarillo sol. La franja de demo pasó a carbón para no competir con el CTA. Verde WhatsApp `#25D366` queda reservado para el roadmap R-02 |
 | Tipografía | Títulos: una serif o display con carácter (p. ej. Fraunces). Cuerpo: sans legible (p. ej. Inter). Autoalojadas, con `font-display: swap`. |
 | Forma | Esquinas redondeadas 12–16 px, sombras suaves, mucho espacio en blanco |
 | Iconos | Línea simple, un solo set (p. ej. Lucide) |

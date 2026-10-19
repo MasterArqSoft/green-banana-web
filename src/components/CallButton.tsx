@@ -32,7 +32,7 @@ export function CallButton({
         texto: label,
         telefono: formatPhone(site.phone),
       })}
-      className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold whitespace-nowrap text-white shadow-suave transition-colors hover:bg-hoja ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold whitespace-nowrap text-carbon shadow-suave transition-colors hover:bg-cta-hover ${sizes[size]} ${className}`}
     >
       <Phone
         aria-hidden="true"

@@ -5,6 +5,44 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: revisión UI/UX con `ui-ux-pro-max`
+
+### Contexto
+- Revisión del sitio con la skill `ui-ux-pro-max`, por prioridad: accesibilidad, táctil, rendimiento, estilo, layout y tipografía. Búsquedas puntuales en `landing`, `ux` y `nextjs`; no se generó un sistema de diseño nuevo, porque el diseño lo fijan los specs. Una consulta sobre jerarquía del hero devolvió resultados que no venían al caso y se descartó.
+- **Medido con Playwright a 360 px:**
+  - al recorrer con Tab, la barra fija no tapa ningún elemento con foco (WCAG 2.4.11);
+  - todos los botones miden ≥ 44 px;
+  - los enlaces del pie medían **17 px** de alto.
+- **Cumplía sin cambios:** axe sin infracciones, contraste, textos alternativos, AVIF/WebP con `srcset`, CLS 0, sin scroll horizontal, base de 16 px, íconos SVG y 9 puntos de llamada.
+
+### Decisiones del usuario
+- **Botón Llamar en amarillo sol (`#F2B705`) con texto carbón**, en vez del verde `#0F7A41`. Motivo: el patrón *Trust & Authority + Conversion* pide el color de acento solo para el CTA, y el verde se confundía con títulos y fondos.
+- **Enlaces del pie con área táctil de 44 px.**
+- No se aplicaron, de impacto bajo:
+  - el cruce momentáneo del botón flotante con otros botones al hacer scroll;
+  - una navegación interna (FR-01 no la contempla).
+
+### Cambios
+- `globals.css`: `--color-cta: #f2b705` y nuevo `--color-cta-hover: #e0a800`. Contrastes: carbón sobre CTA 8,16:1, sobre hover 6,91:1; botón contra el fondo hoja de "Para negocios" 3,52:1.
+- `CallButton`: `bg-cta text-carbon hover:bg-cta-hover`. El botón flotante hereda el cambio.
+- `Business`: se quitó el `ring-2 ring-white`; el amarillo ya se distingue sobre el verde.
+- `DemoBanner`: de `bg-sol` a `bg-carbon text-crema` (14,37:1), para no competir con el CTA.
+- `Footer`: enlaces con `inline-flex min-h-11 items-center` (44 px).
+- `02-content-spec.md` §5 (CTA, con historial de colores) y `CLAUDE.md` (amarillo reservado al CTA y regla de 44 px para enlaces táctiles).
+
+### Verificado
+- `npm run validate` pasa: 160 pruebas unitarias, 32 e2e (axe sin infracciones con los colores nuevos) y presupuesto de 266,8 KB.
+- Capturas a 360 px y en escritorio revisadas. Los 6 enlaces del pie miden 44 px.
+
+### GitHub: Claude en "Contributors"
+- Tras reescribir el historial, la portada todavía mostraba a Claude. Verificado:
+  - todos los commits tienen como autor y committer al usuario;
+  - 0 líneas `Co-authored-by` y 0 menciones a Anthropic;
+  - la API `contributors` solo devuelve `MasterArqSoft`.
+- Es caché de la barra lateral de GitHub, que puede tardar hasta unas 24 h en actualizarse. No requiere acción.
+
+---
+
 ## 2026-10-18: T-49, ESLint sin `braces`
 
 ### Cambios

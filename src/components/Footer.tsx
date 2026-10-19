@@ -12,7 +12,9 @@ export function Footer() {
     { label: footer.labels.nit, value: legal.nit },
     { label: footer.labels.direccion, value: legal.direccion },
   ];
-  const linkClass = "underline underline-offset-4 hover:text-sol";
+  // Área táctil de 44 px de alto (revisión UX: antes medían 17 px).
+  const linkClass =
+    "inline-flex min-h-11 items-center underline underline-offset-4 hover:text-sol";
   return (
     // Sobre fondo carbón, el foco del teclado se dibuja en crema (WCAG 2.4.7).
     <footer

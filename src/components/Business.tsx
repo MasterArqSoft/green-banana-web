@@ -28,8 +28,7 @@ export function Business() {
             </p>
           </div>
         </div>
-        {/* Borde blanco para que el botón se distinga sobre el fondo verde. */}
-        <CallButton className="shrink-0 ring-2 ring-white" />
+        <CallButton className="shrink-0" />
       </div>
     </section>
   );

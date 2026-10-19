@@ -4,7 +4,10 @@ import { copy, isProduction } from "@/lib/content";
 export function DemoBanner() {
   if (isProduction) return null;
   return (
-    <p role="note" className="bg-sol px-4 py-2 text-center text-sm text-carbon">
+    <p
+      role="note"
+      className="bg-carbon px-4 py-2 text-center text-sm text-crema"
+    >
       {copy.demoNotice}
     </p>
   );

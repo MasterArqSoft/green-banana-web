@@ -3,8 +3,10 @@
 /*
  * Tokens de diseño (spec/02-content-spec.md §5). Los componentes usan estos nombres
  * (bg-crema, text-carbon, bg-cta, font-display, rounded-card...) y nunca colores sueltos.
- * Contrastes medidos (WCAG 2.2 AA): carbón/crema 14,37; blanco/cta 5,41; blanco/hoja 6,39;
- * carbón/sol 8,16. El amarillo sol sobre crema da 1,76: solo como fondo o acento, nunca texto.
+ * Contrastes medidos (WCAG 2.2 AA): carbón/crema 14,37; carbón/cta 8,16; carbón/cta-hover 6,91;
+ * blanco/hoja 6,39. El amarillo sol sobre crema da 1,76: solo como fondo o acento, nunca texto.
+ * El amarillo es el acento exclusivo del botón Llamar (revisión UX, patrón Trust + Conversion):
+ * no lo uses como fondo de otros elementos para que el CTA no pierda protagonismo.
  */
 @theme {
   --color-hoja: #2f6b3a;
@@ -12,7 +14,8 @@
   --color-sol: #f2b705;
   --color-carbon: #1f2a24;
   --color-crema: #fffbf2;
-  --color-cta: #0f7a41;
+  --color-cta: #f2b705; /* = sol; botón Llamar con texto carbón */
+  --color-cta-hover: #e0a800;
 
   --radius-control: 0.75rem; /* 12 px: botones y campos */
   --radius-card: 1rem; /* 16 px: tarjetas */
