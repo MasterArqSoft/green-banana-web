@@ -5,6 +5,37 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-18: skills candidatas para evaluar
+
+### Decisiones del usuario
+- Documentar cada skill candidata (descripción, objetivo y finalidad) para evaluarlas después. **Ninguna se instala por ahora.**
+
+### Cambios
+- `doc/skills-candidatas/`: `README.md` (índice, resumen y skills instaladas que sobran) y un documento por candidata:
+  1. Marketing Skills (`copywriting`, `cro`, `seo-audit`): encaje alto.
+  2. `web-design-guidelines` (Vercel): alto.
+  3. `vercel-react-best-practices`: medio-alto.
+  4. `accessibility-auditor` (OneWave): medio.
+  5. `nextjs-seo` (laguagu): medio.
+  6. `playwright-skill` (TestDino): bajo.
+- `.gitignore`: excepción `!/doc/skills-candidatas/`. `CLAUDE.md`: referencia a la carpeta y la regla de no instalar skills sin aprobación.
+
+### Verificado
+- Existencia, estrellas, licencia y última actualización de los 5 repositorios con la API de GitHub. Las 8 skills existen; se leyó el inicio de cada `SKILL.md`.
+- Hallazgos que no aparecían en los sitios de terceros:
+  - en el repositorio de Corey Haines, la skill de conversión se llama `cro` (no "page-cro");
+  - `web-design-guidelines` descarga sus reglas de internet en cada uso;
+  - `vercel-labs/agent-skills` no tiene archivo LICENSE;
+  - `accessibility-auditor` apunta a WCAG 2.1 AA, no a 2.2;
+  - `playwright-skill` está verificada contra Playwright 1.64, la misma versión del proyecto.
+- Los comandos de instalación salen de los directorios de terceros y quedan "por verificar".
+
+### Abierto
+- Evaluación del usuario.
+- Desinstalar o no `jest-react-testing` y `typescript-advanced-types`, que no aplican.
+
+---
+
 ## 2026-10-18: revisión UI/UX con `ui-ux-pro-max`
 
 ### Contexto

@@ -49,6 +49,7 @@ next-env.d.ts
 /doc/*
 !/doc/bitacora.md
 !/doc/creditos.md
+!/doc/skills-candidatas/
 
 # Playwright
 /test-results/
