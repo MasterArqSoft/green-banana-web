@@ -117,7 +117,7 @@ PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
 - **Texto:** Estas son fincas de referencia de nuestro origen en la zona bananera del Magdalena. Las ubicaciones son aproximadas. [POR CONFIRMAR autorización de cada productor, RP-02]
 - **Botón:** Ver mapa · **Mientras carga:** Cargando mapa… · **Si falla:** No pudimos cargar el mapa. Las fincas están en la lista de abajo.
 - **Aviso antes de cargar (AC-19):** Al ver el mapa, tu navegador se conectará a OpenStreetMap, que recibe tu dirección IP. Enlace: *Política de privacidad de OpenStreetMap*.
-- **Lista:** Fincas en el mapa. Cada elemento muestra nombre, municipio y coordenadas. El acopio aparece como "Acopio en Santa Marta".
+- **Lista:** Fincas en el mapa. Cada elemento muestra nombre y municipio, sin coordenadas (AC-16, enmienda del 2026-10-19); las coordenadas solo ubican los marcadores del mapa. El acopio aparece como "Acopio en Santa Marta".
 - **Atribución (AC-18):** © OpenStreetMap contributors
 - **Datos (`fincas.json`):**
 
@@ -132,7 +132,7 @@ PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
 
 - **Centro inicial:** 10.88, -74.21, zoom 9. Al cargar, el mapa se ajusta a todas las ubicaciones con margen (fitBounds); el centro y el zoom solo se usan si no hay ubicaciones.
 - **Claves de `copy.json`:** `navigation.backHome`; `map.title`, `map.text`, `map.showButton`, `map.consent`, `map.privacyUrl`, `map.loading`, `map.error`, `map.listTitle`, `map.acopioLabel`, `map.attribution`.
-  - Agregadas en T-53 (decisión del usuario, 2026-10-19): `map.privacyLink` (texto del enlace), `map.coordinates` ("Coordenadas aproximadas: {lat}, {lng}") y `map.zoomIn` "Acercar", `map.zoomOut` "Alejar" y `map.closePopup` "Cerrar", que reemplazan los textos en inglés de Leaflet. `map.acopioLabel` = "Centro de acopio".
+  - Agregadas en T-53 (decisión del usuario, 2026-10-19): `map.privacyLink` (texto del enlace) y `map.zoomIn` "Acercar", `map.zoomOut` "Alejar" y `map.closePopup` "Cerrar", que reemplazan los textos en inglés de Leaflet. `map.acopioLabel` = "Centro de acopio".
   - Marcadores: finca = círculo hoja; acopio = cuadrado carbón. Ambos con borde crema y sin amarillo, que está reservado al CTA.
 - **Coordenadas:** aproximadas por municipio, según las fuentes de la tabla. Revisar con un mapa oficial antes de publicar.
 

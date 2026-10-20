@@ -128,7 +128,7 @@
 | AC-13 | Ninguna imagen usada tiene derechos de autor sin licencia verificada | NFR-08, Q10 |
 | AC-14 | Desde cualquier página legal se llega al inicio con un enlace visible y con foco; la marca de la barra superior también lleva al inicio | FR-19 |
 | AC-15 | Leaflet y las teselas no se descargan hasta pulsar "Ver mapa". En la carga inicial, la página se mantiene dentro de 300 KB (gzip) | FR-24, NFR-01 |
-| AC-16 | La lista de fincas muestra el mismo nombre, municipio y coordenadas que el mapa, y funciona sin JavaScript | FR-24, NFR-02 |
+| AC-16 | La lista de fincas muestra el mismo nombre y municipio que el mapa, y funciona sin JavaScript. No muestra coordenadas (enmienda del 2026-10-19: no aportan al visitante, aparentan una precisión que no tienen y, con fincas reales, exponen la ubicación del productor) | FR-24, NFR-02 |
 | AC-17 | Cambiar una finca o el centro del mapa se hace solo en `fincas.json`. Una finca con "(FICTICIO)" bloquea el build de producción | NFR-07, P9 |
 | AC-18 | El mapa muestra "© OpenStreetMap contributors" visible, sin esconderlo tras un control | FR-24, política de teselas de OSM |
 | AC-19 | Antes de cargar el mapa se muestra un aviso: el navegador se conectará a OpenStreetMap, que recibe la dirección IP, con enlace a su política de privacidad. El botón "Ver mapa" es la acción de consentimiento | FR-24, D-13, Ley 1581 |

@@ -264,7 +264,6 @@ export const copySchema = z.strictObject({
     error: text,
     listTitle: text,
     acopioLabel: text,
-    coordinates: textWith("lat").and(textWith("lng")),
     attribution: text,
     zoomIn: text,
     zoomOut: text,

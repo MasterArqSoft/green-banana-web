@@ -150,7 +150,6 @@
     "error": "No pudimos cargar el mapa. Las fincas están en la lista de abajo.",
     "listTitle": "Fincas en el mapa",
     "acopioLabel": "Centro de acopio",
-    "coordinates": "Coordenadas aproximadas: {lat}, {lng}",
     "attribution": "© OpenStreetMap contributors",
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",

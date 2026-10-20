@@ -7,14 +7,18 @@ describe("MapaFincas (FR-24)", () => {
   const html = renderToStaticMarkup(<MapaFincas />);
   const items = html.match(/<li[\s>][\s\S]*?<\/li>/g) ?? [];
 
-  it("lista las 6 ubicaciones con nombre, municipio y coordenadas en HTML (AC-16)", () => {
+  it("lista las 6 ubicaciones con nombre y municipio en HTML (AC-16)", () => {
     expect(items).toHaveLength(6);
     fincas.fincas.forEach((finca, index) => {
       expect(items[index]).toContain(finca.nombre);
       expect(items[index]).toContain(finca.municipio);
-      expect(items[index]).toContain(
-        `${finca.lat.toFixed(4)}, ${finca.lng.toFixed(4)}`,
-      );
+    });
+  });
+
+  it("no muestra las coordenadas de las fincas en la lista (AC-16)", () => {
+    fincas.fincas.forEach((finca) => {
+      expect(html).not.toContain(finca.lat.toFixed(4));
+      expect(html).not.toContain(String(finca.lat));
     });
   });
 

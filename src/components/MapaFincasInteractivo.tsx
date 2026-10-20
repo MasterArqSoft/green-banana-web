@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Map as LeafletMap } from "leaflet";
 import type { Finca } from "@/lib/schema";
 
@@ -8,6 +8,8 @@ import type { Finca } from "@/lib/schema";
 // datos y los textos llegan por props desde MapaFincas. Leaflet y su CSS se importan
 // solo al pulsar "Ver mapa" (AC-15), así que no están en la carga inicial. Si la
 // carga falla, la lista de fincas del componente de servidor sigue disponible.
+// Antes del clic se ve una vista previa dibujada con CSS (sin teselas ni terceros) y
+// una tarjeta con el aviso (`aviso`, renderizado en el servidor) y el botón (AC-19).
 
 type Ubicacion = Omit<Finca, "productor">;
 
@@ -27,14 +29,32 @@ type Estado = "idle" | "loading" | "ready" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
+// Posición relativa (0 a 1) de cada ubicación para la vista previa decorativa.
+// Es un esquema: norte arriba y este a la derecha, sin escala real.
+function posicionesPrevia(fincas: Ubicacion[]) {
+  const lats = fincas.map((finca) => finca.lat);
+  const lngs = fincas.map((finca) => finca.lng);
+  const [minLat, maxLat] = [Math.min(...lats), Math.max(...lats)];
+  const [minLng, maxLng] = [Math.min(...lngs), Math.max(...lngs)];
+  const rango = (min: number, max: number) => max - min || 1;
+  return fincas.map((finca) => ({
+    id: finca.id,
+    tipo: finca.tipo,
+    x: (finca.lng - minLng) / rango(minLng, maxLng),
+    y: (maxLat - finca.lat) / rango(minLat, maxLat),
+  }));
+}
+
 export function MapaFincasInteractivo({
   avisoId,
+  aviso,
   fincas,
   centro,
   zoom,
   textos,
 }: {
   avisoId: string;
+  aviso: ReactNode;
   fincas: Ubicacion[];
   centro: { lat: number; lng: number };
   zoom: number;
@@ -130,31 +150,89 @@ export function MapaFincasInteractivo({
   }
 
   return (
-    // Altura reservada desde el primer render para no mover la página (CLS).
+    // Altura reservada desde el primer render para no mover la página (CLS). En
+    // escritorio toma la altura de la lista (celda de la grilla) con un mínimo.
     // isolate: los paneles de Leaflet no tapan la barra superior fija.
     <div
       role="region"
       aria-label={textos.title}
-      className="relative isolate h-80 w-full overflow-hidden rounded-card bg-hoja-claro md:h-[26rem]"
+      className="relative isolate h-[28rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
     >
       <div ref={contenedor} className="size-full" />
       {estado !== "ready" && (
-        <div className="absolute inset-0 flex items-center justify-center p-4 text-center">
-          {estado === "idle" && (
-            <button
-              type="button"
-              onClick={cargarMapa}
-              aria-describedby={avisoId}
-              className="inline-flex min-h-11 items-center rounded-control bg-hoja px-5 font-semibold text-white shadow-suave"
+        <>
+          {/* Vista previa decorativa: cuadrícula, curvas y marcadores en su posición relativa.
+              En móvil, marcadores arriba y tarjeta abajo; en escritorio, lado a lado. */}
+          <div aria-hidden="true" className="mapa-previa absolute inset-0">
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              className="absolute inset-0 size-full text-hoja/15"
             >
-              {textos.showButton}
-            </button>
-          )}
-          <p role="status" className="font-semibold text-hoja">
-            {estado === "loading" && textos.loading}
-            {estado === "error" && textos.error}
-          </p>
-        </div>
+              <path
+                d="M-5 30 C 20 18, 35 42, 60 30 S 95 18, 105 26"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.6"
+              />
+              <path
+                d="M-5 62 C 18 52, 40 74, 62 60 S 92 50, 105 58"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.6"
+              />
+              <path
+                d="M-5 86 C 25 78, 45 96, 70 84 S 95 80, 105 88"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.6"
+              />
+            </svg>
+            <div className="absolute inset-x-[15%] top-[7%] h-[26%] md:inset-x-auto md:inset-y-[10%] md:right-[10%] md:h-auto md:w-[38%]">
+              {posicionesPrevia(fincas).map((punto) => (
+                <span
+                  key={punto.id}
+                  className={`absolute -translate-1/2 ${
+                    punto.tipo === "acopio"
+                      ? "marcador-acopio"
+                      : "marcador-finca"
+                  }`}
+                  style={{
+                    left: `${punto.x * 100}%`,
+                    top: `${punto.y * 100}%`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Tarjeta: aviso antes del botón (AC-19). */}
+          <div className="absolute inset-x-4 bottom-4 flex flex-col gap-3 rounded-card bg-white p-5 shadow-suave md:inset-x-auto md:top-1/2 md:bottom-auto md:left-8 md:max-w-sm md:-translate-y-1/2">
+            {aviso}
+            {estado === "idle" && (
+              <button
+                type="button"
+                onClick={cargarMapa}
+                aria-describedby={avisoId}
+                className="inline-flex min-h-11 items-center justify-center rounded-control bg-hoja px-5 font-semibold text-white"
+              >
+                {textos.showButton}
+              </button>
+            )}
+            {/* Siempre en el árbol de accesibilidad para que se anuncie al cambiar. */}
+            <p
+              role="status"
+              className={
+                estado === "idle"
+                  ? "sr-only"
+                  : "text-sm font-semibold text-hoja"
+              }
+            >
+              {estado === "loading" && textos.loading}
+              {estado === "error" && textos.error}
+            </p>
+          </div>
+        </>
       )}
     </div>
   );

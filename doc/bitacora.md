@@ -5,6 +5,40 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-19: rediseño de la sección del mapa antes de "Ver mapa"
+
+### Contexto
+- Al usuario no le gustó la demo publicada: un recuadro verde plano con el botón suelto, el aviso fuera del recuadro y la lista desalineada del mapa, con 6 tarjetas sueltas más altas que el mapa.
+
+### Decisión del usuario
+- **Vista previa más tarjeta**, de dos opciones presentadas. Antes del clic no se puede mostrar una imagen real del mapa: sería conectarse a OpenStreetMap (AC-19).
+
+### Cambios
+- `MapaFincasInteractivo`:
+  - vista previa decorativa (`aria-hidden`) con cuadrícula CSS (`.mapa-previa`, `color-mix` con el token hoja), tres curvas SVG y los 6 marcadores en su posición relativa calculada desde las coordenadas (esquema sin escala);
+  - tarjeta blanca con el ícono, el aviso, el enlace de privacidad y el botón "Ver mapa" a todo el ancho. El aviso sigue antes del botón (AC-19);
+  - en móvil: marcadores arriba, tarjeta abajo y altura de 28rem; en escritorio: tarjeta a la izquierda, marcadores a la derecha y altura igual a la de la lista (mínimo 28rem);
+  - el mensaje de estado queda en `sr-only` mientras no se usa, para que se anuncie al cambiar.
+- `MapaFincas`:
+  - el aviso pasa como prop `aviso` (renderizado en el servidor, con `MapPin`);
+  - la lista queda en una sola tarjeta con filas separadas y las coordenadas en texto pequeño.
+- `globals.css`: `.mapa-previa`.
+
+### Sin coordenadas en la lista (decisión del usuario)
+- La lista ya no muestra "Coordenadas aproximadas: …". Motivos:
+  - no aportan al visitante;
+  - con cuatro decimales aparentan una precisión que no tienen;
+  - con fincas reales expondrían la ubicación del productor (RP-02).
+- Las coordenadas siguen en `fincas.json`, solo para ubicar los marcadores.
+- **AC-16 enmendado** en `01-spec.md` y lista de FR-24 en `02-content-spec.md`. Se eliminaron `map.coordinates` (`copy.json` y `copySchema`) y su uso en `MapaFincas`. Prueba nueva: la lista no muestra coordenadas.
+
+### Verificado
+- Capturas a 360 px y 1280 px, antes y después del clic.
+- `npm run validate` pasa: **179 unitarias**, 46 e2e (axe sin infracciones) y `index.html` en 270,9 KB de 300.
+- Commit y push a `main` con el rediseño y el retiro de las coordenadas.
+
+---
+
 ## 2026-10-19: Fase 7 (cambio v1.5), T-51 a T-57: navegación de retorno y mapa de fincas
 
 ### Decisiones
