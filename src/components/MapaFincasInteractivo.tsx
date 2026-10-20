@@ -51,6 +51,26 @@ export function MapaFincasInteractivo({
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<LeafletMap | null>(null);
   const montado = useRef(true);
+  const region = useRef<HTMLDivElement>(null);
+  // El mapa ilustrado se pide solo cuando la sección se acerca a la pantalla: con
+  // loading="lazy", Chrome lo descargaba en la carga inicial y competía con el LCP.
+  const [cercano, setCercano] = useState(false);
+
+  useEffect(() => {
+    const elemento = region.current;
+    if (!elemento) return;
+    const observer = new IntersectionObserver(
+      ([entrada]) => {
+        if (entrada.isIntersecting) {
+          setCercano(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    observer.observe(elemento);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     montado.current = true;
@@ -142,6 +162,7 @@ export function MapaFincasInteractivo({
     // En móvil: mapa ilustrado arriba y aviso en un panel abajo, sin taparlo.
     // isolate: los paneles de Leaflet no tapan la barra superior fija.
     <div
+      ref={region}
       role="region"
       aria-label={textos.title}
       className="relative isolate h-[33rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
@@ -150,20 +171,22 @@ export function MapaFincasInteractivo({
       {estado !== "ready" && (
         <>
           {/* Mapa ilustrado de la zona (decorativo: la lista y el aviso llevan la
-              información). Carga diferida; no cuenta en el peso inicial. En móvil,
+              información). Se pide al acercarse a la sección; no cuenta en el peso inicial. En móvil,
               una versión recortada a las fincas con símbolos más grandes. */}
-          <picture>
-            <source media="(max-width: 767px)" srcSet={previa.movil} />
-            <img
-              src={previa.escritorio}
-              alt=""
-              width={1277}
-              height={950}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-x-0 top-0 h-[21rem] w-full object-cover md:inset-0 md:h-full md:object-[62%_50%]"
-            />
-          </picture>
+          {cercano && (
+            <picture>
+              <source media="(max-width: 767px)" srcSet={previa.movil} />
+              <img
+                src={previa.escritorio}
+                alt=""
+                width={1277}
+                height={950}
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-x-0 top-0 h-[21rem] w-full object-cover md:inset-0 md:h-full md:object-[62%_50%]"
+              />
+            </picture>
+          )}
           <p className="absolute top-[19.6rem] right-2 rounded bg-white/85 px-1.5 text-xs md:top-2">
             {textos.attribution}
           </p>

@@ -41,7 +41,15 @@ test.describe("mapa de fincas (FR-24)", () => {
         externas.push(request.url());
       }
     });
+    const svg: string[] = [];
+    page.on("request", (request) => {
+      if (/mapa-fincas(-movil)?\.svg/.test(request.url()))
+        svg.push(request.url());
+    });
     await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    // El mapa ilustrado no se pide en la carga inicial, solo al acercarse a la sección.
+    expect(svg).toEqual([]);
     await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
     await page.waitForLoadState("networkidle");
     expect(red.leaflet).toEqual([]);

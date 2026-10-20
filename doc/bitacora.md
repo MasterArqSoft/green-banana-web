@@ -5,6 +5,24 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-19: Lighthouse y carga del mapa ilustrado al acercarse
+
+### Hallazgo
+- `npm run lighthouse` tras publicar el mapa ilustrado: Rendimiento 85 (pico de TBT de 330 ms), 91, 90 y 92. LCP de 3,3 a 3,4 s. Las demás categorías, 100.
+- En el informe, `mapa-fincas-movil.svg` (14 KB) se descargaba a los 131 ms, en plena carga inicial, aunque tenía `loading="lazy"`: Chrome adelanta las imágenes diferidas cercanas a la pantalla, igual que pasó con las fotos.
+
+### Cambio (aprobado por el usuario)
+- `MapaFincasInteractivo`: el `<picture>` solo se monta cuando la sección está a menos de 300 px de la pantalla (`IntersectionObserver`, que luego se desconecta). Mientras tanto se ve el fondo `hoja-claro`. Sin JavaScript no hay imagen; es decorativa.
+- Pruebas:
+  - `MapaFincas.test`: el SVG no va en el HTML inicial;
+  - `mapa-fincas.spec`: el SVG no se pide al cargar, solo al acercarse a la sección.
+
+### Verificado
+- Lighthouse, 4 corridas: Rendimiento 92, 92, 90 y 92, con LCP de 3,2 s en todas, TBT de 110 a 180 ms y CLS 0. Accesibilidad, Buenas prácticas y SEO en 100.
+- `npm run validate` pasa: 186 pruebas unitarias, 46 e2e, `index.html` en 270,6 KB de 300 y 0 vulnerabilidades.
+
+---
+
 ## 2026-10-19: mapa ilustrado de la zona como fondo antes de "Ver mapa"
 
 ### Contexto y análisis
