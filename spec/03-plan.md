@@ -70,6 +70,7 @@ Fase 1: llamada telefónica (`tel:`). No hay backend. El formulario B2B, el endp
 - **Elegido:** Leaflet (BSD-2, instalado por npm, sin CDN) con teselas de OpenStreetMap. Carga diferida: el módulo se importa dinámicamente al pulsar "Ver mapa". La altura se reserva en CSS para evitar CLS.
 - **Descartado:** iframe de Google Maps (peso, cookies y un tercero con más datos) y la API de Google con clave (secreto en el cliente, P6).
 - **Plan B (si la revisión jurídica rechaza D-13):** mapa estático en SVG del departamento, sin terceros. Requiere geometría de dominio público y entrada en `doc/creditos.md`.
+  - **Ya existe la base del plan B (2026-10-19):** el fondo antes de "Ver mapa" es un mapa ilustrado (`src/lib/mapa-ilustrado.ts`, rutas estáticas `src/app/mapa-fincas.svg/` y `mapa-fincas-movil.svg/`). Su geometría (`src/lib/mapa-base.json`) se derivó de OSM (ODbL, con atribución) y no de una fuente de dominio público. Si se rechaza D-13, bastaría con quitar el botón y Leaflet.
 - **Restricciones de implementación:**
   - `MapaFincasInteractivo` es el segundo componente cliente. No importa `@/lib/content`; recibe los datos como props desde el componente de servidor `MapaFincas`.
   - El contenedor del mapa usa `isolate` para que los paneles de Leaflet no tapen la barra superior.

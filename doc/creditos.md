@@ -42,6 +42,8 @@ Los originales están en `fotos-originales/` (fuera de Git). Las versiones publi
 | [Leaflet](https://leafletjs.com) 1.9.4 (`leaflet`, por npm, sin CDN) | Mapa interactivo, cargado solo al pulsar "Ver mapa" | BSD-2-Clause |
 | Teselas de [OpenStreetMap](https://www.openstreetmap.org/copyright) (`tile.openstreetmap.org`) | Fondo del mapa | Datos © OpenStreetMap contributors, ODbL 1.0. Atribución visible "© OpenStreetMap contributors" (AC-18), según la política de uso de teselas de OSMF |
 
+| Mapa ilustrado de la zona (`/mapa-fincas.svg` y `/mapa-fincas-movil.svg`, generados en el build desde `src/lib/mapa-base.json`) | Fondo de la sección del mapa antes de pulsar "Ver mapa" | Ilustración propia. La geometría (costa, ciénagas, ríos y Troncal del Caribe) se deriva de datos de OpenStreetMap, © OpenStreetMap contributors, ODbL 1.0: es una "obra producida" que solo exige atribución, que va visible sobre el mapa. Extracto de Overpass del 2026-10-20, simplificado una sola vez. El relieve de la Sierra es un dibujo esquemático propio |
+
 Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals.css`); no se usan las imágenes de marcador de Leaflet.
 
 ## Fuentes
@@ -54,5 +56,6 @@ Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals
 ## Historial
 
 - 2026-10-18 (T-04): se publican las 12 fotos generadas con ChatGPT. La imagen para redes pasa de una tarjeta de texto generada a un recorte del hero.
+- 2026-10-19: mapa ilustrado de la zona como fondo antes de "Ver mapa" (geometría derivada de OSM, ODbL).
 - 2026-10-19 (T-54): Leaflet y teselas de OpenStreetMap para el mapa de fincas. Sin fotos nuevas.
 - 2026-10-18 (T-39): se retiró el `favicon.ico` de la plantilla de Next.js, que no era propio, y se reemplazó por `src/app/icon.svg`.

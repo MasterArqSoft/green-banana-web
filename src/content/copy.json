@@ -153,6 +153,11 @@
     "attribution": "© OpenStreetMap contributors",
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
-    "closePopup": "Cerrar"
+    "closePopup": "Cerrar",
+    "previewLabels": {
+      "sea": ["Mar Caribe"],
+      "lagoon": ["Ciénaga Grande", "de Santa Marta"],
+      "sierra": ["Sierra Nevada", "de Santa Marta"]
+    }
   }
 }

@@ -116,6 +116,7 @@ PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
 - **Título:** Fincas de origen en la zona bananera
 - **Texto:** Estas son fincas de referencia de nuestro origen en la zona bananera del Magdalena. Las ubicaciones son aproximadas. [POR CONFIRMAR autorización de cada productor, RP-02]
 - **Botón:** Ver mapa · **Mientras carga:** Cargando mapa… · **Si falla:** No pudimos cargar el mapa. Las fincas están en la lista de abajo.
+- **Fondo antes de cargar (decisión del usuario, 2026-10-19):** mapa ilustrado de la zona servido por el propio sitio, sin conexión a terceros. Muestra mar Caribe, costa, Ciénaga Grande, ríos, Troncal del Caribe, relieve de la Sierra Nevada y los marcadores en su posición real. Geometría derivada de OSM (ODbL) en `src/lib/mapa-base.json`; nombres en `map.previewLabels` ("Mar Caribe"; "Ciénaga Grande / de Santa Marta"; "Sierra Nevada / de Santa Marta"). Variante móvil recortada a las fincas. El aviso va en una tarjeta compacta (escritorio) o en un panel bajo el mapa (móvil).
 - **Aviso antes de cargar (AC-19):** Al ver el mapa, tu navegador se conectará a OpenStreetMap, que recibe tu dirección IP. Enlace: *Política de privacidad de OpenStreetMap*.
 - **Lista:** Fincas en el mapa. Cada elemento muestra nombre y municipio, sin coordenadas (AC-16, enmienda del 2026-10-19); las coordenadas solo ubican los marcadores del mapa. El acopio aparece como "Acopio en Santa Marta".
 - **Atribución (AC-18):** © OpenStreetMap contributors

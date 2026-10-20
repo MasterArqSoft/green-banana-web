@@ -1,5 +1,6 @@
 import { MapPin } from "lucide-react";
 import { MapaFincasInteractivo } from "@/components/MapaFincasInteractivo";
+import { assetPath } from "@/lib/asset";
 import { copy, fincas } from "@/lib/content";
 
 // Mapa de fincas de origen (FR-24), después de "Origen". Componente de servidor: el aviso
@@ -30,9 +31,13 @@ export function MapaFincas() {
         <div className="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <MapaFincasInteractivo
             avisoId="mapa-fincas-aviso"
+            previa={{
+              escritorio: assetPath("/mapa-fincas.svg"),
+              movil: assetPath("/mapa-fincas-movil.svg"),
+            }}
             aviso={
-              <>
-                <span className="flex size-10 items-center justify-center rounded-full bg-hoja-claro">
+              <div className="flex gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-hoja-claro">
                   <MapPin aria-hidden="true" className="size-5 text-hoja" />
                 </span>
                 <p id="mapa-fincas-aviso" className="text-sm">
@@ -45,7 +50,7 @@ export function MapaFincas() {
                     {map.privacyLink}
                   </a>
                 </p>
-              </>
+              </div>
             }
             fincas={fincas.fincas.map(
               ({ id, tipo, nombre, municipio, lat, lng }) => ({

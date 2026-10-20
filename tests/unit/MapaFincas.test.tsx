@@ -45,6 +45,14 @@ describe("MapaFincas (FR-24)", () => {
     expect(html).not.toContain(copy.map.loading);
   });
 
+  it("el fondo es el mapa ilustrado del propio sitio, decorativo y diferido", () => {
+    expect(html).toContain('srcSet="/mapa-fincas-movil.svg"');
+    expect(html).toMatch(/<img [^>]*src="\/mapa-fincas.svg"/);
+    expect(html).toMatch(/<img [^>]*alt=""/);
+    expect(html).toMatch(/<img [^>]*loading="lazy"/);
+    expect(html).toContain(copy.map.attribution);
+  });
+
   it("no muestra ningún precio (AC-02)", () => {
     expect(html).not.toMatch(/\$\s?\d|COP/);
   });

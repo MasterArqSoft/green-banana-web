@@ -5,6 +5,59 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-19: mapa ilustrado de la zona como fondo antes de "Ver mapa"
+
+### Contexto y análisis
+- Al usuario el fondo le seguía pareciendo plano. Diagnóstico de UX:
+  - la cuadrícula con curvas no tenía ninguna señal de mapa (agua y tierra, costa, relieve, nombres);
+  - los marcadores estaban estirados, sin geografía real;
+  - la tarjeta pesaba más que el mapa;
+  - el salto a Leaflet era brusco. La vista previa funciona cuando anticipa el contenido, como la miniatura de un video.
+- Restricción: antes del clic no se pide nada a OpenStreetMap (AC-19), así que el fondo tiene que ser propio.
+
+### Decisiones del usuario
+- **Mapa ilustrado en SVG** con geografía real, en vez de una captura de teselas de OSM (CC BY-SA, desaconsejada por su política).
+- **Tarjeta compacta.**
+- Paleta monocroma con los tokens del sitio: agua `hoja-claro` con olas y tierra `crema`. No se agregó un azul.
+
+### Cómo se generó la geometría (uso único, fuera del repositorio)
+- Overpass, bbox 10.30,-75.05,11.45,-73.55: `natural=coastline`, `natural=water`, `waterway=river`, `highway=trunk`. Unos 6,6 MB.
+- Script Python con shapely, en el scratchpad de la sesión:
+  - proyección equirectangular local (`cos` de la latitud media, 1000 px por grado);
+  - encuadre -74.95/-73.65 × 10.40/11.35;
+  - tierra = caras del marco cortado por la costa, del lado izquierdo de las vías de costa (convención de OSM);
+  - aguas interiores de más de 60 px², ríos y vías simplificados con Douglas-Peucker (1,2 a 2,5 px);
+  - relieve de la Sierra: símbolos de montaña sobre tierra, al este de un pie de monte aproximado.
+- Resultado: `src/lib/mapa-base.json`, de 31,6 KB (13 KB con gzip).
+
+### Cambios
+- Nuevos:
+  - `src/lib/mapa-ilustrado.ts`: genera el SVG con colores de los tokens, marcadores desde `fincas.json`, nombres desde `copy.map.previewLabels` y texto escapado. Tiene dos variantes:
+    - escritorio: encuadre completo, símbolos ×1,4;
+    - móvil: recortada a las fincas, símbolos ×2,2, rótulos reubicados para no tapar Santa Marta ni la finca B.
+  - Rutas estáticas `src/app/mapa-fincas.svg/route.ts` y `src/app/mapa-fincas-movil.svg/route.ts` (`force-static`).
+- `MapaFincasInteractivo`:
+  - `<picture>` con las dos variantes, `alt=""` y `loading="lazy"`;
+  - atribución OSM visible sobre el mapa (arriba en escritorio, abajo en móvil);
+  - en escritorio, tarjeta compacta abajo a la izquierda (`bg-white/90`, `backdrop-blur`); en móvil, panel bajo el mapa para no taparlo, con una altura de 33rem.
+- `MapaFincas`: pasa `previa` con `assetPath()`; aviso en fila (ícono y texto).
+- Se quitaron la cuadrícula CSS (`.mapa-previa`) y las posiciones estiradas.
+- `copy.json` y `copySchema`: `map.previewLabels`. `.prettierignore`: `src/lib/mapa-base.json`.
+- Pruebas:
+  - nueva `tests/unit/mapa-ilustrado.test.ts`: colores iguales a `globals.css`, un marcador por ubicación y en su posición, nombres, sin URL de terceros, escape y recorte móvil;
+  - `MapaFincas.test` comprueba la imagen diferida y decorativa;
+  - en e2e, cero peticiones externas antes del clic con el mapa ilustrado ya cargado.
+- Docs: `doc/creditos.md` (obra producida de OSM, ODbL), `02-content-spec.md` FR-24, `03-plan.md` D6 (base del plan B) y `CLAUDE.md`.
+
+### Verificado
+- Capturas a 360 px y 1280 px: se reconocen el mar, la costa, la Ciénaga Grande y la Sierra, y los 6 marcadores con su municipio. No hay peticiones externas antes del clic.
+- `npm run validate` pasa:
+  - 186 pruebas unitarias y 46 e2e;
+  - `index.html` en 270,5 KB de 300. El SVG (13,9 KB con gzip) es diferido y no cuenta;
+  - `npm audit`: 0 vulnerabilidades.
+
+---
+
 ## 2026-10-19: rediseño de la sección del mapa antes de "Ver mapa"
 
 ### Contexto

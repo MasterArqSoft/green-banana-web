@@ -268,6 +268,12 @@ export const copySchema = z.strictObject({
     zoomIn: text,
     zoomOut: text,
     closePopup: text,
+    // Nombres del mapa ilustrado (fondo antes de "Ver mapa"); una o dos líneas cada uno.
+    previewLabels: z.strictObject({
+      sea: z.array(text).min(1).max(2),
+      lagoon: z.array(text).min(1).max(2),
+      sierra: z.array(text).min(1).max(2),
+    }),
   }),
 });
 

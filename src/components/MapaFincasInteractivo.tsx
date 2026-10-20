@@ -8,8 +8,9 @@ import type { Finca } from "@/lib/schema";
 // datos y los textos llegan por props desde MapaFincas. Leaflet y su CSS se importan
 // solo al pulsar "Ver mapa" (AC-15), así que no están en la carga inicial. Si la
 // carga falla, la lista de fincas del componente de servidor sigue disponible.
-// Antes del clic se ve una vista previa dibujada con CSS (sin teselas ni terceros) y
-// una tarjeta con el aviso (`aviso`, renderizado en el servidor) y el botón (AC-19).
+// Antes del clic se ve el mapa ilustrado (`previa`, /mapa-fincas.svg servido por el
+// propio sitio, sin terceros) y una tarjeta con el aviso (`aviso`, renderizado en el
+// servidor) y el botón (AC-19).
 
 type Ubicacion = Omit<Finca, "productor">;
 
@@ -29,25 +30,10 @@ type Estado = "idle" | "loading" | "ready" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-// Posición relativa (0 a 1) de cada ubicación para la vista previa decorativa.
-// Es un esquema: norte arriba y este a la derecha, sin escala real.
-function posicionesPrevia(fincas: Ubicacion[]) {
-  const lats = fincas.map((finca) => finca.lat);
-  const lngs = fincas.map((finca) => finca.lng);
-  const [minLat, maxLat] = [Math.min(...lats), Math.max(...lats)];
-  const [minLng, maxLng] = [Math.min(...lngs), Math.max(...lngs)];
-  const rango = (min: number, max: number) => max - min || 1;
-  return fincas.map((finca) => ({
-    id: finca.id,
-    tipo: finca.tipo,
-    x: (finca.lng - minLng) / rango(minLng, maxLng),
-    y: (maxLat - finca.lat) / rango(minLat, maxLat),
-  }));
-}
-
 export function MapaFincasInteractivo({
   avisoId,
   aviso,
+  previa,
   fincas,
   centro,
   zoom,
@@ -55,6 +41,7 @@ export function MapaFincasInteractivo({
 }: {
   avisoId: string;
   aviso: ReactNode;
+  previa: { escritorio: string; movil: string };
   fincas: Ubicacion[];
   centro: { lat: number; lng: number };
   zoom: number;
@@ -152,62 +139,38 @@ export function MapaFincasInteractivo({
   return (
     // Altura reservada desde el primer render para no mover la página (CLS). En
     // escritorio toma la altura de la lista (celda de la grilla) con un mínimo.
+    // En móvil: mapa ilustrado arriba y aviso en un panel abajo, sin taparlo.
     // isolate: los paneles de Leaflet no tapan la barra superior fija.
     <div
       role="region"
       aria-label={textos.title}
-      className="relative isolate h-[28rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
+      className="relative isolate h-[33rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
     >
       <div ref={contenedor} className="size-full" />
       {estado !== "ready" && (
         <>
-          {/* Vista previa decorativa: cuadrícula, curvas y marcadores en su posición relativa.
-              En móvil, marcadores arriba y tarjeta abajo; en escritorio, lado a lado. */}
-          <div aria-hidden="true" className="mapa-previa absolute inset-0">
-            <svg
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              className="absolute inset-0 size-full text-hoja/15"
-            >
-              <path
-                d="M-5 30 C 20 18, 35 42, 60 30 S 95 18, 105 26"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.6"
-              />
-              <path
-                d="M-5 62 C 18 52, 40 74, 62 60 S 92 50, 105 58"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.6"
-              />
-              <path
-                d="M-5 86 C 25 78, 45 96, 70 84 S 95 80, 105 88"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.6"
-              />
-            </svg>
-            <div className="absolute inset-x-[15%] top-[7%] h-[26%] md:inset-x-auto md:inset-y-[10%] md:right-[10%] md:h-auto md:w-[38%]">
-              {posicionesPrevia(fincas).map((punto) => (
-                <span
-                  key={punto.id}
-                  className={`absolute -translate-1/2 ${
-                    punto.tipo === "acopio"
-                      ? "marcador-acopio"
-                      : "marcador-finca"
-                  }`}
-                  style={{
-                    left: `${punto.x * 100}%`,
-                    top: `${punto.y * 100}%`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Mapa ilustrado de la zona (decorativo: la lista y el aviso llevan la
+              información). Carga diferida; no cuenta en el peso inicial. En móvil,
+              una versión recortada a las fincas con símbolos más grandes. */}
+          <picture>
+            <source media="(max-width: 767px)" srcSet={previa.movil} />
+            <img
+              src={previa.escritorio}
+              alt=""
+              width={1277}
+              height={950}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-x-0 top-0 h-[21rem] w-full object-cover md:inset-0 md:h-full md:object-[62%_50%]"
+            />
+          </picture>
+          <p className="absolute top-[19.6rem] right-2 rounded bg-white/85 px-1.5 text-xs md:top-2">
+            {textos.attribution}
+          </p>
 
-          {/* Tarjeta: aviso antes del botón (AC-19). */}
-          <div className="absolute inset-x-4 bottom-4 flex flex-col gap-3 rounded-card bg-white p-5 shadow-suave md:inset-x-auto md:top-1/2 md:bottom-auto md:left-8 md:max-w-sm md:-translate-y-1/2">
+          {/* Aviso antes del botón (AC-19). En escritorio, tarjeta compacta abajo a la
+              izquierda, como un control del mapa: el mapa es lo principal. */}
+          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t border-hoja/10 bg-white p-4 md:inset-x-auto md:bottom-5 md:left-5 md:max-w-xs md:rounded-card md:border-0 md:bg-white/90 md:shadow-suave md:backdrop-blur-sm">
             {aviso}
             {estado === "idle" && (
               <button

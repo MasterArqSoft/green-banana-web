@@ -80,22 +80,6 @@
   background-color: var(--color-carbon);
 }
 
-/* Vista previa del mapa antes de "Ver mapa": cuadrícula suave dibujada con CSS, sin teselas. */
-.mapa-previa {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in srgb, var(--color-hoja) 8%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-hoja) 8%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 32px 32px;
-}
-
 /* El contenedor recorta lo que sobresale: el foco del mapa se dibuja hacia adentro. */
 .leaflet-container:focus-visible {
   outline-offset: -3px;

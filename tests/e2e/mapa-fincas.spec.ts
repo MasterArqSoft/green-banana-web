@@ -35,11 +35,22 @@ test.describe("mapa de fincas (FR-24)", () => {
     page,
   }) => {
     const red = await vigilarRed(page);
+    const externas: string[] = [];
+    page.on("request", (request) => {
+      if (!request.url().startsWith("http://localhost")) {
+        externas.push(request.url());
+      }
+    });
     await page.goto("/");
     await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
     await page.waitForLoadState("networkidle");
     expect(red.leaflet).toEqual([]);
     expect(red.teselas).toEqual([]);
+    // El mapa ilustrado de fondo sale del propio sitio: ninguna conexión a terceros.
+    await expect(
+      page.locator('#mapa-fincas img[src$="mapa-fincas.svg"]'),
+    ).toHaveJSProperty("complete", true);
+    expect(externas).toEqual([]);
     await expect(page.locator(".leaflet-container")).toHaveCount(0);
 
     // El aviso está antes del botón (AC-19).
