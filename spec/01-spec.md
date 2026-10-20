@@ -1,6 +1,6 @@
 # Spec funcional: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
+**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 ## Índice
 1. Contexto y objetivo
@@ -73,6 +73,8 @@
 | FR-16 | Pie legal | Razón social, NIT, dirección, teléfono, correo, términos, privacidad, PQR con constancia (procedimiento en RP-05), enlace visible a la SIC. Todos los datos legales son configurables desde `site.json`; en Fase 1 van con valores ficticios marcados como tales. | Must |
 | FR-17 | Botón flotante de llamada | Visible en móvil después del hero, sin tapar el contenido ni el pie. | Should |
 | FR-18 | Página legal | Términos (incluye exclusión de retracto en perecederos), política de datos, política de garantía. | Must |
+| FR-19 | Navegación de retorno | En todas las páginas, la marca de la barra superior lleva al inicio. Las páginas legales muestran además un enlace visible "← Volver al inicio" antes del título, con foco visible y área táctil de 44 px. | Must |
+| FR-24 | Mapa de fincas de origen | Sección propia después de "Origen" (FR-06), con fincas ficticias y el acopio de Santa Marta en un mapa de la zona bananera del Magdalena (Zona Bananera, Ciénaga, Aracataca, Fundación). El mapa no se carga hasta que el visitante pulsa "Ver mapa", que aparece junto al aviso de conexión con OpenStreetMap (AC-19). Siempre hay una lista accesible con las mismas fincas. Datos en `fincas.json`; ubicaciones aproximadas [POR CONFIRMAR]. Numerado al final de la sección por ser posterior a la v1.4. | Should |
 
 ### 4.1 Comportamiento del enlace de llamada
 - URL con formato `tel:+<número>`, leído desde `site.json`.
@@ -100,7 +102,7 @@
 | NFR-01 | Rendimiento | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms (móvil 4G, p75) |
 | NFR-02 | Accesibilidad | WCAG 2.2 AA |
 | NFR-03 | SEO | Título, descripción, Open Graph, datos estructurados (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
-| NFR-04 | Seguridad | HTTPS, HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; sin secretos en el cliente |
+| NFR-04 | Seguridad | HTTPS, HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; sin secretos en el cliente. `Referrer-Policy` no puede ser `no-referrer` (OSM lo prohíbe para el mapa, FR-24); el valor recomendado es `strict-origin-when-cross-origin` |
 | NFR-05 | Compatibilidad | Últimas dos versiones de Chrome, Safari, Firefox y Edge; Android 10+ e iOS 15+ |
 | NFR-06 | Disponibilidad | ≥ 99,9 % (hosting estático con CDN) |
 | NFR-07 | Mantenibilidad | Contenido y datos de contacto en archivos de datos; cambiar el número no requiere tocar componentes |
@@ -122,8 +124,15 @@
 | AC-09 | Navegación completa por teclado y lector de pantalla en el menú, el acordeón y los botones de llamada | NFR-02 |
 | AC-10 | La página no envía eventos ni datos a herramientas de analítica en Fase 1 | FR-20, roadmap R-07 |
 | AC-11 | Si no hay testimonios reales, la sección FR-12 no se renderiza | FR-12 |
-| AC-12 | Ninguna página envía datos personales a terceros ni a analítica | NFR-09 |
+| AC-12 | Ninguna página envía datos personales a terceros ni a analítica, salvo la conexión a OpenStreetMap que el visitante inicia al pulsar "Ver mapa" (AC-19) | NFR-09, FR-24, D-13 |
 | AC-13 | Ninguna imagen usada tiene derechos de autor sin licencia verificada | NFR-08, Q10 |
+| AC-14 | Desde cualquier página legal se llega al inicio con un enlace visible y con foco; la marca de la barra superior también lleva al inicio | FR-19 |
+| AC-15 | Leaflet y las teselas no se descargan hasta pulsar "Ver mapa". En la carga inicial, la página se mantiene dentro de 300 KB (gzip) | FR-24, NFR-01 |
+| AC-16 | La lista de fincas muestra el mismo nombre, municipio y coordenadas que el mapa, y funciona sin JavaScript | FR-24, NFR-02 |
+| AC-17 | Cambiar una finca o el centro del mapa se hace solo en `fincas.json`. Una finca con "(FICTICIO)" bloquea el build de producción | NFR-07, P9 |
+| AC-18 | El mapa muestra "© OpenStreetMap contributors" visible, sin esconderlo tras un control | FR-24, política de teselas de OSM |
+| AC-19 | Antes de cargar el mapa se muestra un aviso: el navegador se conectará a OpenStreetMap, que recibe la dirección IP, con enlace a su política de privacidad. El botón "Ver mapa" es la acción de consentimiento | FR-24, D-13, Ley 1581 |
+| AC-20 | El mapa no precarga teselas fuera de la vista y respeta las cabeceras de caché del servidor | FR-24, política de teselas de OSM |
 
 ## 8. Preguntas y decisiones
 

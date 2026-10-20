@@ -55,10 +55,12 @@ test.describe("botones de llamada (AC-03)", () => {
 test.describe("teclado (AC-09)", () => {
   test.skip(({ isMobile }) => isMobile, "Teclado físico: solo escritorio");
 
-  test("el primer Tab llega al botón Llamar con el foco visible", async ({
+  test("el primer Tab llega a la marca (FR-19) y el segundo al botón Llamar con el foco visible", async ({
     page,
   }) => {
     await page.goto("/");
+    await page.keyboard.press("Tab");
+    await expect(page.locator(":focus")).toHaveAttribute("href", "/");
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
     await expect(focused).toHaveAttribute("href", telHref);

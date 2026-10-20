@@ -1,4 +1,6 @@
-import { legal, site } from "@/lib/content";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { copy, legal, site } from "@/lib/content";
 import type { LegalPageKey } from "@/lib/schema";
 import { formatPhone } from "@/lib/tel";
 import { fill } from "@/lib/template";
@@ -22,6 +24,14 @@ export function LegalPage({ page }: { page: LegalPageKey }) {
   return (
     <main className="contenedor flex-1 py-12">
       <article className="max-w-prose">
+        {/* Retorno al inicio antes del título (FR-19, AC-14); área táctil de 44 px. */}
+        <Link
+          href="/"
+          className="mb-4 inline-flex min-h-11 items-center gap-2 font-semibold text-hoja underline underline-offset-4"
+        >
+          <ArrowLeft aria-hidden="true" className="size-5" />
+          {copy.navigation.backHome}
+        </Link>
         <h1 className="text-3xl font-semibold text-hoja md:text-4xl">
           {title}
         </h1>

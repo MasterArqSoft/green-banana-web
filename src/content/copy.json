@@ -135,5 +135,25 @@
     },
     "pqr": "PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].",
     "sic": "Superintendencia de Industria y Comercio"
+  },
+  "navigation": {
+    "backHome": "Volver al inicio"
+  },
+  "map": {
+    "title": "Fincas de origen en la zona bananera",
+    "text": "Estas son fincas de referencia de nuestro origen en la zona bananera del Magdalena. Las ubicaciones son aproximadas. [POR CONFIRMAR autorización de cada productor, RP-02]",
+    "showButton": "Ver mapa",
+    "consent": "Al ver el mapa, tu navegador se conectará a OpenStreetMap, que recibe tu dirección IP.",
+    "privacyUrl": "https://wiki.osmfoundation.org/wiki/Privacy_Policy",
+    "privacyLink": "Política de privacidad de OpenStreetMap",
+    "loading": "Cargando mapa…",
+    "error": "No pudimos cargar el mapa. Las fincas están en la lista de abajo.",
+    "listTitle": "Fincas en el mapa",
+    "acopioLabel": "Centro de acopio",
+    "coordinates": "Coordenadas aproximadas: {lat}, {lng}",
+    "attribution": "© OpenStreetMap contributors",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "closePopup": "Cerrar"
   }
 }

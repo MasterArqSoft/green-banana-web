@@ -32,6 +32,11 @@ describe("TopBar (FR-01)", () => {
     expect(html).toContain(formatPhone(site.phone));
   });
 
+  it("la marca es un enlace al inicio (FR-19, AC-14)", () => {
+    const brand = html.match(/<a [^>]*href="\/"[^>]*>(.*?)<\/a>/);
+    expect(brand?.[1]).toBe(site.brand);
+  });
+
   it("incluye el botón Llamar con el enlace tel:", () => {
     expect(html).toContain(`href="${telHref(site.phone)}"`);
   });

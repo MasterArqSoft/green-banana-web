@@ -35,6 +35,15 @@ Los originales están en `fotos-originales/` (fuera de Git). Las versiones publi
 |---|---|---|
 | [Lucide](https://lucide.dev) (`lucide-react`) | Íconos de interfaz (teléfono, camión, escudo, etc.) | ISC |
 
+## Mapa de fincas (FR-24)
+
+| Recurso | Uso | Licencia |
+|---|---|---|
+| [Leaflet](https://leafletjs.com) 1.9.4 (`leaflet`, por npm, sin CDN) | Mapa interactivo, cargado solo al pulsar "Ver mapa" | BSD-2-Clause |
+| Teselas de [OpenStreetMap](https://www.openstreetmap.org/copyright) (`tile.openstreetmap.org`) | Fondo del mapa | Datos © OpenStreetMap contributors, ODbL 1.0. Atribución visible "© OpenStreetMap contributors" (AC-18), según la política de uso de teselas de OSMF |
+
+Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals.css`); no se usan las imágenes de marcador de Leaflet.
+
 ## Fuentes
 
 | Fuente | Uso | Licencia |
@@ -45,4 +54,5 @@ Los originales están en `fotos-originales/` (fuera de Git). Las versiones publi
 ## Historial
 
 - 2026-10-18 (T-04): se publican las 12 fotos generadas con ChatGPT. La imagen para redes pasa de una tarjeta de texto generada a un recorte del hero.
+- 2026-10-19 (T-54): Leaflet y teselas de OpenStreetMap para el mapa de fincas. Sin fotos nuevas.
 - 2026-10-18 (T-39): se retiró el `favicon.ico` de la plantilla de Next.js, que no era propio, y se reemplazó por `src/app/icon.svg`.

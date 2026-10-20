@@ -8,6 +8,7 @@ import { Guarantee } from "@/components/Guarantee";
 import { Hero } from "@/components/Hero";
 import { LocalBusinessJsonLd } from "@/components/LocalBusinessJsonLd";
 import { HowItWorks } from "@/components/HowItWorks";
+import { MapaFincas } from "@/components/MapaFincas";
 import { Origin } from "@/components/Origin";
 import { ProductCards } from "@/components/ProductCards";
 import { Recipes } from "@/components/Recipes";
@@ -23,6 +24,7 @@ export default function Home() {
       <ProductCards />
       <FreshInfo />
       <Origin />
+      <MapaFincas />
       <Recipes />
       <Benefits />
       <HowItWorks />

@@ -56,6 +56,35 @@
   }
 }
 
+/*
+ * Mapa de fincas (FR-24). Marcadores de L.divIcon y de la lista, solo con tokens:
+ * finca = círculo hoja; acopio = cuadrado carbón (distinto por forma, no solo por color).
+ * Sin amarillo: está reservado al botón Llamar.
+ */
+.marcador-finca,
+.marcador-acopio {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--color-crema);
+  box-shadow: var(--shadow-suave);
+}
+
+.marcador-finca {
+  border-radius: 9999px;
+  background-color: var(--color-hoja);
+}
+
+.marcador-acopio {
+  border-radius: 4px;
+  background-color: var(--color-carbon);
+}
+
+/* El contenedor recorta lo que sobresale: el foco del mapa se dibuja hacia adentro. */
+.leaflet-container:focus-visible {
+  outline-offset: -3px;
+}
+
 /* Movimiento mínimo y respeto a la preferencia del sistema (spec §5). */
 @media (prefers-reduced-motion: reduce) {
   *,

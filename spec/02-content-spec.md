@@ -1,6 +1,6 @@
 # Spec de contenido y diseño: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
+**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. Los textos van en español de Colombia, tono cercano y regional, sin exageraciones. **La landing no publica precios ni pedidos en la Fase 1.** El copy de esta sección se implementa en `src/content/copy.json` (un bloque por sección); los datos del negocio siguen en `site.json` y los demás archivos de contenido.
 
@@ -107,6 +107,34 @@ Razón social: [FICTICIA, Q6] · NIT: [FICTICIO, Q6] · Dirección: [FICTICIA, Q
 *Todos estos datos se leen de `site.json`. No se escriben en la página.*
 Enlaces: Términos · Privacidad · Garantía · PQR · **Superintendencia de Industria y Comercio** (enlace visible)
 PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
+
+### FR-19 Navegación de retorno
+- **Marca (barra superior):** enlace a la página de inicio en todas las páginas.
+- **Páginas legales:** enlace visible *← Volver al inicio* (`navigation.backHome`) antes del título.
+
+### FR-24 Mapa de fincas de origen
+- **Título:** Fincas de origen en la zona bananera
+- **Texto:** Estas son fincas de referencia de nuestro origen en la zona bananera del Magdalena. Las ubicaciones son aproximadas. [POR CONFIRMAR autorización de cada productor, RP-02]
+- **Botón:** Ver mapa · **Mientras carga:** Cargando mapa… · **Si falla:** No pudimos cargar el mapa. Las fincas están en la lista de abajo.
+- **Aviso antes de cargar (AC-19):** Al ver el mapa, tu navegador se conectará a OpenStreetMap, que recibe tu dirección IP. Enlace: *Política de privacidad de OpenStreetMap*.
+- **Lista:** Fincas en el mapa. Cada elemento muestra nombre, municipio y coordenadas. El acopio aparece como "Acopio en Santa Marta".
+- **Atribución (AC-18):** © OpenStreetMap contributors
+- **Datos (`fincas.json`):**
+
+| Ubicación | Tipo | Latitud | Longitud | Fuente de la coordenada |
+|---|---|---|---|---|
+| Acopio en Santa Marta | acopio | 11.2408 | -74.1990 | latitude.to |
+| Finca de ejemplo A (FICTICIO), Zona Bananera | finca | 10.7964 | -74.1780 | Mongabay (Zona Bananera) |
+| Finca de ejemplo B (FICTICIO), Zona Bananera | finca | 10.9500 | -74.1000 | Desplazada ~19 km de A y ~18 km de C: a 3 km los marcadores se superponían con el zoom inicial (WCAG 2.5.8, axe `target-size`). Decisión del usuario 2026-10-19; [POR CONFIRMAR] |
+| Finca de ejemplo C (FICTICIO), Ciénaga | finca | 11.0069 | -74.2500 | en.wikipedia (Ciénaga) |
+| Finca de ejemplo D (FICTICIO), Aracataca | finca | 10.5937 | -74.1928 | en.wikipedia (Aracataca) |
+| Finca de ejemplo E (FICTICIO), Fundación | finca | 10.5207 | -74.1850 | latitude.to (Fundación) |
+
+- **Centro inicial:** 10.88, -74.21, zoom 9. Al cargar, el mapa se ajusta a todas las ubicaciones con margen (fitBounds); el centro y el zoom solo se usan si no hay ubicaciones.
+- **Claves de `copy.json`:** `navigation.backHome`; `map.title`, `map.text`, `map.showButton`, `map.consent`, `map.privacyUrl`, `map.loading`, `map.error`, `map.listTitle`, `map.acopioLabel`, `map.attribution`.
+  - Agregadas en T-53 (decisión del usuario, 2026-10-19): `map.privacyLink` (texto del enlace), `map.coordinates` ("Coordenadas aproximadas: {lat}, {lng}") y `map.zoomIn` "Acercar", `map.zoomOut` "Alejar" y `map.closePopup` "Cerrar", que reemplazan los textos en inglés de Leaflet. `map.acopioLabel` = "Centro de acopio".
+  - Marcadores: finca = círculo hoja; acopio = cuadrado carbón. Ambos con borde crema y sin amarillo, que está reservado al CTA.
+- **Coordenadas:** aproximadas por municipio, según las fuentes de la tabla. Revisar con un mapa oficial antes de publicar.
 
 ## 3. FAQ (FR-13)
 

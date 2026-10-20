@@ -14,6 +14,7 @@ test.describe("composición de la landing", () => {
       "#presentaciones",
       "#verde-de-verdad",
       "#origen",
+      "#mapa-fincas",
       "#recetas",
       "#beneficios",
       "#como-funciona",

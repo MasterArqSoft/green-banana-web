@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LegalPage } from "@/components/LegalPage";
 import legalJson from "@/content/legal.json";
-import { legal, site } from "@/lib/content";
+import { copy, legal, site } from "@/lib/content";
 import { legalSchema } from "@/lib/schema";
 
 describe("Páginas legales (FR-18)", () => {
@@ -14,6 +14,17 @@ describe("Páginas legales (FR-18)", () => {
       expect(html).toContain(legal.draftNotice!);
       expect(html).not.toMatch(/\{\w+\}/);
       expect(html).not.toMatch(/<form|<input/);
+    },
+  );
+
+  it.each(["terminos", "privacidad", "garantia"] as const)(
+    "%s enlaza al inicio antes del título (FR-19, AC-14)",
+    (page) => {
+      const html = renderToStaticMarkup(<LegalPage page={page} />);
+      const back = html.match(/<a [^>]*href="\/"[^>]*>.*?<\/a>/)?.[0] ?? "";
+      expect(back).toContain(copy.navigation.backHome);
+      expect(back).toContain('aria-hidden="true"');
+      expect(html.indexOf(back)).toBeLessThan(html.indexOf("<h1"));
     },
   );
 

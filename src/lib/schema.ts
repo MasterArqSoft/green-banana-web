@@ -249,6 +249,48 @@ export const copySchema = z.strictObject({
     pqr: text,
     sic: text,
   }),
+  // FR-19: retorno al inicio desde las páginas legales.
+  navigation: z.strictObject({ backHome: text }),
+  // FR-24. El aviso (consent) va antes del botón y es la base del consentimiento (AC-19).
+  // zoomIn, zoomOut y closePopup reemplazan los textos en inglés de Leaflet.
+  map: z.strictObject({
+    title: text,
+    text,
+    showButton: text,
+    consent: text,
+    privacyUrl: z.url({ protocol: /^https$/ }),
+    privacyLink: text,
+    loading: text,
+    error: text,
+    listTitle: text,
+    acopioLabel: text,
+    coordinates: textWith("lat").and(textWith("lng")),
+    attribution: text,
+    zoomIn: text,
+    zoomOut: text,
+    closePopup: text,
+  }),
+});
+
+// Mapa de fincas de origen (FR-24, spec/03-plan.md §5). Ficticias hasta RP-02.
+const finca = z.strictObject({
+  id: slug,
+  tipo: z.enum(["finca", "acopio"]),
+  nombre: text,
+  municipio: text,
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  productor: text,
+});
+
+export const fincasSchema = z.strictObject({
+  // Vista inicial solo si no hay ubicaciones; con ubicaciones el mapa se ajusta a ellas.
+  centro: z.strictObject({
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+  }),
+  zoom: z.number().int().min(5).max(15),
+  fincas: z.array(finca).superRefine(uniqueIds),
 });
 
 // Páginas legales (FR-18). Los párrafos pueden usar {razonSocial}, {nit}, {direccion},
@@ -277,6 +319,8 @@ export type Recipe = z.infer<typeof recipesSchema>[number];
 export type Origin = z.infer<typeof originSchema>;
 export type Testimonial = z.infer<typeof testimonialsSchema>[number];
 export type Copy = z.infer<typeof copySchema>;
+export type Fincas = z.infer<typeof fincasSchema>;
+export type Finca = Fincas["fincas"][number];
 export type LegalPageKey = Exclude<
   keyof z.infer<typeof legalSchema>,
   "draftNotice"

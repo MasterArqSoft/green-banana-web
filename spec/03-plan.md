@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
+**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 ## Índice
 1. Contexto arquitectónico
@@ -65,6 +65,17 @@ Fase 1: llamada telefónica (`tel:`). No hay backend. El formulario B2B, el endp
 ### D5. Pedido por WhatsApp y pedido en línea (roadmap)
 - **R-02 WhatsApp Business:** cuando se active, enlace `wa.me` con mensaje prellenado. No se implementa en Fase 1.
 - **R-04 Pedido en línea:** pasarela Wompi o PayU, carrito mínimo y backend de pedidos. No se implementa ahora.
+
+### D6. Mapa de fincas (FR-24, Fase 1)
+- **Elegido:** Leaflet (BSD-2, instalado por npm, sin CDN) con teselas de OpenStreetMap. Carga diferida: el módulo se importa dinámicamente al pulsar "Ver mapa". La altura se reserva en CSS para evitar CLS.
+- **Descartado:** iframe de Google Maps (peso, cookies y un tercero con más datos) y la API de Google con clave (secreto en el cliente, P6).
+- **Plan B (si la revisión jurídica rechaza D-13):** mapa estático en SVG del departamento, sin terceros. Requiere geometría de dominio público y entrada en `doc/creditos.md`.
+- **Restricciones de implementación:**
+  - `MapaFincasInteractivo` es el segundo componente cliente. No importa `@/lib/content`; recibe los datos como props desde el componente de servidor `MapaFincas`.
+  - El contenedor del mapa usa `isolate` para que los paneles de Leaflet no tapen la barra superior.
+  - Marcadores con `L.divIcon` y clase CSS con tokens; sin imágenes de Leaflet.
+  - `Referrer-Policy` compatible con OSM (NFR-04).
+  - Las teselas se piden solo para la vista actual (AC-20).
 
 ## 3. Arquitectura
 
@@ -146,6 +157,21 @@ type Site = {
 type Zone = {
   name: string;                  // punto de venta o municipio de distribución
   type: 'punto_de_venta' | 'municipio';
+};
+
+// src/content/fincas.json (FR-24; datos ficticios en Fase 1, esquema estricto)
+type Fincas = {
+  centro: { lat: number; lng: number };  // valor inicial si no hay ubicaciones
+  zoom: number;                          // 5 a 15
+  fincas: Array<{
+    id: string;                          // slug
+    tipo: 'finca' | 'acopio';
+    nombre: string;                      // "Finca de ejemplo A (FICTICIO)"
+    municipio: string;
+    lat: number;                         // -90 a 90
+    lng: number;                         // -180 a 180
+    productor: string;                   // "(FICTICIO)" hasta RP-02
+  }>;
 };
 ```
 

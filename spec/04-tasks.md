@@ -1,6 +1,6 @@
 # Tareas: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.4
+**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 Estimaciones en horas efectivas, para una persona con perfil fullstack senior. `[P]` = se puede hacer en paralelo con otras tareas de la misma fase. Referencias: FR/NFR/AC de `01-spec.md` y secciones de `03-plan.md`.
 
@@ -84,7 +84,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | ID | Tarea | Req. | Est. | Dep. |
 |---|---|---|---|---|
 | T-30 | Optimización de rendimiento: imágenes, fuentes, JS, CSS crítico; Lighthouse en local con umbrales (móvil ≥ 90). Lighthouse CI en la pipeline con R-10 | NFR-01, AC-08 | 4 | T-33 |
-| T-32 | Cabeceras de seguridad y CSP según el hosting elegido (R-08); validar scripts de Next.js; verificación con escáner de cabeceras | NFR-04 | 2 | T-33, R-08 |
+| T-32 | Cabeceras de seguridad y CSP según el hosting elegido (R-08); validar scripts de Next.js; verificación con escáner de cabeceras. **Mapa (FR-24, T-54):** `Referrer-Policy` debe ser `strict-origin-when-cross-origin` o más permisiva, nunca `no-referrer` (la política de teselas de OSM exige el Referer); la CSP debe permitir `img-src https://tile.openstreetmap.org` | NFR-04 | 2 | T-33, R-08 |
 | T-37 | Pruebas e2e Playwright: botón Llamar en todos los puntos de contacto, acordeón, navegación por teclado | AC-01 a 03, 09 | 4 | T-33 |
 | T-38 | Auditoría de accesibilidad (axe) y prueba con lector de pantalla | NFR-02, AC-09 | 3 | T-33 |
 | T-39 | Revisión de copy contra P1 y P3, sin precios, sin imágenes sin licencia y la lista legal (spec §9) | AC-02, 07, 13 | 2 | T-33, T-27 |
@@ -100,6 +100,21 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | T-44 | Despliegue a producción y prueba humo (llamada real a la línea de contacto) | DoD | 2 | T-42, T-43, R-08, R-10 |
 | T-45 | Monitoreo: alertas de disponibilidad y revisión semanal de llamadas recibidas | Plan §8 | 2 | T-44 |
 
+## Fase 7: Cambio v1.5 (navegación de retorno y mapa de fincas)
+
+Origen: solicitud del usuario (2026-10-19). Requisitos: FR-19, FR-24, AC-14 a AC-20 (`01-spec.md` v1.5). Decisión D-13 (`05-alcance-y-roadmap.md` v1.5). Diseño: `03-plan.md` D6. `[P]` = en paralelo.
+
+| ID | Tarea | Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-50 | Escribir el cambio de alcance v1.5 en `05`, `01`, `02` y `03`; registrar A-07 y D-13; actualizar este plan | FR-19, FR-24, D-13 | 1 | – |
+| T-51 | Enlace a inicio desde la marca de `TopBar` en todas las páginas, y "Volver al inicio" en `LegalPage` (claves `navigation.backHome` en `copy.json`, esquema Zod) [P] | FR-19, AC-14 | 1.5 | T-50 |
+| T-52 | `content/fincas.json` (centro, zoom, fincas ficticias y acopio), esquema Zod estricto y validación en `content.ts`. Las fincas con "(FICTICIO)" entran en `findPendingMarkers` [P] | FR-24, AC-17 | 1.5 | T-50 |
+| T-53 | `MapaFincas` (servidor: sección, lista accesible, aviso) y `MapaFincasInteractivo` (cliente: Leaflet importado solo al pulsar "Ver mapa", altura reservada, `isolate`, `divIcon` con tokens). Sección después de `Origin` en `page.tsx` | FR-24, AC-15, AC-16, AC-19 | 4 | T-52 |
+| T-54 | Dependencias `leaflet` y `@types/leaflet` por npm (sin CDN). Verificar `npm run budget` ≤ 300 KB sin Leaflet en la carga inicial. Verificar que `Referrer-Policy` permite enviar el origen a OSM | AC-15, AC-20, NFR-04 | 1.5 | T-53 |
+| T-55 | Pruebas. Unitarias: enlace de marca y de retorno, lista de fincas, bloqueo de ficticios, aviso antes del mapa. e2e: axe con la sección nueva, enlace de retorno en las tres legales, Leaflet no descargado antes del clic | AC-14 a AC-19 | 2.5 | T-51, T-53 |
+| T-56 | Atribución "© OpenStreetMap contributors" visible y aviso de conexión con enlace a la política de privacidad de OSM. Revisión jurídica de D-13 junto con T-05. Si se rechaza, plan B (`03` D6) | AC-18, AC-19, D-13 | 1 | T-50 |
+| T-57 | Cierre: entrada en `doc/bitacora.md`, estado en esta tabla, archivos tocados | CLAUDE.md | 0.5 | T-55, T-56 |
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -111,7 +126,8 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | 4. Legal y SEO | 9 |
 | 5. Calidad y seguridad | 19 |
 | 6. Lanzamiento | 7 |
-| **Total** | **~96 h** |
+| 7. Cambio v1.5 (navegación y mapa) | 13,5 |
+| **Total** | **~110 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -119,7 +135,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 
 ## Estado de avance
 
-Actualizado: 2026-10-18. Detalle de cada tarea en `doc/bitacora.md`.
+Actualizado: 2026-10-19. Detalle de cada tarea en `doc/bitacora.md`.
 
 | Estado | Tareas |
 |---|---|
@@ -128,6 +144,7 @@ Actualizado: 2026-10-18. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+| **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |
 
 Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages, datos ficticios, sin indexar).
 

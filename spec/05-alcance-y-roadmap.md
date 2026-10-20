@@ -1,6 +1,6 @@
 # 05 · Alcance Fase 1 y roadmap: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** vigente
+**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** vigente
 
 Fuente de verdad del alcance. Si un spec contradice este documento, gana este documento y el spec se corrige (ver `00-constitution.md` §5).
 
@@ -14,7 +14,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 - **Público objetivo:** personas naturales, tiendas, hoteles y otros puntos de venta.
 - **Precio:** se informa por teléfono. No aparece en la landing.
 - **Contacto:** llamada telefónica con número configurable en `site.json`.
-- **Datos ficticios en Fase 1:** nombre comercial, razón social, NIT, dirección, correo, número de contacto, origen y fotos. Se reemplazan en el roadmap de producción (RP-01 y RP-02).
+- **Datos ficticios en Fase 1:** nombre comercial, razón social, NIT, dirección, correo, número de contacto, origen, fotos, fincas del mapa y sus coordenadas. Se reemplazan en el roadmap de producción (RP-01 y RP-02).
 
 ## 2. Dentro del alcance de la Fase 1
 
@@ -26,6 +26,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | A-04 | Contacto | Botón de llamada con número de `site.json`. Ficticio hasta RP-01. |
 | A-05 | No funcionales | Mobile-first, LCP ≤ 2.5 s, CLS ≤ 0.1, INP ≤ 200 ms, peso ≤ 300 KB, WCAG 2.2 AA, OWASP ASVS nivel 1. |
 | A-06 | Imágenes | Solo libres de derechos de autor o propias ficticias, hasta RP-02. |
+| A-07 | Navegación de retorno y mapa de fincas de origen | Enlace de la marca y "Volver al inicio" en las páginas legales (FR-19). Mapa de fincas ficticias de la zona bananera del Magdalena, cargado solo al pulsar "Ver mapa" con aviso previo (FR-24, D-13). |
 
 ## 3. Fuera del alcance de la Fase 1
 
@@ -54,6 +55,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
 | Demostración del POC/MVP | Publicación pública en GitHub Pages (https://masterarqsoft.github.io/green-banana-web/) con datos ficticios, desplegada por GitHub Actions en cada push a `main`. Conflicto abierto: D-11 |
 | Repositorio | GitHub, público (cuenta MasterArqSoft, `green-banana-web`), desde T-07 |
+| Mapa de fincas (FR-24) | Leaflet con teselas de OpenStreetMap, carga solo al pulsar "Ver mapa", con aviso. Aprobado el 2026-10-19 (D-13); revisión jurídica pendiente. Plan B: mapa estático sin terceros |
 | Proveedor de CI/CD (R-10) | GitHub Actions, por la regla "repositorio y pipeline en el mismo proveedor". Se configura cuando haya varios entornos |
 
 ## 5. Riesgos y pendientes
@@ -72,6 +74,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | D-10 | Publicar el repositorio en GitHub adelanta R-10 | **Resuelto (2026-10-18):** repositorio público en GitHub desde T-07; CI/CD con GitHub Actions |
 | D-12 | `npm audit` completo: 5 vulnerabilidades altas de `braces` (GHSA-vfj7-8cjw-p6xm) en dependencias de desarrollo, vía `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces` 3.0.3. No hay versión corregida | **Resuelto (2026-10-18, T-49):** el usuario no aceptó el riesgo; se reemplazó `eslint-config-next` por una configuración propia sin `@next/eslint-plugin-next`. `npm audit` completo: 0 vulnerabilidades; `validate` usa la auditoría completa |
 | D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | **Parcialmente resuelto (2026-10-18):** el bloqueo solo actúa con `SITE_ENV=production`, que define únicamente la pipeline de producción; fuera de producción se muestra una franja de aviso de datos ficticios (`demoNotice`). Sigue abierto: la demo en GitHub Pages no tiene cabeceras propias (CSP, NFR-04) |
+| D-13 | El mapa de fincas (Leaflet con teselas de OpenStreetMap) envía la dirección IP del visitante a OpenStreetMap Foundation al cargarse. OSMF registra esa IP y la usa para estimar la ubicación del visitante. Choca con AC-12 y NFR-09 en la versión 1.4 | **Aprobado por el usuario (2026-10-19):** carga solo tras la acción del visitante ("Ver mapa") con aviso previo (AC-19), y AC-12 enmendado en la 1.5. Pendiente: revisión jurídica dentro de T-56 y T-05. Si el asesor la rechaza, se usa el plan B: mapa estático sin terceros (`03-plan.md` D6) |
 
 ## 6. Roadmap
 
@@ -93,7 +96,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | ID | Tarea | Preguntas | Estado |
 |---|---|---|---|
 | RP-01 | Reemplazar datos ficticios por reales en `site.json`: nombre comercial, razón social, NIT, dirección, correo, número de contacto y horario. Registrar y configurar dominio, y actualizar `url` en `site.json` (canónica, sitemap y Open Graph) | Q1, Q6, Q7, Q9 | Pendiente |
-| RP-02 | Reemplazar origen ficticio (finca, asociación, municipio) y las imágenes por fotos reales de producto, productor y acopio | Q4, Q10 | Pendiente |
+| RP-02 | Reemplazar origen ficticio (finca, asociación, municipio) y las imágenes por fotos reales de producto, productor y acopio. Las fincas reales del mapa (FR-24) solo se publican con autorización escrita de cada productor y coordenadas verificadas | Q4, Q10 | Pendiente |
 | RP-03 | Definir y validar con asesor jurídico cómo se informa el precio total por teléfono (Ley 1480). Evaluar también si los medios de pago y el tiempo de entrega deben publicarse en la página [POR CONFIRMAR] | Q14, Q18 | Pendiente |
 | RP-04 | Definir la política de garantía: reposición del producto, devolución del dinero o ambas | Q16 | Pendiente |
 | RP-05 | Definir el procedimiento de PQR con constancia: correo electrónico o teléfono con número de radicado | Q17 | Pendiente |
@@ -103,12 +106,18 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Documento | Versión | Ubicación |
 |---|---|---|
 | `00-constitution.md` | 1.4 | `spec/` |
-| `01-spec.md` | 1.4 | `spec/` |
-| `02-content-spec.md` | 1.4 | `spec/` |
-| `03-plan.md` | 1.4 | `spec/` |
-| `04-tasks.md` | 1.4 | `spec/` |
-| `05-alcance-y-roadmap.md` | 1.4 | `spec/` |
+| `01-spec.md` | 1.5 | `spec/` |
+| `02-content-spec.md` | 1.5 | `spec/` |
+| `03-plan.md` | 1.5 | `spec/` |
+| `04-tasks.md` | 1.5 | `spec/` |
+| `05-alcance-y-roadmap.md` | 1.5 | `spec/` |
 | Versión original (respaldo) | 1.0 | `spec/_v1.0/` |
+
+**Cambios de la versión 1.5 (2026-10-19):**
+- Navegación de retorno (FR-19) y mapa de fincas de origen (FR-24, A-07).
+- AC-12 enmendado: la única conexión a terceros es la del mapa, iniciada por el visitante (AC-19). Nuevos AC-14 a AC-20.
+- D-13: IP del visitante hacia OpenStreetMap, pendiente de revisión jurídica.
+- `03-plan.md`: decisión D6 (mapa) y modelo de `fincas.json`. `04-tasks.md`: Fase 7 (T-50 a T-57).
 
 **Cambios de la versión 1.4 (2026-10-18):**
 - Alcance alineado: POC/MVP y reparto a personas naturales y puntos de venta (Q15).

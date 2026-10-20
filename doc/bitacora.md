@@ -5,6 +5,73 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-19: Fase 7 (cambio v1.5), T-51 a T-57: navegación de retorno y mapa de fincas
+
+### Decisiones
+- **Leaflet solo tras el clic (D-13, aprobado por el usuario):** el aviso de conexión con OpenStreetMap va antes del botón "Ver mapa" y el botón es la acción de consentimiento (AC-19). Leaflet 1.9.4 se instala por npm, sin CDN, y se importa con `import()` dentro del handler del clic, junto con su CSS. No hay Google Maps, claves de API ni plan B en SVG.
+- **AC-12 enmendado en la v1.5:** la única conexión a terceros es la del mapa, iniciada por el visitante.
+- **Coordenadas de origen** (`02-content-spec.md`, FR-24): acopio y cascos municipales aproximados, todo [POR CONFIRMAR].
+  - **Finca B movida** a 10.9500, -74.1000 (decisión del usuario). A 3 km de A, los marcadores se superponían con el zoom inicial y axe fallaba con `target-size` (WCAG 2.5.8).
+  - El margen de `fitBounds` es de 20 px. Con 32 px, el mapa móvil (320 px de alto) bajaba a zoom 8 y se pisaban Aracataca y Fundación, a 8 km.
+- **Decisiones del usuario sobre lo que la spec no resolvía:**
+  - textos de Leaflet en español desde `copy.json` (`map.zoomIn` "Acercar", `map.zoomOut` "Alejar", `map.closePopup` "Cerrar");
+  - `map.acopioLabel` = "Centro de acopio";
+  - marcador de acopio: cuadrado carbón con borde crema, sin amarillo (reservado al CTA). La finca es un círculo hoja.
+- Claves añadidas por necesidad: `map.privacyLink` (texto del enlace) y `map.coordinates` ("Coordenadas aproximadas: {lat}, {lng}").
+
+### Cambios
+- **T-51:**
+  - `TopBar`: la marca pasa a `<Link href="/">` (antes era `<p>`).
+  - `LegalPage`: enlace "← Volver al inicio" con `ArrowLeft`, 44 px y subrayado, antes del `<h1>` en las tres páginas legales.
+  - `copy.navigation.backHome` en `copy.json` y `copySchema`.
+- **T-52:**
+  - `src/content/fincas.json`: acopio y 5 fincas ficticias.
+  - `fincasSchema`: estricto, slug, rangos de lat y lng, zoom entero de 5 a 15, `uniqueIds`.
+  - `content.ts` exporta `fincas` y lo incluye en las frases prohibidas y en `findPendingMarkers`. Pendientes para publicar: **31 → 42**.
+- **T-53:**
+  - `MapaFincas` (servidor): sección `#mapa-fincas` después de `Origin`, con aviso, enlace a la política de privacidad de OSM y lista accesible en HTML.
+  - `MapaFincasInteractivo` (cliente, sin `@/lib/content`):
+    - estados `idle | loading | ready | error` y altura reservada (`h-80 md:h-[26rem]`, `isolate`);
+    - `scrollWheelZoom: false`, `divIcon` con clases CSS y popups armados con `textContent`;
+    - foco al mapa al terminar de cargar y `map.remove()` al desmontar.
+  - `globals.css`: `.marcador-finca` y `.marcador-acopio` con tokens, y foco del mapa hacia adentro (`outline-offset: -3px`).
+- **T-54:**
+  - `leaflet` 1.9.4 y `@types/leaflet` 1.9.22 en versión exacta.
+  - `doc/creditos.md`: Leaflet (BSD-2) y teselas de OSM (ODbL).
+  - `04-tasks.md` T-32: `Referrer-Policy` debe ser `strict-origin-when-cross-origin` o más permisiva, nunca `no-referrer`, y la CSP necesita `img-src https://tile.openstreetmap.org`.
+- **T-55:**
+  - Unitarias:
+    - `TopBar.test` (marca a "/") y `LegalPage.test` (volver antes del h1, en las 3 páginas);
+    - nuevo `MapaFincas.test` (6 ubicaciones, aviso antes del botón, sin Leaflet ni teselas en el HTML);
+    - `content.test`: esquema de fincas (lat y lng fuera de rango, id repetido, campo extra, zoom) y las fincas bloqueando producción. Las fincas aportan 10 marcadores de un total de 42.
+  - e2e:
+    - `layout.spec` (orden con `#mapa-fincas`);
+    - `calls.spec`: el primer Tab ahora llega a la marca (FR-19) y el segundo a Llamar;
+    - nuevo `mapa-fincas.spec`: sin Leaflet ni teselas antes del clic, atribución, popup en español, axe con el mapa cargado y retorno al inicio en las 3 legales. Las teselas se interceptan con `page.route`.
+- **T-56:** atribución con `prefix: false` y siempre visible.
+- **Documentación:** `CLAUDE.md` (dos componentes cliente, 42 pendientes, specs 1.5, D-13, presupuesto 270 KB) y `02-content-spec.md` (claves nuevas, finca B y marcadores).
+
+### Verificado
+- `npm run validate` pasa:
+  - format, lint, typecheck;
+  - **178 pruebas unitarias** y **46 e2e** (6 omitidas por proyecto);
+  - presupuesto `index.html` **269,7 KB** de 300 (antes 266,8), legales 250,7 KB;
+  - `npm audit`: 0 vulnerabilidades.
+- Ningún JS ni CSS de la carga inicial de `index.html` contiene Leaflet; van en chunks aparte.
+- Capturas a 360 px y 1280 px: la barra fija queda encima del mapa, la atribución se ve y los marcadores no se superponen (zoom 9 en los dos tamaños).
+
+### Archivos tocados
+`package.json`, `package-lock.json`, `src/app/globals.css`, `src/app/page.tsx`, `src/components/TopBar.tsx`, `src/components/LegalPage.tsx`, `src/components/MapaFincas.tsx` (nuevo), `src/components/MapaFincasInteractivo.tsx` (nuevo), `src/content/copy.json`, `src/content/fincas.json` (nuevo), `src/lib/schema.ts`, `src/lib/content.ts`, `tests/unit/TopBar.test.tsx`, `tests/unit/LegalPage.test.tsx`, `tests/unit/MapaFincas.test.tsx` (nuevo), `tests/unit/content.test.ts`, `tests/e2e/layout.spec.ts`, `tests/e2e/calls.spec.ts`, `tests/e2e/mapa-fincas.spec.ts` (nuevo), `doc/creditos.md`, `doc/bitacora.md`, `spec/02-content-spec.md`, `spec/04-tasks.md`, `CLAUDE.md`.
+
+### Abierto
+- Revisión jurídica de D-13 (T-56, con T-05); si se rechaza, plan B.
+- Prueba manual con lector de pantalla (T-38), ahora también del mapa y del enlace de retorno.
+- Coordenadas de las fincas [POR CONFIRMAR] y autorización de cada productor (RP-02).
+- Lighthouse móvil (1 corrida, tras el cierre): Rendimiento 93, Accesibilidad 100, Buenas prácticas 100, SEO 100. LCP de laboratorio 3,2 s, CLS 0, TBT 110 ms. Está dentro del rango histórico de laboratorio (2,4-3,3 s). La meta LCP ≤ 2,5 s (NFR-01) se mide en campo.
+- Sin commit ni push.
+
+---
+
 ## 2026-10-18: skills candidatas para evaluar
 
 ### Decisiones del usuario

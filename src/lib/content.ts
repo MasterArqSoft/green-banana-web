@@ -9,9 +9,11 @@ import originJson from "@/content/origin.json";
 import copyJson from "@/content/copy.json";
 import testimonialsJson from "@/content/testimonials.json";
 import legalJson from "@/content/legal.json";
+import fincasJson from "@/content/fincas.json";
 import {
   copySchema,
   faqSchema,
+  fincasSchema,
   legalSchema,
   originSchema,
   productsSchema,
@@ -48,6 +50,7 @@ export const testimonials = parse(
   testimonialsJson,
   "testimonials.json",
 );
+export const fincas = parse(fincasSchema, fincasJson, "fincas.json");
 
 // P1 y P3: ninguna frase prohibida en el contenido publicado.
 const forbidden = findForbiddenClaims(
@@ -61,6 +64,7 @@ const forbidden = findForbiddenClaims(
     copy,
     testimonials,
     legal,
+    fincas,
   ]),
 );
 if (forbidden.length > 0) {
@@ -93,6 +97,7 @@ if (isProduction) {
     copy,
     testimonials,
     legal,
+    fincas,
   });
   if (pending.length > 0) {
     throw new Error(
