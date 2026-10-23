@@ -5,6 +5,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: agente `arquitecto-software`
+
+### Contexto y decisión del usuario
+- El usuario pidió un agente que evalúe arquitectura, patrones de diseño y código limpio, y que vigile que la arquitectura no se rompa.
+- Se descartó una skill genérica de patrones: empuja abstracciones de aplicaciones grandes (repositorios, fábricas, inyección de dependencias) que aquí sobran y costarían presupuesto de rendimiento.
+- En su lugar, un subagente que protege **esta** arquitectura: muchas reglas de `CLAUDE.md` y `03-plan.md` no las vigila ninguna prueba (por ejemplo, no importar `@/lib/content` desde un componente cliente).
+
+### Diseño del agente
+- Archivo: `.claude/agents/arquitecto-software.md` (versionado en Git, a diferencia de `.claude/skills/`).
+- Solo revisa e informa; no modifica archivos. Herramientas: `Read`, `Grep`, `Glob` y `Bash` (solo lectura, `lint` y `typecheck`). Modelo: Opus.
+- Revisa:
+  - 16 invariantes tomadas de los specs: capas y flujo de datos, contenido separado del código, recursos y terceros, alcance, dependencias y trazabilidad;
+  - diseño y código limpio con criterio proporcional: simplicidad y YAGNI en la Fase 1; responsabilidad única, duplicación de utilidades existentes y nombres coherentes. Los patrones de backend se evalúan al llegar R-04 o R-06.
+- Informe: veredicto, hallazgos por severidad (bloqueante, importante, sugerencia) con `archivo:línea` y regla de origen, resultado de `lint` y `typecheck`, y puntos `[POR CONFIRMAR]`.
+
+### Estado de partida
+- Verificado a mano: los JSON de contenido solo se importan en `src/lib/content.ts` y solo hay dos componentes cliente (`FloatingCallVisibility` y `MapaFincasInteractivo`).
+
+### Abierto
+- Primera revisión completa con el agente (requiere reiniciar la sesión de Claude Code para que lo cargue).
+- Opcional: convertir en reglas de ESLint (`no-restricted-imports`) las invariantes que se puedan comprobar de forma automática, para que fallen en `validate` sin depender del agente.
+
+---
+
 ## 2026-10-22: desinstalación de `jest-react-testing` y `typescript-advanced-types`
 
 ### Contexto
