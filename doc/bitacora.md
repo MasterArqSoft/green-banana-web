@@ -32,8 +32,27 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - en un PR, un push nuevo cancela la verificación anterior del mismo PR (`verificar-<ref>`).
 - `CLAUDE.md` y `dependabot.yml`: antes de fusionar un PR de Dependabot basta con revisar el check `verificar`.
 
+### Acciones fijadas por SHA (pedido del usuario, misma fecha)
+- Las seis acciones de `pages.yml` pasan de etiqueta (`@v7`) a SHA de commit con la versión en un comentario. Los SHA se resolvieron con `gh api`:
+
+  | Acción | Versión |
+  |---|---|
+  | `checkout` | v7.0.1 |
+  | `setup-node` | v7.1.0 |
+  | `configure-pages` | v6.0.0 |
+  | `upload-pages-artifact` | v5.0.0 |
+  | `deploy-pages` | v5.0.1 |
+  | `upload-artifact` | v7.0.2 |
+
+- Motivo: una etiqueta se puede mover a otro código, por ejemplo si roban la cuenta del autor, como pasó con `tj-actions/changed-files` en 2025. Un SHA siempre apunta al mismo código. El job `deploy` tiene permiso de publicar la demo.
+- Dependabot (`github-actions`, mensual) sigue proponiendo actualizaciones: cambia el SHA y el comentario.
+- `spec/03-plan.md` §7 (A06) y `CLAUDE.md`.
+- Primeros PR de Dependabot con `verificar`:
+  - #5 (`typescript-eslint` 8.72.0) pasa;
+  - #6 (ESLint 10) falla en `npm ci`: `eslint-plugin-import@2.32.0` no acepta ESLint 10 (riesgo ya anotado en `CLAUDE.md`);
+  - #4 (`globals` 17) es anterior y no tiene el check.
+
 ### Abierto
-- Fijar las acciones por SHA (puede esperar a R-10).
 - Opcional, lo configura el usuario en GitHub: una regla de protección de `main` que exija el check `verificar` para fusionar.
 - `ubuntu-latest` pasa a Ubuntu 26 desde el 2026-10-19 (aviso de GitHub); por ahora el build pasa.
 
