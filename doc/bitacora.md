@@ -5,6 +5,36 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: mejoras al agente `arquitecto-software`
+
+### Contexto
+El usuario pidió evaluar qué hizo mal el agente en su primera revisión. Fallas detectadas al comparar su informe con lo que pasó después:
+1. **Gravedad mal calibrada:**
+   - el hover amarillo del pie quedó como bloqueante y con veredicto "Rompe la arquitectura", aunque el mismo informe decía que la arquitectura estaba sana;
+   - usó una severidad, "Menor", que su formato no define.
+2. **Afirmó sin medir:** dijo que `next/image` en `Testimonials` "no tiene efecto". Al quitarlo, la landing bajó 5,3 KB.
+3. **Presupuesto con un build viejo:** informó el presupuesto medido sobre un `out/` de tres días antes.
+4. **Specs revisados a medias:** no detectó que §10 de `spec/03-plan.md` seguía diciendo "sin despliegue automático".
+5. **Estructura de carpetas sin revisar:** no evaluó la organización. Los 24 componentes sueltos los señaló el usuario.
+6. **No propuso automatizar las invariantes con ESLint**, aunque estaba pendiente en la bitácora.
+
+### Cambios en `.claude/agents/arquitecto-software.md`
+- **Evidencia:** toda afirmación de peso o comportamiento necesita una medición o una cita de código; si no la tiene, se marca "no verificado". Puede correr `npm test`, `npm run build` y `npm run budget` (solo escriben en `out/` y `.next/`).
+- **Build viejo:** si `out/` es más viejo que el último cambio en `src/`, reconstruye antes de medir.
+- **Severidad por grupo de invariantes:**
+  - bloqueante: capas, alcance, terceros, dependencias vetadas, CI y datos ficticios en producción;
+  - importante: contenido, recursos, diseño y trazabilidad;
+  - solo tres severidades, y el veredicto debe ser coherente con ellas.
+- **Herramientas existentes:** las reglas que ya vigilan ESLint, las pruebas o las guardas se confirman con su resultado, y además se revisa que nadie las haya desactivado.
+- **Revisión completa:** compara todas las secciones de `03-plan.md` (§1 a §12) y `CLAUDE.md` con el código y los workflows.
+- **Invariante nueva 17 (CI y despliegue):** `verificar` antes de publicar, acciones fijadas por SHA, permisos solo en los jobs que publican, Dependabot.
+- **Diseño:** ahora revisa la estructura de carpetas (`secciones/`, `ui/`, `cliente/`, `seo/`, `tests/unit/` reflejando `src/`).
+- **Automatizar:** por cada hallazgo que se pueda comprobar con ESLint, una prueba o el build, propone la regla concreta.
+- **Fotos:** la invariante 10 se actualizó (`recipeImage`, `testimonialImage`, sin `next/image`, el hero como excepción).
+- **Cuándo usarlo:** la descripción incluye cambios en `.github/`.
+
+---
+
 ## 2026-10-22: verificación antes de publicar la demo y `eslint-config-prettier` fijo
 
 ### Decisión del usuario
