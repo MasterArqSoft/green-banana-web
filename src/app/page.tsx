@@ -1,19 +1,19 @@
-import { Benefits } from "@/components/Benefits";
-import { Business } from "@/components/Business";
-import { Coverage } from "@/components/Coverage";
-import { Faq } from "@/components/Faq";
-import { FinalCta } from "@/components/FinalCta";
-import { FreshInfo } from "@/components/FreshInfo";
-import { Guarantee } from "@/components/Guarantee";
-import { Hero } from "@/components/Hero";
-import { LocalBusinessJsonLd } from "@/components/LocalBusinessJsonLd";
-import { HowItWorks } from "@/components/HowItWorks";
-import { MapaFincas } from "@/components/MapaFincas";
-import { Origin } from "@/components/Origin";
-import { ProductCards } from "@/components/ProductCards";
-import { Recipes } from "@/components/Recipes";
-import { Testimonials } from "@/components/Testimonials";
-import { TrustBar } from "@/components/TrustBar";
+import { Benefits } from "@/components/secciones/Benefits";
+import { Business } from "@/components/secciones/Business";
+import { Coverage } from "@/components/secciones/Coverage";
+import { Faq } from "@/components/secciones/Faq";
+import { FinalCta } from "@/components/secciones/FinalCta";
+import { FreshInfo } from "@/components/secciones/FreshInfo";
+import { Guarantee } from "@/components/secciones/Guarantee";
+import { Hero } from "@/components/secciones/Hero";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
+import { HowItWorks } from "@/components/secciones/HowItWorks";
+import { MapaFincas } from "@/components/secciones/MapaFincas";
+import { Origin } from "@/components/secciones/Origin";
+import { ProductCards } from "@/components/secciones/ProductCards";
+import { Recipes } from "@/components/secciones/Recipes";
+import { Testimonials } from "@/components/secciones/Testimonials";
+import { TrustBar } from "@/components/secciones/TrustBar";
 
 // Composición de la landing. El orden final de las secciones es T-33.
 export default function Home() {

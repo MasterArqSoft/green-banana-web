@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { DemoBanner } from "@/components/DemoBanner";
-import { FloatingCall } from "@/components/FloatingCall";
-import { Footer } from "@/components/Footer";
-import { TopBar } from "@/components/TopBar";
+import { DemoBanner } from "@/components/ui/DemoBanner";
+import { FloatingCall } from "@/components/ui/FloatingCall";
+import { Footer } from "@/components/secciones/Footer";
+import { TopBar } from "@/components/secciones/TopBar";
 import { copy, isProduction, site } from "@/lib/content";
 import { absoluteUrl, ogImage, seoDescription, seoTitle } from "@/lib/seo";
 import { fraunces, inter } from "./fonts";

@@ -18,6 +18,14 @@ export function seoValues() {
 export const seoTitle = () => fill(copy.seo.title, seoValues());
 export const seoDescription = () => fill(copy.seo.description, seoValues());
 
+/**
+ * Serializa datos estructurados para un <script type="application/ld+json">.
+ * "<" se escapa como \u003c para que ningún texto pueda cerrar la etiqueta.
+ */
+export function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 // Imagen para redes: recorte JPG de la foto del hero (IMAGES.og, generado por npm run images).
 export function ogImage() {
   return {

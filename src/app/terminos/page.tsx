@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalPage, legalValues } from "@/components/LegalPage";
+import { LegalPage, legalValues } from "@/components/ui/LegalPage";
 import { legal, site } from "@/lib/content";
 import { absoluteUrl } from "@/lib/seo";
 import { fill } from "@/lib/template";

@@ -5,6 +5,78 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: componentes en subcarpetas y capas vigiladas por ESLint
+
+### Decisión del usuario
+- La raíz del repositorio y `src/components/` (24 archivos sueltos) no mostraban un orden claro. Se aprobó agrupar los componentes y que ESLint haga cumplir las capas.
+- Se descartó una arquitectura limpia o hexagonal: el sitio es estático y sin backend, así que no hay casos de uso ni repositorios que separar. Se evalúa con R-04 o R-06.
+
+### Cambios
+- `src/components/` se reorganizó con `git mv` (conserva el historial):
+  - `secciones/`: las 17 secciones de la página;
+  - `ui/`: `CallButton`, `Picture`, `LegalPage`, `DemoBanner` y `FloatingCall`;
+  - `cliente/`: `FloatingCallVisibility` y `MapaFincasInteractivo`;
+  - `seo/`: `LocalBusinessJsonLd`.
+- Se actualizaron las importaciones `@/components/...` en 36 archivos de `src/` y `tests/`. El comportamiento no cambia.
+- `eslint.config.mjs` vigila las capas `app → components → lib → content`:
+  - los JSON de contenido solo se importan en `src/lib/content.ts`;
+  - `components/` y `lib/` no importan `app/`, y `lib/` no importa componentes;
+  - `cliente/` no importa `@/lib/content`;
+  - `"use client"` solo se permite en `cliente/`.
+- En flat config un bloque posterior reemplaza las restricciones del anterior, así que cada bloque repite las que le aplican (constantes `SOLO_CONTENT_TS`, `NO_APP` y `NO_COMPONENTS`).
+- Se comprobó con archivos de prueba por `--stdin` que cada regla falla donde debe y que `content.ts` sigue permitido.
+- Documentación: `spec/03-plan.md` §4 (árbol y reglas de ESLint), `CLAUDE.md` (capas y carpetas, ruta de `CallButton`) y regla 3 de `.claude/agents/arquitecto-software.md`.
+
+### Verificación
+- `npm run validate` pasa completo:
+  - 191 pruebas unitarias;
+  - e2e: 46 pasan y 6 se omiten (son solo de móvil);
+  - presupuesto: 270,6 KB de 300;
+  - `npm audit`: 0 vulnerabilidades.
+
+### Pruebas unitarias
+- A pedido del usuario, `tests/unit/` refleja `src/` (también con `git mv`):
+  - `components/secciones/`: 16 archivos;
+  - `components/ui/`: `DemoBanner`, `FloatingCall` y `LegalPage`;
+  - `lib/`: `content`, `format`, `images`, `mapa-ilustrado`, `seo`, `tel` y `template`.
+- No hizo falta tocar `vitest.config.mts`: el patrón `tests/unit/**/*.test.{ts,tsx}` ya incluye subcarpetas.
+- Se actualizaron los comandos de ejemplo de `CLAUDE.md`, el árbol de `spec/03-plan.md` y la regla 15 del agente.
+
+---
+
+## 2026-10-22: primera revisión de arquitectura y correcciones
+
+### Revisión
+- Primera revisión completa con el agente `arquitecto-software` sobre `e2fdaf1`. Veredicto: la arquitectura está sana; una regla rota (amarillo como texto en el pie) y deuda menor.
+- El usuario aprobó corregir los hallazgos 1, 2, 4 y 9, y actualizar `spec/03-plan.md`.
+
+### Cambios
+- **Pie (hallazgo 1):** `Footer.tsx` usaba `hover:text-sol`, y `sol` nunca va como texto. Ahora el hover engrosa el subrayado (`hover:decoration-2`). Se descartó `hoja-claro` porque casi no se distingue del crema.
+- **JSON-LD (hallazgo 2):** `Faq.tsx` escapaba con `"\u003c"` (una sola barra), que en JavaScript es el propio `<`, así que no escapaba nada. Nueva función `jsonLd()` en `src/lib/seo.ts`, que usan `Faq` y `LocalBusinessJsonLd`. Prueba nueva en `seo.test.tsx` con `</script>`.
+- **Modo demo (hallazgo 4):** `tests/unit/DemoBanner.test.tsx` prueba la franja y `metadata.robots` (`noindex`) en los dos modos. `@/app/fonts` se simula porque `next/font` no corre en Vitest.
+- **Comentario (hallazgo 9):** `FloatingCallVisibility.tsx` ya no dice "único componente cliente".
+- **`spec/03-plan.md` v1.6:**
+  - §3: el diagrama incluye el mapa como segundo componente cliente, `legal.json` y `fincas.json`.
+  - §4: estructura real del repositorio, carpetas generadas y sentido de las dependencias entre capas.
+  - §7: la CSP admite las teselas de OSM y se nombra `jsonLd()` como control de XSS.
+  - §8: dos componentes cliente; el CSS en línea se descartó.
+
+### Verificación
+- `npm run validate` pasa completo:
+  - 26 archivos de pruebas unitarias, 191 pruebas;
+  - e2e: 46 pasan y 6 se omiten (son solo de móvil);
+  - `npm audit`: 0 vulnerabilidades.
+- Presupuesto con el build nuevo: 270,6 KB de 300 en `index` y unos 251 KB en las páginas legales.
+
+### Archivos
+`src/components/Footer.tsx`, `src/components/Faq.tsx`, `src/components/LocalBusinessJsonLd.tsx`, `src/components/FloatingCallVisibility.tsx`, `src/lib/seo.ts`, `tests/unit/seo.test.tsx`, `tests/unit/DemoBanner.test.tsx` (nuevo), `spec/03-plan.md`.
+
+### Abierto
+- Hallazgos 5 a 8, 10 y 11 sin corregir (menores y sugerencias).
+- Decisiones del usuario: fotos de testimonios en `images.ts` antes de FR-12, versión exacta de `eslint-config-prettier`, y lint, pruebas y acciones fijadas por SHA en `pages.yml` antes de R-10.
+
+---
+
 ## 2026-10-22: agente `arquitecto-software`
 
 ### Contexto y decisión del usuario

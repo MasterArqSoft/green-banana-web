@@ -135,7 +135,7 @@ Origen: solicitud del usuario (2026-10-19). Requisitos: FR-19, FR-24, AC-14 a AC
 
 ## Estado de avance
 
-Actualizado: 2026-10-19. Detalle de cada tarea en `doc/bitacora.md`.
+Actualizado: 2026-10-22. Detalle de cada tarea en `doc/bitacora.md`.
 
 | Estado | Tareas |
 |---|---|

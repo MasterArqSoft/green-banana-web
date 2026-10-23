@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.6 · **Fecha:** 2026-10-22 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 ## Índice
 1. Contexto arquitectónico
@@ -85,7 +85,8 @@ flowchart TB
     subgraph Cliente
       P[Páginas Next.js exportadas a HTML estático]
       I1[Acordeón FAQ: details/summary nativo, sin JS]
-      I2[Componente cliente: Botón flotante Llamar]
+      I2[Componente cliente: visibilidad del botón flotante Llamar]
+      I3[Componente cliente: mapa de fincas; Leaflet con import() al pulsar "Ver mapa"]
     end
     subgraph Datos de contenido
       D1[site.json: marca, contacto, legales, acopio]
@@ -96,8 +97,10 @@ flowchart TB
       D6[origin.json: lote vigente]
       D7[copy.json: textos de interfaz por sección]
       D8[testimonials.json: vacío hasta tener testimonios reales]
+      D9[legal.json: términos, privacidad y garantía]
+      D10[fincas.json: fincas de origen del mapa]
     end
-    D1 & D2 & D3 & D4 & D5 & D6 & D7 & D8 -->|Build + validación Zod| P
+    D1 & D2 & D3 & D4 & D5 & D6 & D7 & D8 & D9 & D10 -->|Build + validación Zod en lib/content.ts| P
 ```
 
 **Flujo del botón de llamada**
@@ -115,18 +118,40 @@ sequenceDiagram
 ## 4. Estructura del repositorio
 
 ```
-landing-guineo-verde/
+green-banana-web/
 ├─ src/
-│  ├─ components/        # TopBar, Hero, TrustBar, ProductCards, Origin, Recipes, Faq, Coverage, CallButton, FloatingCall, Footer...
-│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal
-│  ├─ app/               # Next.js (App Router): layout.tsx, page.tsx, terminos/, privacidad/, garantia/
-│  ├─ lib/               # tel.ts, schema.ts (analytics.ts entra con R-07)
-│  └─ styles/
-├─ public/               # fuentes autoalojadas, favicon, robots.txt
-├─ tests/                # unit/ (Vitest) y e2e/ (Playwright)
+│  ├─ app/               # Rutas (App Router): layout.tsx, page.tsx, terminos/, privacidad/, garantia/,
+│  │                     # robots.ts, sitemap.ts, mapa-fincas.svg/ y mapa-fincas-movil.svg/ (SVG en build),
+│  │                     # globals.css (tokens de diseño) y fonts.ts (next/font, autoalojadas)
+│  ├─ components/
+│  │  ├─ secciones/      # Una por sección de la página: TopBar, Hero, TrustBar, ProductCards, Origin,
+│  │  │                  # MapaFincas, Recipes, ..., FinalCta, Footer
+│  │  ├─ ui/             # Piezas reutilizables: CallButton, Picture, LegalPage, DemoBanner, FloatingCall
+│  │  ├─ cliente/        # Los únicos componentes con "use client": FloatingCallVisibility, MapaFincasInteractivo
+│  │  └─ seo/            # Datos estructurados: LocalBusinessJsonLd
+│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal, fincas
+│  └─ lib/               # Lógica pura sin React: content.ts (único acceso al contenido), schema.ts (Zod),
+│                        # claims.ts, tel.ts, seo.ts, images.ts, asset.ts, template.ts, format.ts,
+│                        # mapa-ilustrado.ts + mapa-base.json (analytics.ts entra con R-07)
+├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
+├─ scripts/              # images.mjs, budget.mjs, lighthouse.mjs
+├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, components/ui/, lib/)
+│                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
-└─ (archivo de CI/CD según proveedor; pendiente, R-10)
+├─ doc/                  # bitácora y créditos (el resto, solo local)
+├─ .github/              # pages.yml (demo) y dependabot.yml; la pipeline completa llega con R-10
+└─ archivos de configuración en la raíz (Next, TypeScript, ESLint, Prettier, Vitest, Playwright)
 ```
+
+Carpetas generadas, fuera de Git: `node_modules/`, `.next/`, `out/` (build estático), `test-results/` y `fotos-originales/`.
+
+Dependencias entre capas (en un solo sentido): `app/` → `components/` → `lib/` → `content/`. Los componentes cliente no importan `lib/content.ts`; reciben datos por props.
+
+ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), con `no-restricted-imports` y `no-restricted-syntax` en `eslint.config.mjs`:
+- los JSON de `src/content/` solo se importan en `src/lib/content.ts`;
+- `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
+- `components/cliente/` no importa `@/lib/content`;
+- `"use client"` solo se permite en `components/cliente/`.
 
 No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 
@@ -224,7 +249,7 @@ Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content
 
 | Riesgo | Control | Requisito |
 |---|---|---|
-| Inyección o XSS (A03) | Sin HTML dinámico no confiable, escape por defecto, CSP estricta | NFR-04 |
+| Inyección o XSS (A03) | Sin HTML dinámico no confiable, escape por defecto, JSON-LD serializado con `jsonLd()` de `src/lib/seo.ts` (escapa `<`), CSP estricta | NFR-04 |
 | Configuración insegura (A05) | Cabeceras HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` en el archivo de configuración del hosting elegido en R-08 (p. ej. `staticwebapp.config.json` en Azure Static Web Apps o `_headers` en Cloudflare Pages). Con exportación estática, `next.config` no aplica cabeceras | NFR-04 |
 | Componentes vulnerables (A06) | `npm audit` completo (producción y desarrollo) en el script de validación local (`npm run validate`, `audit:deps`), que falla con vulnerabilidades altas o críticas; ESLint sin `eslint-config-next` para evitar `braces` (T-49); Dependabot (actualizaciones semanales, alertas y PR de seguridad) desde T-40; versiones fijadas con `package-lock.json` | NFR-04 |
 | Fuga de secretos | Ninguno en Fase 1 (sitio sin backend). Cuando se active R-06, claves solo en variables del servidor | P6 |
@@ -232,9 +257,9 @@ Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content
 | Disponibilidad | Sitio estático en CDN | NFR-06 |
 | Suplantación o falsificación de marca | Dominio propio con HTTPS | P6 |
 
-CSP de partida (Fase 1, sin terceros de formulario). Next.js puede requerir scripts en línea: validar en T-32 si se usan hashes o `'unsafe-inline'`:
+CSP de partida (Fase 1, sin terceros de formulario; `img-src` admite las teselas de OpenStreetMap del mapa de fincas, D6 y T-32). Next.js puede requerir scripts en línea: validar en T-32 si se usan hashes o `'unsafe-inline'`:
 ```
-default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+default-src 'self'; script-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
 ```
 
 ## 8. Rendimiento y SEO
@@ -244,8 +269,8 @@ default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'u
 | HTML estático | Todo el contenido renderizado en build |
 | Imágenes | AVIF/WebP (JPG de respaldo en el hero), `srcset` con versiones menores (tarjetas 200 px, recetas 400 px, origen 600 px), `width` y `height` explícitos, `loading="lazy"` fuera del primer viewport, imagen del hero con `fetchpriority="high"`. Configuración en `src/lib/images.ts`; las genera `npm run images` |
 | Fuentes | Autoalojadas, subconjunto latino, máximo 2 familias, `font-display: swap` |
-| JavaScript | Componente cliente (`'use client'`) solo para el botón flotante; el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
-| CSS | Tailwind con purga; CSS crítico en línea |
+| JavaScript | Dos componentes cliente (`'use client'`): la visibilidad del botón flotante y el mapa de fincas (D6; Leaflet se carga con `import()` solo al pulsar "Ver mapa", fuera de la carga inicial); el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
+| CSS | Tailwind con purga, en un archivo enlazado. El CSS en línea (`experimental.inlineCss`) se probó y se descartó: duplica el CSS en el HTML |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
 | SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt`. La URL base es `url` en `site.json`. Fuera de producción (demo con datos ficticios, D-11) la página lleva `noindex` y `robots.txt` bloquea el rastreo; con `SITE_ENV=production` se permite y se publica el sitemap |
 | Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB |
