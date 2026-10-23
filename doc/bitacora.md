@@ -5,6 +5,29 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: verificación antes de publicar la demo y `eslint-config-prettier` fijo
+
+### Decisión del usuario
+- Fijar `eslint-config-prettier` en versión exacta, como los demás plugins de ESLint.
+- La demo no debe publicarse sin pasar lint y pruebas: antes, `pages.yml` solo construía y desplegaba.
+
+### Cambios
+- `package.json`: `eslint-config-prettier` pasa de `^10.1.8` a `10.1.8`; el lockfile ya tenía esa versión.
+- `.github/workflows/pages.yml`: nuevo job `verificar`, del que depende `build`. Si falla, la demo no se publica.
+  - Corre lo mismo que `npm run validate` salvo `audit:deps`: formato, lint, tipos, pruebas unitarias, build, presupuesto y pruebas e2e con Chromium.
+  - Si una prueba e2e falla, sube `test-results/` como artefacto (7 días).
+  - Va en un job aparte porque las pruebas e2e sirven `out/` desde la raíz y el build de la demo lleva el prefijo `/green-banana-web`.
+  - `npm audit` queda fuera: una vulnerabilidad nueva en una dependencia de desarrollo bloquearía la demo sin que haya un cambio nuestro; ya la cubre Dependabot.
+  - `actions/upload-artifact@v7`: última versión, consultada con `gh api`.
+- Documentación: `spec/03-plan.md` §10 (ya no dice "sin despliegue automático") y §4, y `CLAUDE.md`.
+
+### Abierto
+- Correr `verificar` también en los pull requests (por ejemplo, los de Dependabot), sin publicar.
+- Fijar las acciones por SHA. Las dos cosas se pueden dejar para R-10.
+- `ubuntu-latest` pasa a Ubuntu 26 desde el 2026-10-19 (aviso de GitHub); por ahora el build pasa.
+
+---
+
 ## 2026-10-22: hallazgos menores de la revisión de arquitectura (5 a 8, 10 y 11)
 
 ### Cambios

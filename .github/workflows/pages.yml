@@ -17,7 +17,55 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Lo mismo que `npm run validate`, salvo `audit:deps` (las alertas de seguridad las
+  # cubre Dependabot). Si algo falla, la demo no se publica. Construye sin el prefijo
+  # de la demo, porque las pruebas e2e sirven out/ desde la raíz (tests/e2e/server.mjs).
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Formato (Prettier)
+        run: npm run format:check
+
+      - name: Lint (ESLint, incluye las capas de src/)
+        run: npm run lint
+
+      - name: Tipos (TypeScript)
+        run: npm run typecheck
+
+      - name: Pruebas unitarias (Vitest)
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Presupuesto de peso (≤ 300 KB)
+        run: npm run budget
+
+      - name: Navegador para las pruebas e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Pruebas e2e (Playwright + axe)
+        run: npx playwright test
+
+      # Trazas y capturas de las pruebas que fallen, para revisarlas en GitHub.
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-test-results
+          path: test-results/
+          retention-days: 7
+
   build:
+    needs: verificar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

@@ -91,7 +91,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - Next.js con exportación estática (`output: 'export'`), React, TypeScript y Tailwind CSS.
 - Sin backend en Fase 1. Sin rutas de servidor, sin formularios, sin base de datos.
 - Repositorio público en GitHub; CI/CD con GitHub Actions (la pipeline completa se configura en R-10).
-- Demo del POC/MVP en GitHub Pages: `.github/workflows/pages.yml` la despliega en cada push a `main` con `PAGES_BASE_PATH` como `basePath`.
+- Demo del POC/MVP en GitHub Pages: `.github/workflows/pages.yml` la despliega en cada push a `main` con `PAGES_BASE_PATH` como `basePath`, solo si antes pasa el job `verificar` (lo mismo que `validate` salvo `audit:deps`; e2e sobre un build sin prefijo).
 
 ## Pendientes (no decidir por tu cuenta)
 Recuérdaselos al usuario cuando pregunte por pendientes. Detalle en `spec/05-alcance-y-roadmap.md` §5 y §7.

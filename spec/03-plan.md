@@ -139,7 +139,7 @@ green-banana-web/
 │                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
 ├─ doc/                  # bitácora y créditos (el resto, solo local)
-├─ .github/              # pages.yml (demo) y dependabot.yml; la pipeline completa llega con R-10
+├─ .github/              # pages.yml (verifica y publica la demo) y dependabot.yml; la pipeline completa llega con R-10
 └─ archivos de configuración en la raíz (Next, TypeScript, ESLint, Prettier, Vitest, Playwright)
 ```
 
@@ -295,7 +295,7 @@ Ningún evento lleva datos personales. Los parámetros UTM se leen para medir el
 
 **Regla obligatoria:** el repositorio y la pipeline deben estar en el mismo proveedor.
 
-Mientras R-10 esté pendiente, la validación se ejecuta en local y la página se construye sin despliegue automático.
+Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm run validate`). La demo de GitHub Pages (`.github/workflows/pages.yml`, D-09) se publica en cada push a `main` solo si pasa el job `verificar`: formato, lint, tipos, pruebas unitarias, build, presupuesto de peso y pruebas e2e. No incluye `npm audit` (lo cubre Dependabot) ni Lighthouse; ambos llegan con R-10.
 
 | Entorno | Rama | Propósito |
 |---|---|---|
