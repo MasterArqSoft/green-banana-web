@@ -148,12 +148,12 @@ Carpetas generadas, fuera de Git: `node_modules/`, `.next/`, `out/` (build está
 Dependencias entre capas (en un solo sentido): `app/` → `components/` → `lib/` → `content/`. Los componentes cliente no importan `lib/content.ts`; reciben datos por props.
 
 ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), con `no-restricted-imports` y `no-restricted-syntax` en `eslint.config.mjs`:
-- los JSON de `src/content/` solo se importan en `src/lib/content.ts`;
+- los JSON de `src/content/` solo se importan en `src/lib/content.ts`. La regla vale dentro de `src/`, no en `scripts/` ni en `tests/` (decisión del usuario, 2026-10-23): `scripts/images.mjs` corre en Node sin el alias `@/`, y las pruebas alteran los JSON para comprobar que los esquemas los rechazan. Lo que llega al navegador queda protegido, y `testimonialImage` valida `photo` antes de que el script arme la ruta;
 - `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
 - `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format` y `tel`;
 - `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`).
 
-`tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12.
+`tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e; lista aprobada por el usuario el 2026-10-23, y agregarle algo requiere justificarlo en el PR), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12.
 
 No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 

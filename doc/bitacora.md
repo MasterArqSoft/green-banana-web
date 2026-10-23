@@ -45,10 +45,10 @@ El agente `arquitecto-software`, ya con sus instrucciones nuevas, revisó `7eb91
 - presupuesto: 265,4 KB de 300, con 176,5 KB de JS;
 - 0 vulnerabilidades.
 
-### Decisiones pendientes del usuario
-- **¿La regla "los JSON solo se importan en `content.ts`" se aplica también a `scripts/` y `tests/`?** Hoy no: `scripts/images.mjs` lee `testimonials.json` y las pruebas importan los JSON para alterarlos.
-- **Exentos de `estructura.test.ts`:** hoy solo `components/cliente/`.
-- **Protección de `main` en GitHub:** que `verificar` sea obligatorio antes de fusionar.
+### Decisiones del usuario
+- **La regla de los JSON vale solo dentro de `src/`:** no se extiende a `scripts/` ni a `tests/` (opción A). Lo que llega al navegador está protegido y el riesgo del script lo cubre `testimonialImage`. Quedó escrito en `03-plan.md` §4.
+- **Exentos de `estructura.test.ts`:** se acepta la lista, que hoy tiene solo `components/cliente/`.
+- **Protección de `main` en GitHub** (que `verificar` sea obligatorio antes de fusionar): queda pendiente. Se agregó a "Pendientes" en `CLAUDE.md`, con la recomendación de exigir solo el check, sin obligar a usar PR.
 
 ### Archivos
 - Código: `src/lib/{asset,images,schema}.ts`, `src/components/ui/Picture.tsx`, `src/components/secciones/{Hero,MapaFincas}.tsx`, `src/components/cliente/MapaFincasInteractivo.tsx` y `src/content/copy.json`.

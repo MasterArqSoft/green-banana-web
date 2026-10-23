@@ -110,6 +110,7 @@ Recuérdaselos al usuario cuando pregunte por pendientes. Detalle en `spec/05-al
 - **T-38, parte manual:** prueba con lector de pantalla (NVDA o TalkBack); la lista está en la bitácora.
 - **D-13, mapa de fincas:** revisión jurídica del envío de la IP a OpenStreetMap (con T-05); si se rechaza, plan B (`03-plan.md` D6). Coordenadas de las fincas [POR CONFIRMAR] y autorización de cada productor (RP-02).
 - **Conflicto D-11 (parcial):** la demo en GitHub Pages no permite cabeceras propias (CSP, NFR-04).
+- **Protección de `main` en GitHub:** la configura el usuario en Settings → Rules → Rulesets, con el check `verificar` obligatorio. Recomendación: exigir solo el check, sin obligar a usar PR. Hasta entonces, `verificar` avisa pero no bloquea la fusión: revisa que pase antes de fusionar.
 
 ## Reglas de trabajo
 - Responde siempre en español.
