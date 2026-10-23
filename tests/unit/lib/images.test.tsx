@@ -7,7 +7,7 @@ import { Picture } from "@/components/ui/Picture";
 import { ProductCards } from "@/components/secciones/ProductCards";
 import { Recipes } from "@/components/secciones/Recipes";
 import { products, recipes } from "@/lib/content";
-import { allImages, IMAGES } from "@/lib/images";
+import { allImages, IMAGES, recipeImage } from "@/lib/images";
 
 describe("fotos publicadas (T-04, NFR-08)", () => {
   it.each(
@@ -26,10 +26,15 @@ describe("fotos publicadas (T-04, NFR-08)", () => {
       expect(IMAGES.products[product.id]).toBeDefined();
     }
     for (const recipe of recipes) {
-      expect(
+      expect(recipeImage(recipe.id)).toBe(
         IMAGES.recipes[recipe.id as keyof typeof IMAGES.recipes],
-      ).toBeDefined();
+      );
     }
+  });
+
+  it("una receta sin foto falla con su id, no con un TypeError", () => {
+    expect(() => recipeImage("arepa")).toThrow(/"arepa"/);
+    expect(() => recipeImage("constructor")).toThrow(/"constructor"/);
   });
 });
 

@@ -1,5 +1,5 @@
 import base from "@/lib/mapa-base.json";
-import type { Copy, Finca } from "@/lib/schema";
+import type { Copy, Ubicacion } from "@/lib/schema";
 
 // Mapa ilustrado de la zona bananera (FR-24): fondo de la sección del mapa antes de
 // pulsar "Ver mapa". Se genera en el build como /mapa-fincas.svg y /mapa-fincas-movil.svg
@@ -49,6 +49,12 @@ export const VARIANTES: Record<
 
 export type Variante = keyof typeof VARIANTES;
 
+/** Ancho y alto en px del SVG de cada variante (para el width y height del <img>). */
+export function medidasMapa(variante: Variante) {
+  const [, , ancho, alto] = VARIANTES[variante].recorte;
+  return { ancho, alto };
+}
+
 const { oeste, norte, escala, sur } = base.encuadre;
 const K = Math.cos((((sur + norte) / 2) * Math.PI) / 180);
 
@@ -88,7 +94,7 @@ function rotulo(
 }
 
 export function mapaIlustradoSvg(
-  fincas: Omit<Finca, "productor">[],
+  fincas: Ubicacion[],
   etiquetas: Etiquetas,
   variante: Variante = "escritorio",
 ): string {

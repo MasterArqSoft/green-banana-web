@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import { LegalPage } from "@/components/ui/LegalPage";
 import legalJson from "@/content/legal.json";
 import { copy, legal, site } from "@/lib/content";
+import { legalMetadata } from "@/lib/legal";
 import { legalSchema } from "@/lib/schema";
+import { absoluteUrl } from "@/lib/seo";
 
 describe("Páginas legales (FR-18)", () => {
   it.each(["terminos", "privacidad", "garantia"] as const)(
@@ -39,6 +41,16 @@ describe("Páginas legales (FR-18)", () => {
     const html = renderToStaticMarkup(<LegalPage page="privacidad" />);
     expect(html).toContain("Ley 1581 de 2012");
   });
+
+  it.each(["terminos", "privacidad", "garantia"] as const)(
+    "%s tiene título con la marca, descripción y URL canónica",
+    (page) => {
+      const metadata = legalMetadata(page);
+      expect(metadata.title).toBe(`${legal[page].title} | ${site.brand}`);
+      expect(metadata.description).not.toMatch(/\{\w+\}/);
+      expect(metadata.alternates?.canonical).toBe(absoluteUrl(`/${page}`));
+    },
+  );
 
   it("el esquema rechaza una página sin secciones", () => {
     const broken = structuredClone(legalJson);

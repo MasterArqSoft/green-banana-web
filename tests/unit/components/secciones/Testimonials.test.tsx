@@ -8,7 +8,7 @@ const sample = (name: string): Testimonial => ({
   name,
   context: "Barrio de ejemplo",
   text: "Texto de prueba.",
-  photo: `/images/testimonios/${name}.webp`,
+  photo: name,
   photoAlt: `Foto de ${name}`,
   authorized: true,
 });
@@ -23,6 +23,16 @@ describe("Testimonials (FR-12)", () => {
     const html = renderToStaticMarkup(<Testimonials items={items} />);
     expect(html.match(/<li/g)).toHaveLength(3);
     expect(html).toContain("Foto de ana");
+  });
+
+  it("las fotos pasan por images.ts: AVIF, WebP y carga diferida", () => {
+    const html = renderToStaticMarkup(
+      <Testimonials items={["ana", "luis", "rosa"].map(sample)} />,
+    );
+    expect(html).toContain("/images/testimonios/ana.avif");
+    expect(html).toContain("/images/testimonios/ana.webp");
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('width="96"');
   });
 
   it("el esquema exige 0 o entre 3 y 5 testimonios autorizados", () => {

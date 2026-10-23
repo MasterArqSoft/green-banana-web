@@ -131,7 +131,7 @@ green-banana-web/
 │  │  └─ seo/            # Datos estructurados: LocalBusinessJsonLd
 │  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal, fincas
 │  └─ lib/               # Lógica pura sin React: content.ts (único acceso al contenido), schema.ts (Zod),
-│                        # claims.ts, tel.ts, seo.ts, images.ts, asset.ts, template.ts, format.ts,
+│                        # claims.ts, tel.ts, seo.ts, legal.ts, images.ts, asset.ts, template.ts, format.ts,
 │                        # mapa-ilustrado.ts + mapa-base.json (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
 ├─ scripts/              # images.mjs, budget.mjs, lighthouse.mjs

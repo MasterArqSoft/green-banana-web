@@ -5,6 +5,38 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: hallazgos menores de la revisión de arquitectura (5 a 8, 10 y 11)
+
+### Cambios
+- **5. `Picture`:** se quitó la prop `priority`, que no usaba nadie. El hero queda como excepción documentada en `Picture.tsx` y en `CLAUDE.md`: arma su propio `<picture>` con `media` y es el único con prioridad alta.
+- **6. Testimonios (FR-12):** dejan `next/image` y usan `Picture`.
+  - `testimonialImage(photo)` en `images.ts`: 96×96, AVIF y WebP, máximo 10 KB.
+  - En `testimonials.json`, `photo` pasa de ruta en `public/` a un nombre (`slug`): la foto original es `fotos-originales/testimonio-<photo>.png`, y `scripts/images.mjs` lee `testimonials.json` para generarla.
+  - Nueva fila en `spec/02-content-spec.md` §6.
+  - Efecto lateral: sale `next/image` del JavaScript de la landing: `index` baja de 270,6 a 265,3 KB.
+  - Las medidas (96 px, 10 KB) son una propuesta: [POR CONFIRMAR] cuando haya testimonios reales.
+- **7. Tipos del mapa:** `Ubicacion` y `MapaTextos` se exportan desde `schema.ts`. `MapaFincasInteractivo` y `mapa-ilustrado.ts` los usan en lugar de copias a mano, y `centro` usa `Fincas["centro"]`. Son solo tipos, no agregan peso al cliente.
+- **8. Medidas del mapa ilustrado:** `medidasMapa(variante)` en `mapa-ilustrado.ts`. `MapaFincas` las pasa en `previa` y ya no hay `1277`/`950` escritos en el componente cliente. Una prueba verifica que coincidan con el `width`/`height` de cada SVG.
+- **10. Páginas legales:** nuevo `src/lib/legal.ts` con `legalValues()` (movida desde `LegalPage`) y `legalMetadata(page)`. Cada página queda en 4 líneas. El separador del título pasó a `copy.seo.legalTitle` (`"{pagina} | {marca}"`, validado en `copySchema`). El título generado no cambia.
+- **11. `recipeImage(id)`** en `images.ts`: si falta la foto de una receta, el build falla con el id y no con un `TypeError`. Usa `Object.hasOwn`, así que ids como `constructor` también fallan.
+
+### Pruebas
+- Nuevas:
+  - receta sin foto;
+  - fotos de testimonios con AVIF, WebP y carga diferida;
+  - medidas del mapa contra el SVG;
+  - metadatos de las tres páginas legales.
+- `npm run validate` pasa completo:
+  - 196 pruebas unitarias;
+  - e2e: 46 pasan y 6 se omiten;
+  - presupuesto: 265,3 KB de 300;
+  - `npm audit`: 0 vulnerabilidades.
+
+### Archivos
+`src/lib/{schema,images,mapa-ilustrado,legal}.ts`, `src/content/copy.json`, `scripts/images.mjs`, `src/components/ui/{Picture,LegalPage}.tsx`, `src/components/secciones/{Recipes,Testimonials,MapaFincas}.tsx`, `src/components/cliente/MapaFincasInteractivo.tsx`, `src/app/{terminos,privacidad,garantia}/page.tsx`, pruebas en `tests/unit/`, `spec/02-content-spec.md`, `spec/03-plan.md` y `CLAUDE.md`.
+
+---
+
 ## 2026-10-22: componentes en subcarpetas y capas vigiladas por ESLint
 
 ### Decisión del usuario

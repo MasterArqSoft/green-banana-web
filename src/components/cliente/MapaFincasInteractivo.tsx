@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Map as LeafletMap } from "leaflet";
-import type { Finca } from "@/lib/schema";
+import type { Fincas, MapaTextos, Ubicacion } from "@/lib/schema";
 
 // Segundo componente cliente (spec/03-plan.md D6). Nunca importa @/lib/content: los
 // datos y los textos llegan por props desde MapaFincas. Leaflet y su CSS se importan
@@ -11,20 +11,6 @@ import type { Finca } from "@/lib/schema";
 // Antes del clic se ve el mapa ilustrado (`previa`, /mapa-fincas.svg servido por el
 // propio sitio, sin terceros) y una tarjeta con el aviso (`aviso`, renderizado en el
 // servidor) y el botón (AC-19).
-
-type Ubicacion = Omit<Finca, "productor">;
-
-type Textos = {
-  title: string;
-  showButton: string;
-  loading: string;
-  error: string;
-  acopioLabel: string;
-  attribution: string;
-  zoomIn: string;
-  zoomOut: string;
-  closePopup: string;
-};
 
 type Estado = "idle" | "loading" | "ready" | "error";
 
@@ -41,11 +27,11 @@ export function MapaFincasInteractivo({
 }: {
   avisoId: string;
   aviso: ReactNode;
-  previa: { escritorio: string; movil: string };
+  previa: { escritorio: string; movil: string; ancho: number; alto: number };
   fincas: Ubicacion[];
-  centro: { lat: number; lng: number };
+  centro: Fincas["centro"];
   zoom: number;
-  textos: Textos;
+  textos: MapaTextos;
 }) {
   const [estado, setEstado] = useState<Estado>("idle");
   const contenedor = useRef<HTMLDivElement>(null);
@@ -179,8 +165,8 @@ export function MapaFincasInteractivo({
               <img
                 src={previa.escritorio}
                 alt=""
-                width={1277}
-                height={950}
+                width={previa.ancho}
+                height={previa.alto}
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-x-0 top-0 h-[21rem] w-full object-cover md:inset-0 md:h-full md:object-[62%_50%]"

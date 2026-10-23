@@ -1,10 +1,10 @@
 // Genera las fotos publicadas en public/images/ desde fotos-originales/ (T-04).
 // Recorta a la proporción, redimensiona y baja la calidad hasta cumplir el peso máximo
 // de cada imagen (src/lib/images.ts). Falla si alguna no cabe. Uso: npm run images
-import { existsSync, mkdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import sharp from "sharp";
-import { allImages } from "../src/lib/images.ts";
+import { allImages, testimonialImage } from "../src/lib/images.ts";
 
 const SOURCE_DIR = "fotos-originales";
 const OUT_DIR = join("public", "images");
@@ -16,8 +16,17 @@ const encoders = {
   jpg: (img, quality) => img.jpeg({ quality, mozjpeg: true }),
 };
 
+// Más una foto por testimonio (FR-12); hoy no hay ninguno.
+const testimonials = JSON.parse(
+  readFileSync(join("src", "content", "testimonials.json"), "utf8"),
+);
+const specs = [
+  ...allImages(),
+  ...testimonials.map(({ photo }) => testimonialImage(photo)),
+];
+
 let failed = false;
-for (const spec of allImages()) {
+for (const spec of specs) {
   const source = join(SOURCE_DIR, `${spec.source}.png`);
   if (!existsSync(source)) {
     console.log(`✗ Falta ${source}`);

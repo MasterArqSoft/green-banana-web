@@ -123,7 +123,30 @@ export const IMAGES = {
   recipes: Record<string, ImageSpec>;
 };
 
-/** Todas las imágenes, para el script de generación y las pruebas. */
+/** Foto de una receta por su id de recipes.json. Si falta, el build falla con el id. */
+export function recipeImage(id: string): ImageSpec {
+  const recipes: Record<string, ImageSpec> = IMAGES.recipes;
+  if (!Object.hasOwn(recipes, id))
+    throw new Error(
+      `Falta la foto de la receta "${id}" en IMAGES.recipes (src/lib/images.ts).`,
+    );
+  return recipes[id];
+}
+
+/**
+ * Foto de un testimonio (FR-12), por el campo `photo` de testimonials.json. Se muestra a
+ * 48 px; 96 px cubre pantallas de alta densidad. scripts/images.mjs la genera.
+ */
+export const testimonialImage = (photo: string): ImageSpec => ({
+  source: `testimonio-${photo}`,
+  output: `testimonios/${photo}`,
+  width: 96,
+  height: 96,
+  formats: ["avif", "webp"],
+  maxKB: 10,
+});
+
+/** Todas las imágenes fijas, para el script de generación y las pruebas. */
 export function allImages(): ImageSpec[] {
   return [
     IMAGES.heroDesktop,

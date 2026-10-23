@@ -2,6 +2,7 @@ import { MapPin } from "lucide-react";
 import { MapaFincasInteractivo } from "@/components/cliente/MapaFincasInteractivo";
 import { assetPath } from "@/lib/asset";
 import { copy, fincas } from "@/lib/content";
+import { medidasMapa } from "@/lib/mapa-ilustrado";
 
 // Mapa de fincas de origen (FR-24), después de "Origen". Componente de servidor: el aviso
 // y la lista se entregan en el HTML y funcionan sin JavaScript (AC-16). El mapa solo se
@@ -34,6 +35,7 @@ export function MapaFincas() {
             previa={{
               escritorio: assetPath("/mapa-fincas.svg"),
               movil: assetPath("/mapa-fincas-movil.svg"),
+              ...medidasMapa("escritorio"),
             }}
             aviso={
               <div className="flex gap-3">

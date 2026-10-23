@@ -113,8 +113,9 @@ export const testimonialsSchema = z
       // Negocio o barrio.
       context: text,
       text,
-      // Ruta en public/, p. ej. "/images/testimonios/ana.webp".
-      photo: z.string().startsWith("/"),
+      // Nombre de la foto en fotos-originales/testimonio-<photo>.png; npm run images la
+      // publica optimizada (testimonialImage en src/lib/images.ts).
+      photo: slug,
       photoAlt: text,
       // Constancia de que la persona autorizó publicar su testimonio y su foto.
       authorized: z.literal(true),
@@ -145,6 +146,10 @@ export const copySchema = z.strictObject({
   // NFR-03 y 02-content-spec.md §7.
   seo: z.strictObject({
     title: textWith("marca"),
+    // Título de las páginas legales, p. ej. "Términos y condiciones | Marca".
+    legalTitle: textWith("pagina").includes("{marca}", {
+      message: "Debe incluir el marcador {marca}",
+    }),
     description: text,
     keywords: z.array(text).min(1),
     ogImageAlt: text,
@@ -326,6 +331,21 @@ export type Testimonial = z.infer<typeof testimonialsSchema>[number];
 export type Copy = z.infer<typeof copySchema>;
 export type Fincas = z.infer<typeof fincasSchema>;
 export type Finca = Fincas["fincas"][number];
+/** Finca sin el productor: lo que dibujan el mapa interactivo y el ilustrado. */
+export type Ubicacion = Omit<Finca, "productor">;
+/** Textos del mapa que recibe el componente cliente (solo los que usa). */
+export type MapaTextos = Pick<
+  Copy["map"],
+  | "title"
+  | "showButton"
+  | "loading"
+  | "error"
+  | "acopioLabel"
+  | "attribution"
+  | "zoomIn"
+  | "zoomOut"
+  | "closePopup"
+>;
 export type LegalPageKey = Exclude<
   keyof z.infer<typeof legalSchema>,
   "draftNotice"

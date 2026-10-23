@@ -188,6 +188,7 @@ Cada tarjeta: foto, nombre, tiempo, 2 líneas. Las recetas completas, si se publ
 | Origen y productor | AVIF/WebP | 1200×800 | 90 KB |
 | Recetas | AVIF/WebP | 600×400 | 40 KB |
 | Open Graph | JPG | 1200×630 | 150 KB |
+| Testimonios (FR-12, cuando existan) | AVIF/WebP | 96×96 (se muestra a 48 px) | 10 KB |
 
 Todas con texto alternativo descriptivo.
 

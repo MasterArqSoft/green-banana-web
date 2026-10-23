@@ -1,6 +1,6 @@
-import Image from "next/image";
-import { assetPath } from "@/lib/asset";
+import { Picture } from "@/components/ui/Picture";
 import { copy, testimonials } from "@/lib/content";
+import { testimonialImage } from "@/lib/images";
 import type { Testimonial } from "@/lib/schema";
 
 // Testimonios (FR-12). Solo reales y autorizados (P1). Sin testimonios, la sección
@@ -31,11 +31,9 @@ export function Testimonials({
           >
             <blockquote className="text-lg">“{item.text}”</blockquote>
             <div className="flex items-center gap-3">
-              <Image
-                src={assetPath(item.photo)}
+              <Picture
+                spec={testimonialImage(item.photo)}
                 alt={item.photoAlt}
-                width={48}
-                height={48}
                 className="size-12 rounded-full object-cover"
               />
               <p>

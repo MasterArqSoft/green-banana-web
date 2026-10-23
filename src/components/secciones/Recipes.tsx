@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import { Picture } from "@/components/ui/Picture";
 import { copy, recipes } from "@/lib/content";
-import { IMAGES } from "@/lib/images";
+import { recipeImage } from "@/lib/images";
 
 // Usos y recetas (FR-07): tarjetas con foto, nombre, tiempo y descripción corta.
 // Si algún día se publican recetas completas, van en la propia página, sin enlaces externos.
@@ -25,7 +25,7 @@ export function Recipes() {
             className="flex flex-col overflow-hidden rounded-card bg-white shadow-suave"
           >
             <Picture
-              spec={IMAGES.recipes[recipe.id as keyof typeof IMAGES.recipes]}
+              spec={recipeImage(recipe.id)}
               alt={recipe.imageAlt}
               sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
               className="aspect-[3/2] w-full object-cover"

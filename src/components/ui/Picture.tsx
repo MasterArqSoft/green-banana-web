@@ -26,22 +26,15 @@ type PictureProps = {
   spec: ImageSpec;
   alt: string;
   className?: string;
-  /** Solo la foto del primer viewport (hero): carga inmediata y prioridad alta. */
-  priority?: boolean;
   /** Ancho en pantalla para elegir la versión del srcset, p. ej. "(min-width: 1024px) 280px, 96px". */
   sizes?: string;
 };
 
 // Foto optimizada (NFR-08): <picture> con AVIF y WebP, ancho y alto explícitos (CLS 0)
-// y carga diferida salvo la del hero. Se usa <img> directo porque con exportación
-// estática el optimizador de next/image está desactivado.
-export function Picture({
-  spec,
-  alt,
-  className,
-  priority = false,
-  sizes,
-}: PictureProps) {
+// y carga diferida. Se usa <img> directo porque con exportación estática el optimizador
+// de next/image está desactivado. Excepción: el hero arma su propio <picture>, porque
+// cambia de foto entre móvil y escritorio (media) y es el único con prioridad alta (LCP).
+export function Picture({ spec, alt, className, sizes }: PictureProps) {
   const fallback = spec.formats[spec.formats.length - 1];
   const responsive = Boolean(spec.variants?.length);
   return (
@@ -61,8 +54,7 @@ export function Picture({
         alt={alt}
         width={spec.width}
         height={spec.height}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
+        loading="lazy"
         decoding="async"
         className={className}
       />

@@ -1,21 +1,9 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { copy, legal, site } from "@/lib/content";
+import { copy, legal } from "@/lib/content";
+import { legalValues } from "@/lib/legal";
 import type { LegalPageKey } from "@/lib/schema";
-import { formatPhone } from "@/lib/tel";
 import { fill } from "@/lib/template";
-
-// Datos de site.json que pueden usar los párrafos de legal.json.
-export function legalValues() {
-  return {
-    razonSocial: site.legal.razonSocial,
-    nit: site.legal.nit,
-    direccion: site.legal.direccion,
-    correo: site.legal.correo,
-    telefono: formatPhone(site.phone),
-    ciudad: site.acopio.city,
-  };
-}
 
 // Página legal (FR-18): términos, privacidad o garantía, desde legal.json.
 export function LegalPage({ page }: { page: LegalPageKey }) {

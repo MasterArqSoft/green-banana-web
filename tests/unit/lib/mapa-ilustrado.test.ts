@@ -2,7 +2,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { copy, fincas } from "@/lib/content";
-import { COLORES, mapaIlustradoSvg, proyectar } from "@/lib/mapa-ilustrado";
+import {
+  COLORES,
+  mapaIlustradoSvg,
+  medidasMapa,
+  proyectar,
+} from "@/lib/mapa-ilustrado";
 
 describe("mapa ilustrado (fondo antes de «Ver mapa», FR-24)", () => {
   const escritorio = mapaIlustradoSvg(fincas.fincas, copy.map.previewLabels);
@@ -65,5 +70,13 @@ describe("mapa ilustrado (fondo antes de «Ver mapa», FR-24)", () => {
   it("la variante móvil recorta el encuadre a la zona de las fincas", () => {
     expect(movil).toMatch(/viewBox="330 60 820 850"/);
     expect(escritorio).toMatch(/viewBox="0 0 \d+ \d+"/);
+    // El <img> de la vista previa usa estas medidas: deben ser las del SVG (CLS 0).
+    for (const [svg, variante] of [
+      [escritorio, "escritorio"],
+      [movil, "movil"],
+    ] as const) {
+      const { ancho, alto } = medidasMapa(variante);
+      expect(svg).toContain(`width="${ancho}" height="${alto}"`);
+    }
   });
 });
