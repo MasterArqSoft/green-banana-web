@@ -21,9 +21,20 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - `actions/upload-artifact@v7`: última versión, consultada con `gh api`.
 - Documentación: `spec/03-plan.md` §10 (ya no dice "sin despliegue automático") y §4, y `CLAUDE.md`.
 
+### `verificar` en los pull requests (pedido del usuario, misma fecha)
+- `pages.yml` también corre con `pull_request` a `main`, lo que incluye los PR de Dependabot de npm y de GitHub Actions. En un PR solo corre `verificar`: `build` y `deploy` llevan `if: github.event_name != 'pull_request'`.
+- Permisos:
+  - el workflow queda en `contents: read`;
+  - `pages: write` e `id-token: write` pasan solo a los jobs que publican;
+  - antes estaban a nivel de workflow y también los recibían los PR.
+- Concurrencia:
+  - las publicaciones siguen en cola (grupo `pages`, sin cancelar);
+  - en un PR, un push nuevo cancela la verificación anterior del mismo PR (`verificar-<ref>`).
+- `CLAUDE.md` y `dependabot.yml`: antes de fusionar un PR de Dependabot basta con revisar el check `verificar`.
+
 ### Abierto
-- Correr `verificar` también en los pull requests (por ejemplo, los de Dependabot), sin publicar.
-- Fijar las acciones por SHA. Las dos cosas se pueden dejar para R-10.
+- Fijar las acciones por SHA (puede esperar a R-10).
+- Opcional, lo configura el usuario en GitHub: una regla de protección de `main` que exija el check `verificar` para fusionar.
 - `ubuntu-latest` pasa a Ubuntu 26 desde el 2026-10-19 (aviso de GitHub); por ahora el build pasa.
 
 ---

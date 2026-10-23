@@ -295,7 +295,7 @@ Ningún evento lleva datos personales. Los parámetros UTM se leen para medir el
 
 **Regla obligatoria:** el repositorio y la pipeline deben estar en el mismo proveedor.
 
-Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm run validate`). La demo de GitHub Pages (`.github/workflows/pages.yml`, D-09) se publica en cada push a `main` solo si pasa el job `verificar`: formato, lint, tipos, pruebas unitarias, build, presupuesto de peso y pruebas e2e. No incluye `npm audit` (lo cubre Dependabot) ni Lighthouse; ambos llegan con R-10.
+Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm run validate`). La demo de GitHub Pages (`.github/workflows/pages.yml`, D-09) se publica en cada push a `main` solo si pasa el job `verificar`: formato, lint, tipos, pruebas unitarias, build, presupuesto de peso y pruebas e2e. No incluye `npm audit` (lo cubre Dependabot) ni Lighthouse; ambos llegan con R-10. En los pull requests a `main` (entre ellos los de Dependabot) corre solo `verificar`, sin publicar.
 
 | Entorno | Rama | Propósito |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Actualización automática de dependencias (T-40, plan §7, NFR-04).
 # Dependabot abre pull requests semanales; cada una pasa por la revisión del usuario
-# y `npm run validate` antes de fusionarse. Las alertas de seguridad llegan aparte.
+# y por el job `verificar` de .github/workflows/pages.yml antes de fusionarse. Las alertas de seguridad llegan aparte.
 version: 2
 updates:
   - package-ecosystem: npm

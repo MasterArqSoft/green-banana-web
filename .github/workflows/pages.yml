@@ -1,20 +1,24 @@
 # Demo pública del POC/MVP en GitHub Pages (decisión D-09 de spec/05-alcance-y-roadmap.md).
 # No es la pipeline completa de R-10 ni el hosting de producción (R-08).
+# En los pull requests a main (p. ej. los de Dependabot) solo corre `verificar`: no publica.
 name: Demo en GitHub Pages
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+# Solo lectura por defecto; los permisos de Pages, únicamente en los jobs que publican.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Las publicaciones van en cola, sin cancelarse. En un pull request, un push nuevo
+# cancela la verificación anterior del mismo PR.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('verificar-{0}', github.ref) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Lo mismo que `npm run validate`, salvo `audit:deps` (las alertas de seguridad las
@@ -66,7 +70,12 @@ jobs:
 
   build:
     needs: verificar
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v7
 
@@ -90,7 +99,11 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
