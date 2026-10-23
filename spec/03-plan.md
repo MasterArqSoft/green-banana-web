@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.6 · **Fecha:** 2026-10-22 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.7 · **Fecha:** 2026-10-23 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 ## Índice
 1. Contexto arquitectónico
@@ -43,7 +43,7 @@ flowchart LR
 | Curva para tu perfil | Baja | Baja (ya usas React) | Nula (ya usas Angular) | Nula (.NET) |
 | Idoneidad para landing | **Alta** | Media-alta | Baja | Baja |
 
-**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita al botón flotante (el acordeón de FAQ usa `<details>` nativo, sin JavaScript). Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
+**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita a dos componentes en `src/components/cliente/`: la visibilidad del botón flotante y el mapa de fincas, que carga Leaflet solo al pulsar "Ver mapa" (D6). El acordeón de FAQ usa `<details>` nativo, sin JavaScript. Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
 
 ### D2. Hosting
 
@@ -135,7 +135,7 @@ green-banana-web/
 │                        # mapa-ilustrado.ts + mapa-base.json (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
 ├─ scripts/              # images.mjs, budget.mjs, lighthouse.mjs
-├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, components/ui/, lib/)
+├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, ui/, seo/ y lib/; estructura.test.ts lo verifica)
 │                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
 ├─ doc/                  # bitácora y créditos (el resto, solo local)
@@ -150,8 +150,10 @@ Dependencias entre capas (en un solo sentido): `app/` → `components/` → `lib
 ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), con `no-restricted-imports` y `no-restricted-syntax` en `eslint.config.mjs`:
 - los JSON de `src/content/` solo se importan en `src/lib/content.ts`;
 - `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
-- `components/cliente/` no importa `@/lib/content`;
-- `"use client"` solo se permite en `components/cliente/`.
+- `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format` y `tel`;
+- `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`).
+
+`tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12.
 
 No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 
@@ -165,11 +167,14 @@ type Presentation = {
   approxWeightG?: number | [number, number];  // peso por unidad o total; rango [mín, máx] p. ej. la caja
   approxUnits?: string;          // "4–5"
   callLabel: string;             // "Llamar para precio"
+  imageAlt: string;              // texto alternativo de la foto
+  pendingConfirmation?: Array<'approxWeightG' | 'approxUnits'>;  // cifras sin confirmar (T-03): se muestran entre corchetes y bloquean producción
 };
 
 // src/content/site.json (esquema Fase 1)
 type Site = {
   brand: string;                 // [POR CONFIRMAR nombre comercial]
+  url: string;                   // URL pública https, sin "/" final (canónica, sitemap, Open Graph); demo hoy, dominio en RP-01
   phone: string;                 // E.164 con "+": "+573000000000" (FICTICIO en desarrollo)
   phoneIsPlaceholder: boolean;   // true mientras el número sea ficticio; bloquea el build con SITE_ENV=production
   schedule: string;              // [POR CONFIRMAR horario]
@@ -251,7 +256,7 @@ Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content
 |---|---|---|
 | Inyección o XSS (A03) | Sin HTML dinámico no confiable, escape por defecto, JSON-LD serializado con `jsonLd()` de `src/lib/seo.ts` (escapa `<`), CSP estricta | NFR-04 |
 | Configuración insegura (A05) | Cabeceras HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` en el archivo de configuración del hosting elegido en R-08 (p. ej. `staticwebapp.config.json` en Azure Static Web Apps o `_headers` en Cloudflare Pages). Con exportación estática, `next.config` no aplica cabeceras | NFR-04 |
-| Componentes vulnerables (A06) | `npm audit` completo (producción y desarrollo) en el script de validación local (`npm run validate`, `audit:deps`), que falla con vulnerabilidades altas o críticas; ESLint sin `eslint-config-next` para evitar `braces` (T-49); Dependabot (actualizaciones semanales, alertas y PR de seguridad) desde T-40; versiones fijadas con `package-lock.json`; acciones de GitHub fijadas por SHA de commit, actualizadas por Dependabot | NFR-04 |
+| Componentes vulnerables (A06) | `npm audit` completo (producción y desarrollo) en el script de validación local (`npm run validate`, `audit:deps`), que falla con vulnerabilidades altas o críticas; ESLint sin `eslint-config-next` para evitar `braces` (T-49); Dependabot (actualizaciones semanales, alertas y PR de seguridad) desde T-40; versiones fijadas con `package-lock.json`; acciones de GitHub fijadas por SHA de commit, actualizadas por Dependabot; `checkout` con `persist-credentials: false`, para que el token no quede al alcance de los scripts de las dependencias | NFR-04 |
 | Fuga de secretos | Ninguno en Fase 1 (sitio sin backend). Cuando se active R-06, claves solo en variables del servidor | P6 |
 | Privacidad (Ley 1581) | Sin formularios ni datos personales en Fase 1; analítica sin cookies | NFR-09 |
 | Disponibilidad | Sitio estático en CDN | NFR-06 |
@@ -333,14 +338,16 @@ Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm
 | FR-08 | `Benefits` | T-46 | Revisión de copy (AC-07, P3) |
 | FR-09 | `HowItWorks` | T-19 | Visual |
 | FR-10 | `Coverage`, `zones.json` | T-20 | Revisión de contenido (AC-04) |
-| FR-11 | `Negocios` con `CallButton` | T-21 | AC-03 |
+| FR-11 | `Business` con `CallButton` | T-21 | AC-03 |
 | FR-12 | `Testimonials` (condicional) | T-23 | AC-11 |
 | FR-13 | `Faq`, JSON-LD | T-24 | AC-09 |
 | FR-14 | `Guarantee` | T-25 | Visual |
 | FR-15 | `FinalCta` con `CallButton` | T-47 | AC-03 |
 | FR-16, FR-18 | `Footer`, páginas legales | T-26, T-27 | AC-05, AC-06 |
 | FR-17 | `FloatingCall` | T-28 | Visual móvil |
-| FR-20, FR-21 | Roadmap R-07 (analítica) | – | AC-10 (ausencia de scripts) |
+| FR-19 | Marca de `TopBar` y "Volver al inicio" en `LegalPage` | T-51 | AC-14 |
+| FR-20, FR-21, FR-22, FR-23 | Roadmap R-07 (analítica) | – | AC-10 (ausencia de scripts) |
+| FR-24 | `MapaFincas`, `MapaFincasInteractivo`, `fincas.json` (D6) | T-52 a T-56 | AC-15 a AC-20 |
 | NFR-01 a 03 | Optimización, SEO | T-30, T-31 | AC-08 |
 | NFR-04 | Cabeceras, CSP | T-32 | Escaneo de cabeceras |
 | NFR-09 | Sin formularios; sin analítica en Fase 1 | T-27 | AC-12 |

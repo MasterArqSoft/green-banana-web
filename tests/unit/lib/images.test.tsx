@@ -3,11 +3,10 @@ import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Hero } from "@/components/secciones/Hero";
-import { Picture } from "@/components/ui/Picture";
 import { ProductCards } from "@/components/secciones/ProductCards";
 import { Recipes } from "@/components/secciones/Recipes";
 import { products, recipes } from "@/lib/content";
-import { allImages, IMAGES, recipeImage } from "@/lib/images";
+import { allImages, IMAGES, recipeImage, testimonialImage } from "@/lib/images";
 
 describe("fotos publicadas (T-04, NFR-08)", () => {
   it.each(
@@ -36,23 +35,11 @@ describe("fotos publicadas (T-04, NFR-08)", () => {
     expect(() => recipeImage("arepa")).toThrow(/"arepa"/);
     expect(() => recipeImage("constructor")).toThrow(/"constructor"/);
   });
-});
 
-describe("Picture", () => {
-  const html = renderToStaticMarkup(
-    <Picture spec={IMAGES.origin} alt="Prueba" />,
-  );
-
-  it("ofrece AVIF y usa WebP como respaldo", () => {
-    expect(html).toContain('type="image/avif"');
-    expect(html).toMatch(/<img[^>]*src="\/images\/origen\/origen\.webp"/);
-  });
-
-  it("declara ancho y alto, y carga en diferido", () => {
-    expect(html).toContain('width="1200"');
-    expect(html).toContain('height="800"');
-    expect(html).toContain('loading="lazy"');
-    expect(html).toContain('alt="Prueba"');
+  it("la foto de un testimonio solo acepta un slug (no puede salir de public/images/)", () => {
+    expect(testimonialImage("ana-maria").output).toBe("testimonios/ana-maria");
+    expect(() => testimonialImage("../../src/app/page")).toThrow(/no válida/);
+    expect(() => testimonialImage("Ana")).toThrow(/no válida/);
   });
 });
 

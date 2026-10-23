@@ -32,7 +32,7 @@ Para cada una, verifica con Grep o leyendo el código. Cita `archivo:línea`. La
 1. Los JSON de `src/content/` solo se importan en `src/lib/content.ts`. Todo lo demás importa desde `@/lib/content`.
 2. Ningún archivo con `"use client"` importa `@/lib/content`, ni directa ni indirectamente (revisa los módulos de `src/lib/` que importe).
 3. Componentes cliente permitidos: `FloatingCallVisibility` y `MapaFincasInteractivo`, en `src/components/cliente/` (ESLint rechaza `"use client"` fuera de esa carpeta; las capas también las vigila `eslint.config.mjs`, así que revisa además que nadie haya debilitado esas reglas). Uno nuevo necesita una justificación explícita (presupuesto de 300 KB, AC-15) y, aun justificado, es un hallazgo importante.
-4. Sin backend en la Fase 1: no hay `src/app/api/`, ni `"use server"`, ni rutas que lean `Request`. Las rutas especiales (`robots`, `sitemap`, los SVG del mapa) llevan `export const dynamic = "force-static"`.
+4. Sin backend en la Fase 1: no hay `src/app/api/`, ni `"use server"` (ESLint lo rechaza), ni rutas que lean `Request`. Las rutas especiales (`robots`, `sitemap`, los SVG del mapa) llevan `export const dynamic = "force-static"`.
 5. Cada archivo de contenido tiene un esquema estricto en `src/lib/schema.ts`, y los tipos salen de `z.infer`. Un tipo escrito a mano que duplique un esquema es un hallazgo.
 6. Las guardas de producción de `content.ts` (`phoneIsPlaceholder`, `findPendingMarkers`, frases prohibidas de `claims.ts`) siguen intactas y se ejecutan en el build.
 
@@ -51,7 +51,7 @@ Para cada una, verifica con Grep o leyendo el código. Cita `archivo:línea`. La
 14. No se reinstalan `eslint-config-next` ni `@next/eslint-plugin-next` (D-12). Los plugins de ESLint van en versión exacta. Toda dependencia nueva de producción se justifica por su peso en el presupuesto.
 
 **Trazabilidad (P10)**
-15. Un componente o módulo nuevo de `src/lib/` trae su prueba en `tests/unit/`, en la carpeta que refleja la de `src/` (`components/secciones/`, `components/ui/`, `lib/`). Un cambio de comportamiento visible se refleja en las pruebas e2e cuando corresponde.
+15. Un componente o módulo nuevo de `src/lib/` trae su prueba en `tests/unit/`, en la carpeta que refleja la de `src/` (`components/secciones/`, `components/ui/`, `components/seo/`, `lib/`). Lo verifica `tests/unit/estructura.test.ts`, junto con la matriz de trazabilidad de `03-plan.md` §12; revisa que nadie haya agrandado su lista de exentos sin motivo. Un cambio de comportamiento visible se refleja en las pruebas e2e cuando corresponde.
 16. Un cambio de alcance o de arquitectura actualiza primero `spec/05`, luego `01`, `03` y `04` (gobierno de specs, constitución §5). En una revisión completa, compara **todas** las secciones de `spec/03-plan.md` (§1 a §12) y el resumen de `CLAUDE.md` con el código, los scripts y los workflows: cualquier frase que ya no sea cierta es un hallazgo.
 
 **CI y despliegue**

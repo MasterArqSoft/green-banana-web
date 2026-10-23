@@ -268,7 +268,8 @@ export const copySchema = z.strictObject({
     loading: text,
     error: text,
     listTitle: text,
-    acopioLabel: text,
+    // Detalle del acopio en la lista y en el popup del mapa.
+    acopioDetail: textWith("municipio"),
     attribution: text,
     zoomIn: text,
     zoomOut: text,
@@ -340,7 +341,7 @@ export type MapaTextos = Pick<
   | "showButton"
   | "loading"
   | "error"
-  | "acopioLabel"
+  | "acopioDetail"
   | "attribution"
   | "zoomIn"
   | "zoomOut"

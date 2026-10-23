@@ -101,7 +101,9 @@ test.describe("mapa de fincas (FR-24)", () => {
     await page.locator(".marcador-acopio.leaflet-marker-icon").click();
     const popup = page.locator(".leaflet-popup");
     await expect(popup).toContainText("Acopio en Santa Marta");
-    await expect(popup).toContainText(copy.map.acopioLabel);
+    await expect(popup).toContainText(
+      copy.map.acopioDetail.replace("{municipio}", "Santa Marta"),
+    );
     await expect(
       popup.getByRole("button", { name: copy.map.closePopup }),
     ).toBeAttached();

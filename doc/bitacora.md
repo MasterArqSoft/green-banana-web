@@ -5,6 +5,61 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-23: hallazgos de la segunda revisión de arquitectura
+
+### Contexto
+El agente `arquitecto-software`, ya con sus instrucciones nuevas, revisó `7eb91eb`: "Aprobado con observaciones", sin bloqueantes, con 3 hallazgos importantes y 5 sugerencias. El usuario pidió corregirlos todos.
+
+### Qué se hizo
+1. **`spec/03-plan.md` al día (v1.7):**
+   - D1 menciona los dos componentes cliente;
+   - en §5, `Site` tiene `url` y `Presentation` tiene `imageAlt` y `pendingConfirmation`;
+   - en §12, `Business` en lugar de `Negocios`, y filas nuevas para FR-19 y FR-24, más FR-22 y FR-23 en la fila de R-07.
+2. **`CLAUDE.md`:** el presupuesto ahora dice 265 KB, de los que unos 176 KB son JavaScript.
+3. **Cada módulo con su prueba en la carpeta equivalente.** Se movieron los bloques que estaban en el archivo de otro módulo:
+   - `CallButton` (estaba en `TopBar`), `FinalCta` (en `Guarantee`), `Picture` (en `images`) y `LocalBusinessJsonLd` (en `seo`);
+   - `legalMetadata` (en `LegalPage`), `findForbiddenClaims` (en `Benefits`) y `findPendingMarkers` (en `content`);
+   - `assetPath` (en `Testimonials`) y los esquemas (en `content` y `template`), que pasan a `lib/schema.test.ts`.
+   
+   Los 4 últimos los encontré al revisar; el agente no los había señalado. `seo.test.tsx` pasa a `.ts` porque ya no renderiza JSX. La prueba nueva `tests/unit/estructura.test.ts` exige:
+   - que cada módulo tenga su prueba (`components/cliente/` queda exento: necesita navegador);
+   - que ninguna prueba quede sin su módulo;
+   - que cada FR de `01-spec.md` aparezca en §12.
+4. **ESLint:**
+   - en `components/cliente/`, `@/lib/*` solo se permite para `schema`, `template`, `format` y `tel`, porque `seo`, `legal`, `images` y `claims` cargan el contenido;
+   - `"use server"` falla en todo `src/`.
+   
+   Se comprobó con archivos de prueba que cada regla falla cuando debe.
+5. **Texto del acopio:**
+   - `copy.map.acopioLabel` pasa a ser `copy.map.acopioDetail`, `"Centro de acopio · {municipio}"`, y se rellena con `fill()` en la lista y en el popup;
+   - el separador ya no está escrito en el código;
+   - en la lista, el "·" deja de tener `aria-hidden` (igual que ya pasaba en el popup). Falta confirmar en la prueba manual con lector de pantalla (T-38) que no estorbe; si estorba, se separa en dos claves.
+6. **`imageSrc`:** pasa de `ui/Picture.tsx` a `lib/asset.ts`, y no a `images.ts` como proponía el agente, porque `images.ts` no puede tener imports: lo carga `scripts/images.mjs` con Node, e `imageSrc` necesita `assetPath`.
+7. **`testimonialImage(photo)`** rechaza lo que no sea un slug. `scripts/images.mjs` lee `testimonials.json` sin pasar por Zod, y con un `../` en `photo` se podría escribir fuera de `public/images/`. Se validó en la función y no solo en el script, para que los dos usos queden cubiertos.
+8. **`pages.yml`:** los dos `checkout` llevan `persist-credentials: false`.
+
+### Verificación
+`npm run validate` completo:
+- 292 pruebas unitarias (antes 196; la diferencia es casi toda de las comprobaciones de estructura y trazabilidad);
+- 46 e2e (6 omitidas por ser solo de móvil);
+- presupuesto: 265,4 KB de 300, con 176,5 KB de JS;
+- 0 vulnerabilidades.
+
+### Decisiones pendientes del usuario
+- **¿La regla "los JSON solo se importan en `content.ts`" se aplica también a `scripts/` y `tests/`?** Hoy no: `scripts/images.mjs` lee `testimonials.json` y las pruebas importan los JSON para alterarlos.
+- **Exentos de `estructura.test.ts`:** hoy solo `components/cliente/`.
+- **Protección de `main` en GitHub:** que `verificar` sea obligatorio antes de fusionar.
+
+### Archivos
+- Código: `src/lib/{asset,images,schema}.ts`, `src/components/ui/Picture.tsx`, `src/components/secciones/{Hero,MapaFincas}.tsx`, `src/components/cliente/MapaFincasInteractivo.tsx` y `src/content/copy.json`.
+- Configuración: `eslint.config.mjs` y `.github/workflows/pages.yml`.
+- Pruebas:
+  - nuevas: `tests/unit/estructura.test.ts`, `components/ui/{CallButton,Picture}.test.tsx`, `components/secciones/FinalCta.test.tsx`, `components/seo/LocalBusinessJsonLd.test.tsx` y `lib/{asset,claims,legal,schema}.test.ts`;
+  - modificadas: las 10 de las que salieron los bloques, `MapaFincas.test.tsx` y `tests/e2e/mapa-fincas.spec.ts`.
+- Documentación: `spec/03-plan.md`, `spec/02-content-spec.md`, `spec/04-tasks.md`, `CLAUDE.md` y `.claude/agents/arquitecto-software.md`.
+
+---
+
 ## 2026-10-22: mejoras al agente `arquitecto-software`
 
 ### Contexto

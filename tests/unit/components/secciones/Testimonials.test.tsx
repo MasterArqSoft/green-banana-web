@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Testimonials } from "@/components/secciones/Testimonials";
-import { assetPath } from "@/lib/asset";
 import { testimonialsSchema, type Testimonial } from "@/lib/schema";
 
 const sample = (name: string): Testimonial => ({
@@ -45,19 +44,5 @@ describe("Testimonials (FR-12)", () => {
       authorized: false,
     }));
     expect(testimonialsSchema.safeParse(unauthorized).success).toBe(false);
-  });
-});
-
-describe("assetPath", () => {
-  afterEach(() => vi.unstubAllEnvs());
-
-  it("agrega el prefijo de la demo en GitHub Pages", () => {
-    vi.stubEnv("PAGES_BASE_PATH", "/green-banana-web");
-    expect(assetPath("/images/a.webp")).toBe("/green-banana-web/images/a.webp");
-  });
-
-  it("deja la ruta igual en local", () => {
-    vi.stubEnv("PAGES_BASE_PATH", undefined);
-    expect(assetPath("/images/a.webp")).toBe("/images/a.webp");
   });
 });

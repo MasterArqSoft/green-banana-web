@@ -1,4 +1,4 @@
-import { assetPath } from "@/lib/asset";
+import { imageSrc } from "@/lib/asset";
 import type { ImageFormat, ImageSpec } from "@/lib/images";
 
 const MIME: Record<ImageFormat, string> = {
@@ -6,15 +6,6 @@ const MIME: Record<ImageFormat, string> = {
   webp: "image/webp",
   jpg: "image/jpeg",
 };
-
-export const imageSrc = (
-  spec: ImageSpec,
-  format: ImageFormat,
-  width = spec.width,
-) =>
-  assetPath(
-    `/images/${spec.output}${width === spec.width ? "" : `-${width}`}.${format}`,
-  );
 
 // "a-200.avif 200w, a.avif 600w" con las versiones menores y la principal.
 const srcSetFor = (spec: ImageSpec, format: ImageFormat) =>

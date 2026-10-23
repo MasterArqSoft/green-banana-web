@@ -16,22 +16,3 @@ describe("Benefits (FR-08)", () => {
     expect(findForbiddenClaims(html)).toEqual([]);
   });
 });
-
-describe("findForbiddenClaims (P1, P3)", () => {
-  it("detecta frases prohibidas sin importar tildes ni mayúsculas", () => {
-    expect(findForbiddenClaims("Ayuda contra el CANCER")).toEqual(["cáncer"]);
-    expect(findForbiddenClaims("Controla la diabetes")).toEqual(["diabetes"]);
-    expect(findForbiddenClaims("Ideal para bajar de peso")).toEqual([
-      "bajar de peso",
-    ]);
-    expect(findForbiddenClaims("¡Cupos limitados!")).toEqual([
-      "cupos limitados",
-    ]);
-  });
-
-  it("acepta la formulación permitida", () => {
-    expect(
-      findForbiddenClaims("Fuente de almidón resistente, un tipo de fibra."),
-    ).toEqual([]);
-  });
-});

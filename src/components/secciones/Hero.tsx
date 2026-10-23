@@ -1,5 +1,5 @@
 import { CallButton } from "@/components/ui/CallButton";
-import { imageSrc } from "@/components/ui/Picture";
+import { imageSrc } from "@/lib/asset";
 import { copy, site } from "@/lib/content";
 import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";

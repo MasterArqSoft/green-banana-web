@@ -3,6 +3,7 @@ import { MapaFincasInteractivo } from "@/components/cliente/MapaFincasInteractiv
 import { assetPath } from "@/lib/asset";
 import { copy, fincas } from "@/lib/content";
 import { medidasMapa } from "@/lib/mapa-ilustrado";
+import { fill } from "@/lib/template";
 
 // Mapa de fincas de origen (FR-24), después de "Origen". Componente de servidor: el aviso
 // y la lista se entregan en el HTML y funcionan sin JavaScript (AC-16). El mapa solo se
@@ -71,7 +72,7 @@ export function MapaFincas() {
               showButton: map.showButton,
               loading: map.loading,
               error: map.error,
-              acopioLabel: map.acopioLabel,
+              acopioDetail: map.acopioDetail,
               attribution: map.attribution,
               zoomIn: map.zoomIn,
               zoomOut: map.zoomOut,
@@ -97,13 +98,9 @@ export function MapaFincas() {
                   <div className="min-w-0">
                     <p className="font-semibold">{finca.nombre}</p>
                     <p className="text-sm">
-                      {finca.tipo === "acopio" && (
-                        <>
-                          {map.acopioLabel}
-                          <span aria-hidden="true"> · </span>
-                        </>
-                      )}
-                      {finca.municipio}
+                      {finca.tipo === "acopio"
+                        ? fill(map.acopioDetail, { municipio: finca.municipio })
+                        : finca.municipio}
                     </p>
                   </div>
                 </li>

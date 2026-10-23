@@ -27,6 +27,32 @@ const NO_COMPONENTS = {
   group: ["@/components/*", "**/components/*"],
   message: "src/lib/ es lógica sin React: no importa componentes.",
 };
+// Un componente cliente solo usa los módulos de lib/ que no cargan el contenido.
+// seo, legal, images o claims importan @/lib/content (o son pesados) y lo meterían
+// en el JavaScript del navegador por un camino indirecto.
+const LIB_CLIENTE = {
+  group: [
+    "@/lib/*",
+    "!@/lib/schema",
+    "!@/lib/template",
+    "!@/lib/format",
+    "!@/lib/tel",
+    "!@/lib/content",
+  ],
+  message:
+    "Un componente cliente solo importa @/lib/schema (tipos), template, format o tel. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
+};
+// Directivas que agregan JavaScript o código de servidor.
+const USE_CLIENT = {
+  selector: "Program > ExpressionStatement[directive='use client']",
+  message:
+    'Los componentes cliente viven en src/components/cliente/. Cada "use client" suma JavaScript a la carga inicial.',
+};
+const USE_SERVER = {
+  selector: "ExpressionStatement[directive='use server']",
+  message:
+    'Sin Server Actions: con output: "export" no hay servidor (Fase 1, sin backend).',
+};
 
 const eslintConfig = defineConfig([
   ...tseslint.configs.recommended,
@@ -80,7 +106,7 @@ const eslintConfig = defineConfig([
                 "Un componente cliente no importa el contenido: viajaría todo en el JavaScript del navegador. Recíbelo por props desde un componente de servidor.",
             },
           ],
-          patterns: [SOLO_CONTENT_TS, NO_APP],
+          patterns: [SOLO_CONTENT_TS, NO_APP, LIB_CLIENTE],
         },
       ],
     },
@@ -101,20 +127,15 @@ const eslintConfig = defineConfig([
       "no-restricted-imports": ["error", { patterns: [NO_APP, NO_COMPONENTS] }],
     },
   },
-  // "use client" solo en src/components/cliente/ (CLAUDE.md, JavaScript mínimo).
+  // "use client" solo en src/components/cliente/ (CLAUDE.md, JavaScript mínimo) y
+  // "use server" en ninguna parte.
   {
     files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/components/cliente/**"],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "Program > ExpressionStatement[directive='use client']",
-          message:
-            'Los componentes cliente viven en src/components/cliente/. Cada "use client" suma JavaScript a la carga inicial.',
-        },
-      ],
-    },
+    rules: { "no-restricted-syntax": ["error", USE_CLIENT, USE_SERVER] },
+  },
+  {
+    files: ["src/components/cliente/**/*.{ts,tsx}"],
+    rules: { "no-restricted-syntax": ["error", USE_SERVER] },
   },
   // Desactiva las reglas de estilo que chocan con Prettier.
   prettier,

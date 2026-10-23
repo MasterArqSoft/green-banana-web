@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Map as LeafletMap } from "leaflet";
 import type { Fincas, MapaTextos, Ubicacion } from "@/lib/schema";
+import { fill } from "@/lib/template";
 
 // Segundo componente cliente (spec/03-plan.md D6). Nunca importa @/lib/content: los
 // datos y los textos llegan por props desde MapaFincas. Leaflet y su CSS se importan
@@ -108,7 +109,7 @@ export function MapaFincasInteractivo({
         const detalle = document.createElement("span");
         detalle.textContent =
           finca.tipo === "acopio"
-            ? `${textos.acopioLabel} · ${finca.municipio}`
+            ? fill(textos.acopioDetail, { municipio: finca.municipio })
             : finca.municipio;
         popup.append(nombre, document.createElement("br"), detalle);
 

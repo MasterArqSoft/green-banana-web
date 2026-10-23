@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MapaFincas } from "@/components/secciones/MapaFincas";
 import { copy, fincas } from "@/lib/content";
+import { fill } from "@/lib/template";
 
 describe("MapaFincas (FR-24)", () => {
   const html = renderToStaticMarkup(<MapaFincas />);
@@ -24,7 +25,9 @@ describe("MapaFincas (FR-24)", () => {
 
   it("marca el acopio con su etiqueta", () => {
     const acopio = items.find((item) => item.includes("Acopio en Santa Marta"));
-    expect(acopio).toContain(copy.map.acopioLabel);
+    expect(acopio).toContain(
+      fill(copy.map.acopioDetail, { municipio: "Santa Marta" }),
+    );
   });
 
   it("muestra el aviso con el enlace a la política de privacidad antes del botón (AC-19)", () => {

@@ -1,6 +1,4 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 import { site } from "@/lib/content";
 import { absoluteUrl, jsonLd, ogImage, PAGES, seoTitle } from "@/lib/seo";
 
@@ -20,16 +18,6 @@ describe("SEO (T-31, NFR-03)", () => {
     const out = jsonLd({ text: "a</script><b>" });
     expect(out).not.toContain("<");
     expect(JSON.parse(out)).toEqual({ text: "a</script><b>" });
-  });
-
-  it("publica LocalBusiness con datos de site.json y sin precios", () => {
-    const html = renderToStaticMarkup(<LocalBusinessJsonLd />);
-    const json = html.match(/<script[^>]*>(.*)<\/script>/)?.[1];
-    const data = JSON.parse(json!);
-    expect(data["@type"]).toBe("LocalBusiness");
-    expect(data.telephone).toBe(site.phone);
-    expect(data.address.addressLocality).toBe(site.acopio.city);
-    expect(JSON.stringify(data)).not.toMatch(/price|offer/i);
   });
 });
 

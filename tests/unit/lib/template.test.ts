@@ -1,6 +1,4 @@
 import { describe, expect, it } from "vitest";
-import copyJson from "@/content/copy.json";
-import { copySchema } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
 describe("fill", () => {
@@ -16,18 +14,5 @@ describe("fill", () => {
 
   it("falla si falta un valor", () => {
     expect(() => fill("Llámanos: {telefono}", {})).toThrow("{telefono}");
-  });
-});
-
-describe("esquema de copy.json", () => {
-  it("rechaza un texto al que le falta su marcador", () => {
-    const copy = structuredClone(copyJson);
-    copy.topBar.acopio = "Acopio en Santa Marta";
-    expect(copySchema.safeParse(copy).success).toBe(false);
-  });
-
-  it("rechaza una sección no prevista", () => {
-    const copy = { ...structuredClone(copyJson), hero: { title: "Hola" } };
-    expect(copySchema.safeParse(copy).success).toBe(false);
   });
 });

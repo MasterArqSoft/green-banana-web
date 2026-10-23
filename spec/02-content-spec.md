@@ -132,7 +132,7 @@ PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
 | Finca de ejemplo E (FICTICIO), Fundación | finca | 10.5207 | -74.1850 | latitude.to (Fundación) |
 
 - **Centro inicial:** 10.88, -74.21, zoom 9. Al cargar, el mapa se ajusta a todas las ubicaciones con margen (fitBounds); el centro y el zoom solo se usan si no hay ubicaciones.
-- **Claves de `copy.json`:** `navigation.backHome`; `map.title`, `map.text`, `map.showButton`, `map.consent`, `map.privacyUrl`, `map.loading`, `map.error`, `map.listTitle`, `map.acopioLabel`, `map.attribution`.
+- **Claves de `copy.json`:** `navigation.backHome`; `map.title`, `map.text`, `map.showButton`, `map.consent`, `map.privacyUrl`, `map.loading`, `map.error`, `map.listTitle`, `map.acopioDetail` ("Centro de acopio · {municipio}"; antes `map.acopioLabel`, cambiado el 2026-10-23 para que el separador no viva en el código), `map.attribution`.
   - Agregadas en T-53 (decisión del usuario, 2026-10-19): `map.privacyLink` (texto del enlace) y `map.zoomIn` "Acercar", `map.zoomOut` "Alejar" y `map.closePopup` "Cerrar", que reemplazan los textos en inglés de Leaflet. `map.acopioLabel` = "Centro de acopio".
   - Marcadores: finca = círculo hoja; acopio = cuadrado carbón. Ambos con borde crema y sin amarillo, que está reservado al CTA.
 - **Coordenadas:** aproximadas por municipio, según las fuentes de la tabla. Revisar con un mapa oficial antes de publicar.

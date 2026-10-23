@@ -137,14 +137,23 @@ export function recipeImage(id: string): ImageSpec {
  * Foto de un testimonio (FR-12), por el campo `photo` de testimonials.json. Se muestra a
  * 48 px; 96 px cubre pantallas de alta densidad. scripts/images.mjs la genera.
  */
-export const testimonialImage = (photo: string): ImageSpec => ({
-  source: `testimonio-${photo}`,
-  output: `testimonios/${photo}`,
-  width: 96,
-  height: 96,
-  formats: ["avif", "webp"],
-  maxKB: 10,
-});
+export function testimonialImage(photo: string): ImageSpec {
+  // Mismo patrón que `slug` en schema.ts. Se repite aquí porque scripts/images.mjs lee
+  // testimonials.json sin pasar por Zod, y `photo` forma rutas de archivo: así un "../"
+  // no puede escribir fuera de public/images/.
+  if (!/^[a-z0-9-]+$/.test(photo))
+    throw new Error(
+      `Foto de testimonio no válida: "${photo}". Solo minúsculas, números y guiones.`,
+    );
+  return {
+    source: `testimonio-${photo}`,
+    output: `testimonios/${photo}`,
+    width: 96,
+    height: 96,
+    formats: ["avif", "webp"],
+    maxKB: 10,
+  };
+}
 
 /** Todas las imágenes fijas, para el script de generación y las pruebas. */
 export function allImages(): ImageSpec[] {
