@@ -30,12 +30,12 @@ Cada documento tiene:
 - **riesgos**;
 - **lista de verificación** para decidir.
 
-## Skills instaladas que sobran
+## Skills desinstaladas (2026-10-22)
 
 - `jest-react-testing`: el proyecto usa Vitest, no Jest.
 - `typescript-advanced-types`: los tipos salen de los esquemas de Zod (`z.infer`).
 
-Se podrían desinstalar para que no compitan con las demás al activarse. Es una decisión pendiente.
+Se desinstalaron por decisión del usuario para que no compitan con las demás al activarse. Detalle en `doc/bitacora.md`.
 
 ## Fuentes
 

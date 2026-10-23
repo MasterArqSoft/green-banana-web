@@ -5,6 +5,33 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-22: desinstalación de `jest-react-testing` y `typescript-advanced-types`
+
+### Contexto
+- Análisis de agentes y skills del proyecto. Cierra el punto abierto de la entrada "skills candidatas" (2026-10-18).
+- Claude elige una skill comparando el pedido con su descripción y luego sigue sus instrucciones. Si la descripción encaja pero las instrucciones no aplican, la skill compite con lo que el proyecto usa.
+
+### Decisión del usuario
+- Quitar las dos skills:
+  - `jest-react-testing`: enseña Jest y React Testing Library (`jest.fn`, `jest.mock`, `render`, `screen`), pero el proyecto usa Vitest (`vi.fn`, `vi.mock`) y prueba los componentes sin DOM con `renderToStaticMarkup`. Riesgo medio: ante "escribe una prueba", podía llevar a código que no funciona o a proponer dependencias que no están instaladas;
+  - `typescript-advanced-types`: los tipos salen de los esquemas de Zod (`z.infer` en `src/lib/schema.ts`), una sola fuente de verdad. No aportaba nada y empujaba hacia tipos escritos a mano que pueden desalinearse del esquema. Riesgo bajo.
+- Es reversible: se reinstalan desde sus repositorios de origen (`manutej/luxor-claude-marketplace` y `flora131/atomic`).
+
+### Cambios
+- Borradas `.claude/skills/jest-react-testing/` y `.claude/skills/typescript-advanced-types/`. Están fuera de Git (`.gitignore`), así que el borrado no aparece en el diff.
+- `skills-lock.json`: se quitaron sus dos entradas.
+- `doc/skills-candidatas/README.md`: la sección "Skills instaladas que sobran" pasa a "Skills desinstaladas".
+
+### Quedan instaladas
+- `emil-design-eng`, `frontend-design` y `ui-ux-pro-max`.
+
+### Abierto
+- Las propuestas de esta sesión siguen pendientes de decisión del usuario:
+  - agentes: `guardian-contenido`, `auditor-rendimiento-a11y`, `cronista`, `revisor-dependabot` y `revisor-legal-co`;
+  - instalar solo `copywriting` (y evaluar `cro`) de `coreyhaines31/marketingskills`, con una regla en `CLAUDE.md` para que la constitución prevalezca sobre la skill.
+
+---
+
 ## 2026-10-19: Lighthouse y carga del mapa ilustrado al acercarse
 
 ### Hallazgo

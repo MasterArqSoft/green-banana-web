@@ -13,18 +13,6 @@
       "skillPath": "skills/frontend-design/SKILL.md",
       "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
     },
-    "jest-react-testing": {
-      "source": "manutej/luxor-claude-marketplace",
-      "sourceType": "github",
-      "skillPath": "plugins/luxor-frontend-essentials/skills/jest-react-testing/SKILL.md",
-      "computedHash": "d38163c02ac51cdc499b654be345b660009e359bddd76a9e9f931e1e34898b39"
-    },
-    "typescript-advanced-types": {
-      "source": "flora131/atomic",
-      "sourceType": "github",
-      "skillPath": ".agents/skills/typescript-advanced-types/SKILL.md",
-      "computedHash": "a91d45084cdf6089c490e7ac41762f83d5d0691e4c6f6a36aad876de7a9721a5"
-    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
