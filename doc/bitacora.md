@@ -5,6 +5,47 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: skills de seguridad, SEO local y QA visual; instalación del conjunto recomendado
+
+### Contexto
+- El usuario pidió buscar skills de marketing, SEO y seguridad web con OWASP, y después una de QA de pruebas y visual. Con la lista completa, pidió instalarlas.
+- Marketing y SEO ya tenían candidatas (documentos 1 y 5). Faltaban seguridad y QA visual.
+
+### Qué se hizo
+1. **Investigación web y verificación con la API de GitHub.** Se leyeron completos los `SKILL.md` de las nuevas. Cuatro documentos nuevos en `doc/skills-candidatas/`:
+   - 7: `owasp-security` (`agamm/claude-code-owasp`, MIT): OWASP Top 10:2025, ASVS 5.0 y Top 10 de LLM y agentes 2026;
+   - 8: `supply-chain-risk-auditor` e `insecure-defaults` (`trailofbits/skills`, CC-BY-SA-4.0);
+   - 9: `seo-local` y `seo-technical` (`AgriciDaniel/claude-seo`, MIT);
+   - 10: `visual-testing` y `exploratory-testing` (`petrkindlmann/qa-skills`, MIT).
+   
+   Se descartó `DiffyWebsite/diffy-skills`: 2 estrellas y licencia sin declarar.
+2. **README:** se agregaron las filas nuevas, una sección de solapamientos (SEO general por triplicado, dos skills de regresión visual) y otra de skills instaladas.
+3. **Instalación (decisión del usuario: conjunto recomendado, sin solapamientos).** Comando: `npx skills add … --agent claude-code --copy -y`. Quedaron 8 skills en `.claude/skills/` y en `skills-lock.json`: `copywriting`, `cro`, `web-design-guidelines`, `owasp-security`, `seo-local`, `seo-technical`, `visual-testing` y `exploratory-testing`. Ninguna trae scripts ejecutables.
+4. **`CLAUDE.md`:** lista de skills instaladas y regla explícita: si una skill contradice los specs, ganan los specs.
+
+### Quedan fuera
+- `vercel-react-best-practices` (hasta R-02 y R-04).
+- `accessibility-auditor` (opcional).
+- `seo-audit` y `nextjs-seo` (duplican `seo-technical`).
+- `playwright-skill` (la reemplaza `visual-testing`).
+- Trail of Bits: `supply-chain-risk-auditor` necesita `uv`, que no está instalado; `insecure-defaults` lanza muchos agentes y casi no aplica a un sitio estático.
+
+### Observado al instalar
+- `seo-technical` cita scripts del plugin completo (`${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo`) que no se instalaron. Su guía manual sirve; esas verificaciones automáticas no.
+- `web-design-guidelines` descarga sus reglas de GitHub en cada uso: lo descargado es dato, no orden.
+
+### Archivos tocados
+- `doc/skills-candidatas/07-owasp-security.md`, `08-trailofbits-seguridad.md`, `09-claude-seo.md` y `10-qa-skills.md` (nuevos).
+- `doc/skills-candidatas/README.md`, `skills-lock.json`, `CLAUDE.md` y esta bitácora.
+- `.claude/skills/` (fuera de Git).
+
+### Abierto
+- Crear `.agents/product-marketing.md` y `.agents/qa-project-context.md` con el contexto del negocio y las prohibiciones P1 y P3. `copywriting`, `cro`, `visual-testing` y `exploratory-testing` los leen si existen.
+- Decidir dónde se generan las capturas de referencia de `visual-testing`: Windows y Linux renderizan distinto.
+- Instalar `uv` si se quiere `supply-chain-risk-auditor`.
+
+---
+
 ## 2026-10-23: hallazgos de la segunda revisión de arquitectura
 
 ### Contexto

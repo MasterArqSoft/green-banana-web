@@ -25,7 +25,7 @@ No son fuente de verdad:
 - `doc/`: el informe de investigación (análisis de páginas de referencia) está solo en local, fuera de Git. Si contradice los specs, ganan los specs.
 - `doc/bitacora.md`: registro de sesiones (decisiones, cambios y archivos tocados). **Léelo al empezar para retomar el contexto.**
 - `doc/creditos.md`: origen y licencia de cada foto, ícono y fuente publicados.
-- `doc/skills-candidatas/`: evaluación de skills externas (marketing/CRO, Vercel, accesibilidad, SEO, Playwright). **Ninguna está instalada**: la decisión es del usuario. No instales skills sin su aprobación.
+- `doc/skills-candidatas/`: evaluación de skills externas (marketing/CRO, Vercel, accesibilidad, SEO, seguridad con OWASP, QA visual, Playwright). El 2026-10-24 el usuario instaló 8 en `.claude/skills/` (`copywriting`, `cro`, `web-design-guidelines`, `owasp-security`, `seo-local`, `seo-technical`, `visual-testing` y `exploratory-testing`; registro en `skills-lock.json`); el resto sigue como candidata. No instales skills sin su aprobación. **Si una skill contradice los specs o estas reglas (urgencia, cifras, testimonios, formularios, servicios de pago, APIs que no funcionan con `output: "export"`), ganan los specs.**
 
 ## Estado actual
 Fases 1 y 2 completas; de las Fases 4 y 5, todo lo que no depende de datos o decisiones del usuario. El estado por tarea está en `spec/04-tasks.md` (sección "Estado de avance"). Lo que falta depende del usuario (ver "Pendientes").
