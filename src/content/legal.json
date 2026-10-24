@@ -49,7 +49,15 @@
       {
         "heading": "Qué datos recoge este sitio",
         "paragraphs": [
-          "Este sitio no tiene formularios ni usa cookies de analítica o publicidad. No recoge datos personales."
+          "Este sitio no tiene formularios ni usa cookies de analítica o publicidad, y no te pide datos personales.",
+          "Como cualquier sitio web, el servicio que lo aloja recibe datos técnicos de cada visita, como la dirección IP [POR CONFIRMAR proveedor, finalidad y tiempo de conservación, R-08 y T-05]."
+        ]
+      },
+      {
+        "heading": "Mapa de fincas (opcional)",
+        "paragraphs": [
+          "El mapa interactivo solo se carga si pulsas «Ver mapa». En ese momento tu navegador se conecta a OpenStreetMap, que recibe tu dirección IP para entregarte las imágenes del mapa, según la política de privacidad de la Fundación OpenStreetMap.",
+          "Si no pulsas el botón, el sitio no se conecta con OpenStreetMap. Las fincas también aparecen en la lista de la misma sección."
         ]
       },
       {

@@ -53,7 +53,7 @@ describe("carga del contenido", () => {
     vi.doUnmock("@/content/site.json");
   });
 
-  it("cuenta 42 datos ficticios o por confirmar (checklist para publicar)", async () => {
+  it("cuenta 43 datos ficticios o por confirmar (checklist para publicar)", async () => {
     const content = await import("@/lib/content");
     const { site, products, zones, faq, recipes, origin, copy } = content;
     const { testimonials, legal, fincas } = content;
@@ -70,6 +70,6 @@ describe("carga del contenido", () => {
         legal,
         fincas,
       }),
-    ).toHaveLength(42);
+    ).toHaveLength(43);
   });
 });

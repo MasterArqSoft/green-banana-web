@@ -31,6 +31,17 @@ describe("Páginas legales (FR-18)", () => {
     },
   );
 
+  it("la privacidad describe la conexión opcional del mapa igual que su aviso (H-10, T-70)", () => {
+    const html = renderToStaticMarkup(<LegalPage page="privacidad" />);
+    // Los mismos hechos que copy.map.consent: cuándo, a quién y qué dato.
+    expect(copy.map.consent).toContain("OpenStreetMap");
+    expect(copy.map.consent).toContain("dirección IP");
+    expect(html).toContain(`«${copy.map.showButton}»`);
+    expect(html).toContain("OpenStreetMap, que recibe tu dirección IP");
+    // Ya no afirma que el sitio no recoge ningún dato.
+    expect(html).not.toContain("No recoge datos personales");
+  });
+
   it("los términos incluyen la identidad del vendedor y la exclusión de retracto (AC-06)", () => {
     const html = renderToStaticMarkup(<LegalPage page="terminos" />);
     expect(html).toContain(site.legal.razonSocial);

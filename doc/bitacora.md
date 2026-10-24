@@ -42,6 +42,16 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - **Verificado:**
   - 80 e2e (8 omitidas por perfil), 319 unitarias y tipos sin errores;
   - landing en 266,1 KB de 300 (+0,2 KB de JS del componente); Leaflet sigue fuera de la carga inicial.
+- Commit `8f9b569`.
+
+### T-70: la política de privacidad y el mapa (H-10)
+- **`legal.json`, Privacidad (borrador):**
+  - "No recoge datos personales" pasa a "no te pide datos personales";
+  - sección nueva **"Mapa de fincas (opcional)":** el mapa solo se carga al pulsar «Ver mapa»; entonces OpenStreetMap recibe la IP, según su política de privacidad; sin el clic no hay conexión, y las fincas están en la lista.
+- **Encontrado al releer:** la afirmación tampoco era exacta por el hosting. Cualquier servidor web, hoy GitHub Pages, recibe la IP de cada visita. Se agregó un párrafo marcado **[POR CONFIRMAR proveedor, finalidad y tiempo de conservación, R-08 y T-05]**. Los marcadores pendientes pasan de 42 a 43 (prueba de `content.test.ts` y `CLAUDE.md` actualizados).
+- **Prueba de coherencia en `LegalPage.test.tsx`:** la política contiene el texto real del botón (`copy.map.showButton`) y los mismos hechos que `copy.map.consent` (OpenStreetMap, dirección IP), y ya no dice "No recoge datos personales".
+- La redacción final sigue pendiente de la revisión jurídica (T-05, D-13).
+- **Verificado:** 320 unitarias y 80 e2e, incluida la revisión con axe de Privacidad.
 
 ---
 
