@@ -23,8 +23,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Lo mismo que `npm run validate`, salvo `audit:deps` (las alertas de seguridad las
-  # cubre Dependabot). Si algo falla, la demo no se publica.
+  # Lo mismo que `npm run validate`. Si algo falla, la demo no se publica.
   # Dos builds (T-71): con el prefijo de la demo en out-pages/, que pasa una prueba de
   # humo y es exactamente lo que se publica, y sin prefijo en out/ para las demás pruebas.
   verificar:
@@ -42,6 +41,13 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # Bloqueante desde T-72 (H-08): una vulnerabilidad alta o crítica, en producción o
+      # desarrollo, frena la publicación y los pull requests. Va primero porque es lo más
+      # rápido. Excepciones: política en spec/05-alcance-y-roadmap.md (D-14). Si falla por
+      # una caída del servicio de npm, se vuelve a correr el job.
+      - name: Auditoría de dependencias (npm audit)
+        run: npm run audit:deps
 
       - name: Formato (Prettier)
         run: npm run format:check

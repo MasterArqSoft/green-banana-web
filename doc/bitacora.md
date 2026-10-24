@@ -71,6 +71,19 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - `verificar` sigue solo con `contents: read`, y los permisos de Pages quedan únicamente en `deploy`.
 - **`validate`** suma `build:prefijo` y `test:prefijo`.
 - **Verificado:** `npm run validate` completo, con 320 unitarias, 80 e2e, 18 pruebas de humo con prefijo, landing en 266,1 KB y 0 vulnerabilidades.
+- Commit `0db1ba0`.
+
+### T-72: `npm audit` bloqueante en CI (H-08)
+- **Decisión del usuario:** `npm audit` bloquea la publicación. Cambia la decisión anterior de confiar solo en Dependabot para las alertas.
+- **`pages.yml`:** paso "Auditoría de dependencias" (`npm run audit:deps`, altas o críticas, producción y desarrollo) justo después de `npm ci`. Va primero porque es lo más rápido. Frena también los pull requests, incluidos los de Dependabot.
+- **Política de excepciones, D-14 en `05`:** `npm audit` no permite ignorar avisos concretos. El orden es:
+  1. actualizar la dependencia o usar `overrides` en `package.json`;
+  2. evaluar si el código vulnerable llega a ejecutarse y quitar la dependencia si se puede;
+  3. solo si nada de eso es viable, registrar la excepción (GHSA, justificación, fecha de revisión), que decide el usuario.
+  
+  Si el servicio de npm se cae, se vuelve a correr el job.
+- **Actualizados:** `CLAUDE.md` (CI, Dependabot y D-01 a D-14) y `03-plan.md` (A06 y CI).
+- **Verificado:** `npm run audit:deps` local, 0 vulnerabilidades. El paso nuevo se comprueba en GitHub Actions con el push.
 
 ---
 
