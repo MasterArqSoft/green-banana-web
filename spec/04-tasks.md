@@ -178,6 +178,27 @@ Decisiones del usuario:
 | T-76 | Experimentos medidos para bajar el LCP (uno por vez, varias corridas): precarga de Inter, decodificación y peso del hero, tareas largas de JS. Se conserva solo lo que mejora sin empeorar lo demás; presupuesto de T-75 ajustado al resultado | R-01, NFR-01 | 6 | T-75 |
 | T-77 | Cierre: decisión sobre H-03 registrada, `validate`, revisión de `arquitecto-software`, bitácora, estado y push | CLAUDE.md | 1 | T-75, T-76 |
 
+## Fase 11: Auditoría de causa raíz (2026-10-24)
+
+Origen: auditoría integral sobre `d9ca4fb` (informe y evidencias entregados por el usuario, no versionados). Dictamen: el control de Lighthouse está corregido, pero cumplir 3,4 s no prueba LCP ≤ 2,5 s; H-03 sigue presente, y hay un hallazgo nuevo **MAP-02**: si el mapa carga bien y después falla el proveedor, al moverlo queda gris sin aviso ni "Reintentar". Causa: el contador de teselas es acumulado en la sesión (un éxito inicial desactiva la detección), no se observa `tileerror` y `ready` llega antes de que haya cartografía. Medido con throttling de DevTools: base 2710 ms; sin JavaScript 2415 ms; sin fuentes 2456 ms; hero más comprimido 2584 ms (efectos no sumables). Aprobada por el usuario el 2026-10-24.
+
+Decisiones del usuario:
+- **H-03 se reabre:** un fallo parcial de teselas muestra un aviso discreto con "Reintentar"; el mapa sigue usable.
+- **Fuentes:** Inter recortada a los caracteres del español y a los pesos usados, servida desde el sitio; mismo diseño.
+- **CI-01:** Lighthouse corre en `verificar` como paso informativo; no bloquea la publicación.
+
+| ID | Tarea | Hallazgo / Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-78 | Regresiones e2e del mapa, escritas antes de la corrección: parcial (una correcta y el resto 500), todo 500 al inicio, éxito y luego fallo tras zoom o desplazamiento, una correcta y el resto pendiente > 15 s, "Reintentar" sin doble instancia ni error JS, desmontar durante la carga; axe y teclado en cada estado | MAP-01, MAP-02, H-03 | 8 | – |
+| T-79 | Salud del mapa por vista: registro de teselas con `tileloadstart`/`tileload`/`tileerror`/`tileunload`, evaluación en cada `load`, espera por lote, estados parcial y sin cartografía con aviso y "Reintentar" (`redraw()`, nunca automático); `ready` no retira el estado hasta que hay cartografía | MAP-01, MAP-02, H-03 | 12 | T-78 |
+| T-80 | `npm run lighthouse` con método de throttling configurable (simulado o DevTools), subpartes del LCP y verificación del elemento LCP; línea base con ambos métodos | PERF-01, PERF-02 | 4 | – |
+| T-81 | Hero: 2 o 3 calidades AVIF con las mismas dimensiones, comparación visual aprobada por el usuario y medición | PERF-02 | 4 | T-80 |
+| T-82 | Inter recortada (español, pesos usados) con `next/font/local`; menos bytes verificados en la red, CLS 0, sin regresión visual; licencia en `doc/creditos.md` | PERF-02 | 12 | T-80 |
+| T-83 | Análisis del JavaScript inicial con el analizador de Next; solo cambios pequeños y seguros, o justificación documentada | PERF-02 | 6 | T-80 |
+| T-84 | Documentación: modos de Lighthouse sin "el simulado infla"; robots.txt solo en la raíz del host; FAQ sin resultado enriquecido; CI-01; H-03 reabierto en `05` | PERF-01, SEO-OBS, CI-01 | 4 | T-79 a T-83 |
+| T-85 | Lighthouse informativo en `verificar` (no bloquea) | CI-01 | 4 | T-80 |
+| T-86 | Cierre: `validate`, revisión de `arquitecto-software`, bitácora, estado y push | CLAUDE.md | 2 | T-78 a T-85 |
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -193,7 +214,8 @@ Decisiones del usuario:
 | 8. Auditoría externa | 11,5 |
 | 9. Auditoría independiente | 14 |
 | 10. Reauditoría de cierre | 10 |
-| **Total** | **~146 h** |
+| 11. Auditoría de causa raíz | 56 |
+| **Total** | **~202 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -210,6 +232,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+| **Fase 11 (auditoría de causa raíz)** | En curso (2026-10-24): T-78 hecha; T-79 a T-86 pendientes |
 | **Fase 10 (reauditoría de cierre)** | Completa (2026-10-24): T-75 a T-77 |
 | **Fase 9 (auditoría independiente)** | Completa (2026-10-24): T-68 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |

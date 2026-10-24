@@ -5,6 +5,35 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: Fase 11, auditoría de causa raíz (T-78 a T-86)
+
+### Contexto
+- **Auditoría integral sobre `d9ca4fb`**, con informe y evidencias en una carpeta local del usuario (no versionadas). Dictamen:
+  - el control de Lighthouse está corregido, pero cumplir 3,4 s no acredita LCP ≤ 2,5 s;
+  - H-03 sigue presente (aceptado, no reparado);
+  - **hallazgo nuevo MAP-02:** el mapa carga bien, cae el proveedor y, al desplazar o acercar, queda gris (18 teselas sin imagen) sin aviso ni "Reintentar".
+- **Causa raíz de MAP-02** (`MapaFincasInteractivo.tsx`): el contador de teselas es acumulado en la sesión y una sola tesela correcta desactiva la detección; no se observa `tileerror`; `ready` llega al configurar el mapa, antes de que haya cartografía, y retira el bloque del aviso.
+- **Mediciones del auditor con throttling de DevTools** (3 corridas por variante): base 2710 ms; sin JavaScript 2415 ms; sin fuentes 2456 ms; hero más comprimido 2584 ms. Los efectos no se suman.
+- **Investigación en la web:** Leaflet 1.9.4 ofrece `loading`, `tileloadstart`, `tileload`, `tileerror`, `tileunload`, `load`, `redraw()` e `isLoading()`; el plugin Leaflet.TileLayer.Fallback rellena huecos, pero no detecta caídas; Lighthouse CI agrega por defecto con el valor optimista (nuestro script usa la mediana); Google retiró el resultado enriquecido de FAQ en 2026 (el marcado `FAQPage` sigue siendo válido).
+- **Decisiones del usuario:**
+  - H-03 se reabre: un fallo parcial muestra un aviso discreto con "Reintentar";
+  - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
+  - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
+
+### T-78: regresiones del mapa, escritas antes de la corrección
+- **`tests/e2e/mapa-fincas.spec.ts`**, nuevo bloque "salud del mapa por vista":
+  - fallo parcial (una tesela correcta y el resto HTTP 500): aviso, mapa y marcadores siguen, axe sin infracciones y "Reintentar" recupera las teselas;
+  - carga correcta y fallo total al acercar dos veces: aviso de error, foco en "Reintentar", axe, y el reintento deja un solo mapa con 6 marcadores;
+  - carga correcta y fallo total al desplazar con el teclado (12 × 80 px): aviso de error y "Reintentar";
+  - una tesela correcta y el resto sin responder: tras 15 s (reloj simulado), aviso de fallo parcial;
+  - salir de la página (navegación del cliente) con el mapa cargando: sin errores de JavaScript ni temporizadores residuales.
+- Los cuatro primeros llevan `test.fail()` hasta T-79: **se verificó que hoy fallan por el defecto auditado** (no aparece ningún aviso, `element(s) not found`), en móvil y escritorio. El de desmontaje ya pasa.
+- **Texto nuevo `copy.map.partial`** ("Parte del mapa no cargó. Las fincas están en la lista."), en `copySchema`, `MapaTextos` y las props de `MapaFincas`; lo usa T-79.
+- Fase 11 registrada en `spec/04-tasks.md`.
+- Archivos: `tests/e2e/mapa-fincas.spec.ts`, `src/content/copy.json`, `src/lib/schema.ts`, `src/components/secciones/MapaFincas.tsx`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
+---
+
 ## 2026-10-24: Fase 10, reauditoría de cierre (T-75 a T-77)
 
 ### Contexto

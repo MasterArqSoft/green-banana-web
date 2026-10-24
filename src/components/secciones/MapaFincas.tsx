@@ -73,6 +73,7 @@ export function MapaFincas() {
               loading: map.loading,
               error: map.error,
               retry: map.retry,
+              partial: map.partial,
               acopioDetail: map.acopioDetail,
               attribution: map.attribution,
               zoomIn: map.zoomIn,

@@ -201,6 +201,150 @@ test.describe("errores del mapa y reintento (H-03, H-04, T-69)", () => {
   });
 });
 
+// T-78 (auditoría de causa raíz, MAP-01 y MAP-02): la salud del mapa se evalúa por
+// vista, no por sesión. Una tesela correcta al principio no puede ocultar fallos
+// posteriores. Las teselas que fallan devuelven HTTP 500.
+test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
+  // Con `fallar`, solo las primeras `buenas` teselas responden bien; el resto, HTTP 500.
+  async function teselas(page: Page, buenas = 0) {
+    const control = { fallar: false };
+    let servidas = 0;
+    await page.route(TILE, (route) => {
+      servidas += 1;
+      return !control.fallar || servidas <= buenas
+        ? route.fulfill({ status: 200, contentType: "image/png", body: PNG })
+        : route.fulfill({ status: 500, body: "" });
+    });
+    return control;
+  }
+
+  async function sinInfracciones(page: Page) {
+    const results = await new AxeBuilder({ page })
+      .include("#mapa-fincas")
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+  }
+
+  const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
+
+  test("fallo parcial: avisa sin quitar el mapa y «Reintentar» recupera las teselas", async ({
+    page,
+  }) => {
+    test.fail(true, "T-78: falla hasta la corrección de T-79");
+    const control = await teselas(page, 1);
+    control.fallar = true;
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+
+    await expect(estado(page)).toHaveText(copy.map.partial);
+    await expect(page.locator(".leaflet-container")).toHaveCount(1);
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await expect(reintentar).toBeVisible();
+    await sinInfracciones(page);
+
+    control.fallar = false;
+    await reintentar.click();
+    await expect(reintentar).toHaveCount(0);
+    await expect(estado(page)).not.toHaveText(copy.map.partial);
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+  });
+
+  test("carga bien y falla todo al acercar: avisa y «Reintentar» crea un solo mapa", async ({
+    page,
+  }) => {
+    test.fail(true, "T-78: falla hasta la corrección de T-79");
+    const control = await teselas(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await page.waitForLoadState("networkidle");
+
+    control.fallar = true;
+    const acercar = page.getByRole("button", { name: copy.map.zoomIn });
+    await acercar.click();
+    await page.waitForLoadState("networkidle");
+    await acercar.click();
+
+    await expect(estado(page)).toHaveText(copy.map.error);
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await expect(reintentar).toBeFocused();
+    await sinInfracciones(page);
+
+    control.fallar = false;
+    await reintentar.click();
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(page.locator(".leaflet-container")).toHaveCount(1);
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+  });
+
+  test("carga bien y falla todo al desplazar con el teclado: no queda gris en silencio", async ({
+    page,
+  }) => {
+    test.fail(true, "T-78: falla hasta la corrección de T-79");
+    const control = await teselas(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await page.waitForLoadState("networkidle");
+
+    control.fallar = true;
+    const mapa = page.locator(".leaflet-container");
+    await mapa.focus();
+    // 12 × 80 px (keyboardPanDelta): más que el ancho del mapa, todas las teselas son nuevas.
+    for (let i = 0; i < 12 && (await mapa.count()) > 0; i++) {
+      await page.keyboard.press("ArrowRight");
+      await page.waitForTimeout(150);
+    }
+    await expect(estado(page)).toHaveText(copy.map.error);
+    await expect(
+      page.getByRole("button", { name: copy.map.retry }),
+    ).toBeVisible();
+  });
+
+  test("una tesela carga y las demás no responden: tras la espera, avisa del fallo parcial", async ({
+    page,
+  }) => {
+    test.fail(true, "T-78: falla hasta la corrección de T-79");
+    await page.clock.install();
+    // Solo la primera tesela se responde; las demás quedan pendientes.
+    let servidas = 0;
+    await page.route(TILE, (route) => {
+      servidas += 1;
+      if (servidas === 1) {
+        return route.fulfill({
+          status: 200,
+          contentType: "image/png",
+          body: PNG,
+        });
+      }
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-container")).toBeVisible();
+    await page.clock.runFor(16_000);
+    await expect(estado(page)).toHaveText(copy.map.partial);
+    await expect(page.locator(".leaflet-container")).toHaveCount(1);
+  });
+
+  test("salir de la página con el mapa cargando no deja errores ni temporizadores", async ({
+    page,
+  }) => {
+    await page.clock.install();
+    await page.route(TILE, () => {});
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-container")).toBeVisible();
+    // Navegación del cliente (next/link): el componente se desmonta sin recargar.
+    await page.locator('footer a[href$="/terminos"]').click();
+    await expect(page).toHaveURL(/\/terminos$/);
+    await page.clock.runFor(16_000);
+    await expect(page.locator(".leaflet-container")).toHaveCount(0);
+    // El fixture hace fallar la prueba si quedó un error de JavaScript.
+  });
+});
+
 test.describe("navegación de retorno (FR-19, AC-14)", () => {
   for (const path of ["/terminos", "/privacidad", "/garantia"]) {
     test(`${path} vuelve al inicio con el enlace y con la marca`, async ({
