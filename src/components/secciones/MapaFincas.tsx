@@ -72,6 +72,7 @@ export function MapaFincas() {
               showButton: map.showButton,
               loading: map.loading,
               error: map.error,
+              retry: map.retry,
               acopioDetail: map.acopioDetail,
               attribution: map.attribution,
               zoomIn: map.zoomIn,

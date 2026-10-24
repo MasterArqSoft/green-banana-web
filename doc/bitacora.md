@@ -24,6 +24,24 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Regla única: sin hero, no hay botón flotante.
 - **Prueba nueva en `layout.spec.ts` (móvil):** landing → Privacidad (el botón queda oculto) → "Volver al inicio" (oculto con el hero en pantalla) → scroll (visible). Primero se comprobó que fallaba con el código anterior.
 - **Verificado:** 76 e2e (8 omitidas por perfil), 319 unitarias y tipos sin errores.
+- Commit `4a37b20`.
+
+### T-69: errores del mapa y reintento (H-03, H-04)
+- **Primero las pruebas, en `mapa-fincas.spec.ts`.** Se confirmó que fallaban con el código anterior:
+  - teselas con HTTP 500: el mapa quedaba en "listo", gris, sin aviso (H-03);
+  - se bloquea la descarga de los chunks de JS antes de pulsar "Ver mapa": aparecía el error, pero sin forma de reintentar (H-04).
+- **Detección del fallo de teselas:**
+  - se cuenta `tileload` y se espera el evento `load` de la capa, que llega cuando terminan las teselas visibles, también las que fallaron;
+  - si ninguna cargó, el mapa pasa a error;
+  - un fallo parcial deja huecos, pero no reemplaza el mapa (no hizo falta inventar un umbral).
+- **Recuperación:**
+  - `fallar()` destruye la instancia de Leaflet y vuelven el mapa ilustrado, el aviso, el mensaje y el botón "Reintentar" (`copy.map.retry`, con su esquema y `MapaTextos`), que recibe el foco;
+  - cada intento limpia la instancia anterior. Antes, si el error ocurría después de crear el mapa, `mapa.current` quedaba asignado y un reintento se cortaba en el `return`.
+- **Hallazgo al probar:** `map.remove()` de Leaflet no quita las clases que agregó al contenedor (`leaflet-container` y el fondo gris). El contenedor lleva `key={intento}`, así React lo reemplaza por un nodo limpio en cada intento, sin tocar el DOM por detrás de React.
+- **Comprobado:** el cargador de Turbopack vuelve a intentar el chunk de Leaflet si la primera descarga falló, así que "Reintentar" también sirve para ese caso.
+- **Verificado:**
+  - 80 e2e (8 omitidas por perfil), 319 unitarias y tipos sin errores;
+  - landing en 266,1 KB de 300 (+0,2 KB de JS del componente); Leaflet sigue fuera de la carga inicial.
 
 ---
 

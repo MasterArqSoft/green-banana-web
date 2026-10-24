@@ -35,10 +35,12 @@ export function MapaFincasInteractivo({
   textos: MapaTextos;
 }) {
   const [estado, setEstado] = useState<Estado>("idle");
+  const [intento, setIntento] = useState(0);
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<LeafletMap | null>(null);
   const montado = useRef(true);
   const region = useRef<HTMLDivElement>(null);
+  const boton = useRef<HTMLButtonElement>(null);
   // El mapa ilustrado se pide solo cuando la sección se acerca a la pantalla: con
   // loading="lazy", Chrome lo descargaba en la carga inicial y competía con el LCP.
   const [cercano, setCercano] = useState(false);
@@ -68,8 +70,27 @@ export function MapaFincasInteractivo({
     };
   }, []);
 
+  // Tras un error, el foco pasa a "Reintentar": el botón anterior ya no existe.
+  useEffect(() => {
+    if (estado === "error") boton.current?.focus();
+  }, [estado]);
+
+  // Error: se destruye la instancia (un reintento la crea de nuevo en el mismo
+  // contenedor) y vuelven el mapa ilustrado, el aviso y "Reintentar" (H-04, T-69).
+  // remove() no quita las clases que Leaflet agregó al contenedor (fondo gris): un
+  // `key` nuevo hace que React lo reemplace por un nodo limpio.
+  function fallar() {
+    mapa.current?.remove();
+    mapa.current = null;
+    if (!montado.current) return;
+    setIntento((n) => n + 1);
+    setEstado("error");
+  }
+
   async function cargarMapa() {
     setEstado("loading");
+    mapa.current?.remove();
+    mapa.current = null;
     try {
       const [{ default: L }] = await Promise.all([
         import("leaflet"),
@@ -88,10 +109,21 @@ export function MapaFincasInteractivo({
         .addTo(map);
       // Atribución siempre visible y sin el prefijo de Leaflet (AC-18).
       L.control.attribution({ prefix: false }).addTo(map);
+      // "load" llega cuando terminan las teselas visibles, también las que fallaron.
+      // Si ninguna cargó (OSM caído o bloqueado), el mapa quedaría gris: pasa a error
+      // (H-03). Un fallo parcial deja huecos, pero no reemplaza el mapa entero.
+      let teselasCargadas = 0;
       L.tileLayer(TILES, {
         maxZoom: 19,
         attribution: textos.attribution,
-      }).addTo(map);
+      })
+        .on("tileload", () => {
+          teselasCargadas += 1;
+        })
+        .on("load", () => {
+          if (teselasCargadas === 0 && mapa.current === map) fallar();
+        })
+        .addTo(map);
 
       // Leaflet escribe "Close popup" en el botón de cierre; se reemplaza por copy.json.
       map.on("popupopen", (event) => {
@@ -139,7 +171,7 @@ export function MapaFincasInteractivo({
       // El botón desaparece: el foco pasa al mapa para no perderse.
       contenedor.current.focus();
     } catch {
-      if (montado.current) setEstado("error");
+      fallar();
     }
   }
 
@@ -154,7 +186,7 @@ export function MapaFincasInteractivo({
       aria-label={textos.title}
       className="relative isolate h-[33rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
     >
-      <div ref={contenedor} className="size-full" />
+      <div key={intento} ref={contenedor} className="size-full" />
       {estado !== "ready" && (
         <>
           {/* Mapa ilustrado de la zona (decorativo: la lista y el aviso llevan la
@@ -182,14 +214,15 @@ export function MapaFincasInteractivo({
               izquierda, como un control del mapa: el mapa es lo principal. */}
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t border-hoja/10 bg-white p-4 md:inset-x-auto md:bottom-5 md:left-5 md:max-w-xs md:rounded-card md:border-0 md:bg-white/90 md:shadow-suave md:backdrop-blur-sm">
             {aviso}
-            {estado === "idle" && (
+            {(estado === "idle" || estado === "error") && (
               <button
+                ref={boton}
                 type="button"
                 onClick={cargarMapa}
                 aria-describedby={avisoId}
                 className="inline-flex min-h-11 items-center justify-center rounded-control bg-hoja px-5 font-semibold text-white"
               >
-                {textos.showButton}
+                {estado === "error" ? textos.retry : textos.showButton}
               </button>
             )}
             {/* Siempre en el árbol de accesibilidad para que se anuncie al cambiar. */}

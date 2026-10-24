@@ -275,6 +275,8 @@ export const copySchema = z.strictObject({
     privacyLink: text,
     loading: text,
     error: text,
+    // Botón tras un error: Leaflet no descargó o no cargó ninguna tesela (H-03, H-04, T-69).
+    retry: text,
     listTitle: text,
     // Detalle del acopio en la lista y en el popup del mapa.
     acopioDetail: textWith("municipio"),
@@ -349,6 +351,7 @@ export type MapaTextos = Pick<
   | "showButton"
   | "loading"
   | "error"
+  | "retry"
   | "acopioDetail"
   | "attribution"
   | "zoomIn"

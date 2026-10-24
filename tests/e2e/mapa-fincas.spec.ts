@@ -128,6 +128,60 @@ test.describe("mapa de fincas (FR-24)", () => {
   });
 });
 
+test.describe("errores del mapa y reintento (H-03, H-04, T-69)", () => {
+  test("si ninguna tesela carga, avisa, vuelve al mapa ilustrado y permite reintentar", async ({
+    page,
+  }) => {
+    let teselasCaidas = true;
+    await page.route(TILE, (route) =>
+      teselasCaidas
+        ? route.fulfill({ status: 500, body: "" })
+        : route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+    );
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+
+    const estado = page.locator("#mapa-fincas [role='status']");
+    await expect(estado).toHaveText(copy.map.error);
+    await expect(page.locator(".leaflet-container")).toHaveCount(0);
+    await expect(
+      page.locator('#mapa-fincas img[src$="mapa-fincas.svg"]'),
+    ).toBeVisible();
+    // La lista accesible de fincas sigue disponible.
+    await expect(page.getByText(copy.map.listTitle)).toBeVisible();
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await expect(reintentar).toBeFocused();
+
+    teselasCaidas = false;
+    await reintentar.click();
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(reintentar).toHaveCount(0);
+  });
+
+  test("si falla la descarga de Leaflet, también se puede reintentar", async ({
+    page,
+  }) => {
+    await page.route(TILE, (route) =>
+      route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+    );
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    // Desde aquí, ningún archivo JS nuevo se descarga: falla el import() de Leaflet.
+    await page.route("**/_next/static/chunks/**", (route) => route.abort());
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await expect(reintentar).toBeVisible();
+    await expect(page.locator("#mapa-fincas [role='status']")).toHaveText(
+      copy.map.error,
+    );
+
+    await page.unroute("**/_next/static/chunks/**");
+    await reintentar.click();
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+  });
+});
+
 test.describe("navegación de retorno (FR-19, AC-14)", () => {
   for (const path of ["/terminos", "/privacidad", "/garantia"]) {
     test(`${path} vuelve al inicio con el enlace y con la marca`, async ({

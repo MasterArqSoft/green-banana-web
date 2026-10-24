@@ -149,6 +149,7 @@
     "privacyLink": "Política de privacidad de OpenStreetMap",
     "loading": "Cargando mapa…",
     "error": "No pudimos cargar el mapa. Las fincas están en la lista de abajo.",
+    "retry": "Reintentar",
     "listTitle": "Fincas en el mapa",
     "acopioDetail": "Centro de acopio · {municipio}",
     "attribution": "© OpenStreetMap contributors",
