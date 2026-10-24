@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "npm run build && playwright test",
+    "build:prefijo": "node scripts/build-prefijo.mjs",
+    "test:prefijo": "playwright test -c playwright.prefijo.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:deps": "npm audit --audit-level=high",
@@ -17,7 +19,7 @@
     "lighthouse": "node scripts/lighthouse.mjs",
     "images": "node scripts/images.mjs",
     "icons": "node scripts/icons.mjs",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run budget && playwright test && npm run audit:deps",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build:prefijo && npm run build && npm run budget && playwright test && npm run test:prefijo && npm run audit:deps",
     "prepare": "husky"
   },
   "dependencies": {

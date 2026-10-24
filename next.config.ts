@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   // La demo en GitHub Pages vive en /green-banana-web (lo define el workflow pages.yml).
   // En local queda vacío y el sitio se sirve en la raíz.
   basePath: process.env.PAGES_BASE_PATH ?? "",
+  // Solo con prefijo (la demo): sin barra final, Next pedía el payload de la página de
+  // inicio en /green-banana-web.txt, fuera del sitio (404 y recarga completa al volver al
+  // inicio). Con barra final lo pide en /green-banana-web/index.txt (T-71). Producción,
+  // en la raíz de su dominio, no lo necesita y conserva las URL sin barra.
+  trailingSlash: Boolean(process.env.PAGES_BASE_PATH),
   // La exportación estática no admite el optimizador de imágenes por defecto.
   // Las fotos se entregan ya convertidas a AVIF/WebP en public/ cuando lleguen (T-04).
   images: {

@@ -24,8 +24,9 @@ concurrency:
 
 jobs:
   # Lo mismo que `npm run validate`, salvo `audit:deps` (las alertas de seguridad las
-  # cubre Dependabot). Si algo falla, la demo no se publica. Construye sin el prefijo
-  # de la demo, porque las pruebas e2e sirven out/ desde la raíz (tests/e2e/server.mjs).
+  # cubre Dependabot). Si algo falla, la demo no se publica.
+  # Dos builds (T-71): con el prefijo de la demo en out-pages/, que pasa una prueba de
+  # humo y es exactamente lo que se publica, y sin prefijo en out/ para las demás pruebas.
   verificar:
     runs-on: ubuntu-latest
     steps:
@@ -54,7 +55,13 @@ jobs:
       - name: Pruebas unitarias (Vitest)
         run: npm test
 
-      - name: Build
+      # El prefijo de Pages es el nombre del repositorio (/green-banana-web).
+      - name: Build de la demo, con prefijo (out-pages/)
+        run: npm run build:prefijo
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Build sin prefijo (out/)
         run: npm run build
 
       - name: Presupuesto de peso (≤ 300 KB)
@@ -66,6 +73,20 @@ jobs:
       - name: Pruebas e2e (Playwright + axe)
         run: npx playwright test
 
+      - name: Prueba de humo del artefacto que se publica
+        run: npm run test:prefijo
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+
+      # Solo fuera de los pull requests: el mismo out-pages/ verificado, sin reconstruir.
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: out-pages
+          # Sin esto se excluyen las carpetas que empiezan con punto, como
+          # .well-known/security.txt (T-67).
+          include-hidden-files: true
+
       # Trazas y capturas de las pruebas que fallen, para revisarlas en GitHub.
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -74,44 +95,8 @@ jobs:
           path: test-results/
           retention-days: 7
 
-  build:
-    needs: verificar
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Ningún paso hace push: no se deja el token en .git/config, donde los
-          # scripts de las dependencias podrían leerlo.
-          persist-credentials: false
-
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24
-          cache: npm
-
-      - id: pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-
-      - run: npm ci
-
-      - run: npm run build
-        env:
-          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
-
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: out
-          # Sin esto se excluyen las carpetas que empiezan con punto, como
-          # .well-known/security.txt (T-67).
-          include-hidden-files: true
-
   deploy:
-    needs: build
+    needs: verificar
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:

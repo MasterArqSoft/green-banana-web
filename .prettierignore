@@ -9,6 +9,7 @@ README.md
 # Generados
 .next/
 out/
+out-pages/
 package-lock.json
 skills-lock.json
 src/lib/mapa-base.json

@@ -41,7 +41,7 @@ npm run build          # exportación estática en out/ y, después, la CSP por 
 npm run lint           # ESLint
 npm run typecheck      # next typegen && tsc --noEmit (genera los tipos de rutas como LayoutProps)
 npm run format         # Prettier (escribe); format:check solo verifica
-npm run validate       # TODO junto: format:check, lint, typecheck, test, build, budget, playwright test y audit:deps. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
+npm run validate       # TODO junto: format:check, lint, typecheck, test, build:prefijo, build, budget, playwright test, test:prefijo y audit:deps. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
 npm run audit:deps     # npm audit completo (producción y desarrollo), falla con altas o críticas
 npm run budget         # peso inicial por página (gzip) ≤ 300 KB; requiere out/ construido
 npm run lighthouse     # Lighthouse móvil, 4 categorías ≥ 90 (AC-08); requiere out/; no está en validate (lento). Fuera de producción omite is-crawlable (la demo es noindex)
@@ -51,11 +51,13 @@ npm test               # pruebas unitarias (Vitest, tests/unit/**/*.test.{ts,tsx
 npx vitest run tests/unit/lib/tel.test.ts        # un solo archivo
 npx vitest run tests/unit/lib/tel.test.ts -t "formatPhone"   # una sola prueba por nombre
 npm run test:e2e       # build + Playwright (tests/e2e/*.spec.ts) en móvil 360×640 y escritorio 1280×800
+npm run build:prefijo  # build de la demo con /green-banana-web en out-pages/ (lo que publica GitHub Pages); deja out/ libre
+npm run test:prefijo   # prueba de humo sobre out-pages/, servido solo bajo el prefijo (playwright.prefijo.config.ts)
 npx playwright test tests/e2e/layout.spec.ts --project=movil-360   # un archivo y un proyecto (requiere out/ ya construido)
 ```
 Pruebas e2e: `layout.spec.ts` (orden, 360 px, botón flotante, ninguna descarga de otras páginas al cargar), `calls.spec.ts` (enlaces `tel:`, sin precios, teclado y "Saltar al contenido"), `csp.spec.ts` (CSP sin violaciones en las 4 páginas, la 404, el mapa y la navegación), `a11y.spec.ts` (axe con etiquetas WCAG 2.2 AA en las 4 páginas; cualquier infracción falla) y `mapa-fincas.spec.ts` (Leaflet y teselas no se piden antes de "Ver mapa", atribución, axe con el mapa cargado y "Volver al inicio"; las teselas se interceptan con `page.route`, nunca se piden a OSM desde las pruebas). Playwright sirve `out/` con `tests/e2e/server.mjs` (puerto 4173, gzip, sin dependencias) y necesita Chromium (`npx playwright install chromium`).
 
-En Git Bash de Windows, para probar el build con el prefijo de la demo: `MSYS_NO_PATHCONV=1 PAGES_BASE_PATH=/green-banana-web npm run build`.
+Para probar el build con el prefijo de la demo: `npm run build:prefijo && npm run test:prefijo`. Con prefijo, `next.config.ts` activa `trailingSlash` (URL `/green-banana-web/terminos/`): sin él, Next pedía el payload de inicio en `/green-banana-web.txt`, fuera del sitio. Producción no lleva barra final. Con prefijo, Next no enlaza `favicon.ico` (sí `icon.svg` y `apple-icon.png`).
 
 **Next.js 16 cambia APIs respecto a versiones anteriores** (ver `AGENTS.md`). Antes de usar una API de Next, consulta la guía en `node_modules/next/dist/docs/`. Con `output: "export"` no se pueden usar `cacheComponents`/PPR, `headers`, `redirects`, `rewrites`, Server Actions, Route Handlers con Request ni el optimizador de imágenes por defecto (`images.unoptimized: true`). `experimental.inlineCss` se probó y se descartó (duplica el CSS en el HTML).
 
@@ -93,7 +95,7 @@ Prettier no formatea `spec/`, `doc/`, `CLAUDE.md`, `AGENTS.md` ni `README.md` (`
 - Next.js con exportación estática (`output: 'export'`), React, TypeScript y Tailwind CSS.
 - Sin backend en Fase 1. Sin rutas de servidor, sin formularios, sin base de datos.
 - Repositorio público en GitHub; CI/CD con GitHub Actions (la pipeline completa se configura en R-10).
-- Demo del POC/MVP en GitHub Pages: `.github/workflows/pages.yml` la despliega en cada push a `main` con `PAGES_BASE_PATH` como `basePath`, solo si antes pasa el job `verificar` (lo mismo que `validate` salvo `audit:deps`; e2e sobre un build sin prefijo). En los pull requests a `main`, incluidos los de Dependabot, corre solo `verificar`, sin publicar. Las acciones van fijadas por SHA con la versión en un comentario (`@<sha> # v7.0.1`); una acción nueva se agrega igual. Los `checkout` llevan `persist-credentials: false` (ningún paso hace push).
+- Demo del POC/MVP en GitHub Pages: `.github/workflows/pages.yml` la despliega en cada push a `main`, solo si antes pasa el job `verificar` (lo mismo que `validate` salvo `audit:deps`). `verificar` construye la demo con prefijo en `out-pages/`, le pasa la prueba de humo y **sube ese mismo artefacto** a Pages; `deploy` lo publica sin reconstruir (T-71). Las e2e completas corren sobre el build sin prefijo (`out/`). En los pull requests a `main`, incluidos los de Dependabot, corre solo `verificar`, sin publicar. Las acciones van fijadas por SHA con la versión en un comentario (`@<sha> # v7.0.1`); una acción nueva se agrega igual. Los `checkout` llevan `persist-credentials: false` (ningún paso hace push).
 
 ## Pendientes (no decidir por tu cuenta)
 Recuérdaselos al usuario cuando pregunte por pendientes. Detalle en `spec/05-alcance-y-roadmap.md` §5 y §7.

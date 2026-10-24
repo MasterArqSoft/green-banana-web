@@ -52,6 +52,25 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - **Prueba de coherencia en `LegalPage.test.tsx`:** la política contiene el texto real del botón (`copy.map.showButton`) y los mismos hechos que `copy.map.consent` (OpenStreetMap, dirección IP), y ya no dice "No recoge datos personales".
 - La redacción final sigue pendiente de la revisión jurídica (T-05, D-13).
 - **Verificado:** 320 unitarias y 80 e2e, incluida la revisión con axe de Privacidad.
+- Commit `05aa583`.
+
+### T-71: publicar el artefacto verificado (H-01)
+- **`npm run build:prefijo`** (`scripts/build-prefijo.mjs`) corre `npm run build` con `PAGES_BASE_PATH` y mueve el resultado a `out-pages/` (fuera de Git, de Prettier y de ESLint). Va antes del build sin prefijo, así `out/` queda para las demás pruebas, `budget` y `lighthouse`.
+- **`tests/e2e/server.mjs`** acepta `OUT_DIR` y `BASE_PATH`: sirve `out-pages/` solo bajo `/green-banana-web/`, y fuera de ahí todo es 404, como GitHub Pages.
+- **Prueba de humo** `tests/e2e/prefijo.spec.ts`, con su configuración `playwright.prefijo.config.ts` (puerto 4174; la configuración principal la ignora), en móvil y escritorio:
+  - las 5 rutas, incluida la 404, sin respuestas con error ni violaciones de CSP, con scroll hasta el pie;
+  - imágenes, mapa ilustrado, Leaflet con teselas interceptadas;
+  - ir a Privacidad y volver;
+  - íconos, `favicon.ico`, robots, sitemap y `security.txt` bajo el prefijo.
+- **La prueba encontró dos cosas que el build sin prefijo no muestra:**
+  1. Al volver al inicio desde una página legal, Next pedía el payload en `/green-banana-web.txt`, fuera del sitio. Se confirmó en la demo publicada (404; `/green-banana-web/index.txt` sí da 200). El efecto era una petición fallida y una recarga completa. Sin prefijo pedía `/index.txt` (200) y navegaba sin recargar. **Decisión del usuario:** `trailingSlash` solo con prefijo (`next.config.ts`). Las URL de la demo pasan a llevar barra final (`/green-banana-web/terminos/`); producción y las pruebas sin prefijo no cambian. Next sigue generando `404.html` en la raíz.
+  2. Con prefijo, Next no enlaza `favicon.ico` (lo espera en la raíz del dominio). Enlaza `icon.svg` y `apple-icon.png`, y el archivo se publica igual. Queda documentado.
+- **`pages.yml`:**
+  - `verificar` construye las dos versiones, corre la prueba de humo y, fuera de los pull requests, sube **ese mismo `out-pages/`** con `upload-pages-artifact`;
+  - el job `build` desaparece (también `configure-pages`: el prefijo es `/${{ github.event.repository.name }}`) y `deploy` depende de `verificar`;
+  - `verificar` sigue solo con `contents: read`, y los permisos de Pages quedan únicamente en `deploy`.
+- **`validate`** suma `build:prefijo` y `test:prefijo`.
+- **Verificado:** `npm run validate` completo, con 320 unitarias, 80 e2e, 18 pruebas de humo con prefijo, landing en 266,1 KB y 0 vulnerabilidades.
 
 ---
 

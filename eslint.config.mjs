@@ -150,7 +150,13 @@ const eslintConfig = defineConfig([
   },
   // Desactiva las reglas de estilo que chocan con Prettier.
   prettier,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "out-pages/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
 ]);
 
 export default eslintConfig;

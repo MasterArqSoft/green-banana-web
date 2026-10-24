@@ -4,6 +4,8 @@ import { defineConfig, devices } from "@playwright/test";
 // `npm run test:e2e` construye primero y luego levanta tests/e2e/server.mjs.
 export default defineConfig({
   testDir: "tests/e2e",
+  // La prueba de humo con prefijo tiene su propia configuración (playwright.prefijo.config.ts).
+  testIgnore: "prefijo.spec.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

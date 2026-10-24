@@ -134,7 +134,7 @@ green-banana-web/
 │                        # claims.ts, tel.ts, seo.ts, legal.ts, images.ts, asset.ts, template.ts, format.ts,
 │                        # mapa-ilustrado.ts + mapa-base.json, csp.ts, security-txt.ts (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
-├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), budget.mjs, lighthouse.mjs
+├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), build-prefijo.mjs, budget.mjs, lighthouse.mjs
 ├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, ui/, seo/ y lib/; estructura.test.ts lo verifica)
 │                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
@@ -306,7 +306,7 @@ Ningún evento lleva datos personales. Los parámetros UTM se leen para medir el
 
 **Regla obligatoria:** el repositorio y la pipeline deben estar en el mismo proveedor.
 
-Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm run validate`). La demo de GitHub Pages (`.github/workflows/pages.yml`, D-09) se publica en cada push a `main` solo si pasa el job `verificar`: formato, lint, tipos, pruebas unitarias, build, presupuesto de peso y pruebas e2e. No incluye `npm audit` (lo cubre Dependabot) ni Lighthouse; ambos llegan con R-10. En los pull requests a `main` (entre ellos los de Dependabot) corre solo `verificar`, sin publicar.
+Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm run validate`). La demo de GitHub Pages (`.github/workflows/pages.yml`, D-09) se publica en cada push a `main` solo si pasa el job `verificar`: formato, lint, tipos, pruebas unitarias, build, presupuesto de peso y pruebas e2e. Desde T-71, `verificar` también construye la demo con su prefijo (`npm run build:prefijo`, en `out-pages/`), le corre una prueba de humo (`tests/e2e/prefijo.spec.ts`: 5 rutas sin recursos rotos ni violaciones de CSP, imágenes, Leaflet, navegación, íconos y `security.txt`) y sube **ese mismo artefacto** a Pages: lo publicado es lo verificado. Con prefijo, `trailingSlash` está activo, porque sin él Next pedía el payload de la página de inicio fuera del sitio. No incluye `npm audit` (lo cubre Dependabot) ni Lighthouse; ambos llegan con R-10. En los pull requests a `main` (entre ellos los de Dependabot) corre solo `verificar`, sin publicar.
 
 | Entorno | Rama | Propósito |
 |---|---|---|
