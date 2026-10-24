@@ -58,9 +58,12 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - `main` sin protección (la configura el usuario).
 - **Detalle encontrado:** `unrs-resolver` ya no está en `package-lock.json`. La entrada de `allowScripts` en `package.json` y la frase de `CLAUDE.md` que la menciona quedaron obsoletas; quitarlas queda pendiente de confirmación del usuario.
 
+### Decisiones del usuario (después de la revisión)
+- **Capturas de referencia de `visual-testing`: opción B.** Se toman y se comparan solo en local (Windows); la prueba visual no corre en `verificar` (Linux). Motivo: Windows y Linux dibujan las fuentes distinto, y unas referencias de Windows fallarían siempre en CI. Consecuencia aceptada: los PR de Dependabot no tienen revisión visual automática. Registrado en `.agents/qa-project-context.md`.
+- **`allowScripts`: se quitó** de `package.json`. En `CLAUDE.md`, la frase sobre `unrs-resolver` se reemplazó por la situación actual: solo `fsevents` tiene script de instalación, y uno nuevo se revisa antes de permitirlo.
+
 ### Abierto
-- Decidir dónde se generan las capturas de referencia de `visual-testing`: Windows y Linux renderizan distinto.
-- Quitar o no la entrada obsoleta de `allowScripts`.
+- Crear la prueba visual (`toHaveScreenshot`), excluida de CI, con sus capturas de referencia.
 - Instalar `uv` si se quiere `supply-chain-risk-auditor`.
 
 ---

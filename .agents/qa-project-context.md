@@ -37,7 +37,7 @@ Lo leen las skills `visual-testing` y `exploratory-testing`. **No es fuente de v
 
 ## Restricciones
 - Sin servicios de pago ni de terceros (Chromatic, Percy, Argos): solo `toHaveScreenshot` de Playwright.
-- Las capturas de referencia: **[POR CONFIRMAR]** dónde se generan (Windows local o Linux en CI).
+- **Capturas de referencia (decisión del usuario, 2026-10-24):** se toman y se comparan **solo en local, en Windows**. La prueba visual no corre en CI (`verificar`, Linux), porque Windows y Linux dibujan las fuentes distinto y fallaría siempre. Consecuencia aceptada: los PR de Dependabot no tienen revisión visual automática.
 - Presupuesto: peso inicial ≤ 300 KB (`npm run budget`); Lighthouse móvil ≥ 90.
 
 ## Pendiente manual

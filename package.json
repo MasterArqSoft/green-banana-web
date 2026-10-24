@@ -57,8 +57,5 @@
       "prettier --write"
     ],
     "*.{json,css}": "prettier --write"
-  },
-  "allowScripts": {
-    "unrs-resolver": false
   }
 }
