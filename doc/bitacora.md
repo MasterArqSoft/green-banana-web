@@ -28,6 +28,26 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 - **Prueba negativa de punta a punta:** con el LCP permitido bajado temporalmente a 2,5 s, `npm run lighthouse` marcó `✗ largest-contentful-paint: 3334ms (≤ 2500ms)` y terminó con salida 1. Después se restauró.
 - **Medido con el presupuesto vigente:** corridas con Rendimiento 92, 92 y 92 y LCP de 3,18, 3,22 y 3,15 s; mediana: LCP 3181 ms, TBT 119 ms, CLS 0. Salida 0.
 - **NFR-01** (`01-spec.md`) distingue la meta de campo (p75) del presupuesto de laboratorio que bloquea. Actualizados `03-plan.md` (umbrales) y `CLAUDE.md`.
+- Commit `87b46b8`.
+
+### T-76: investigación del LCP (R-01)
+- **Línea base (modo simulado, mediana de 3):** LCP 3182 ms, TBT 96 ms, CLS 0, Rendimiento 93.
+- **Experimentos, uno por vez, con 3 corridas cada uno:**
+
+  | Experimento | LCP simulado | LCP con throttling real | Resultado |
+  |---|---|---|---|
+  | E1: foto del hero sin `decoding="async"` | 3191 ms | — | Sin efecto; revertido |
+  | E2: sin precarga de Inter (`preload: false`) | 3230 ms | 2,8–2,9 s (base: 2,7 s) | Empeora; revertido |
+
+- **Causa encontrada:**
+  - **Modo simulado (el que usa el control):** sin throttling, en local, los scripts llegan casi sin latencia y se ejecutan **antes del primer pintado**. En la traza del navegador: evaluación de 47 y 23 ms, layout de 34 ms, decodificación de la foto y pintado a los 242 ms. Lighthouse proyecta esa traza a 4G lenta y suma al LCP todo el JavaScript y la CPU ×4; por eso el LCP (3,2 s) coincide con el momento interactivo (3,2 s).
+  - **Con throttling aplicado de verdad** (`--throttling-method=devtools`, misma red y CPU): LCP **2,7 s**, FCP 2,3 s y TBT de 350 a 400 ms (este modo penaliza más la latencia por petición y la CPU).
+  - **Cascada con throttling real:** HTML 0,68 s, CSS (bloquea el render) 1,43 s, fuentes 1,64 y 2,00 s, foto del hero pedida a los 0,69 s y terminada a los 2,65 s. La foto comparte los 1,5 Mbps con las fuentes (65 KB) y los chunks de JS (71 KB el mayor), que se piden a la vez.
+- **Conclusión:** ningún cambio de bajo riesgo mejora el LCP. Lo que falta para 2,5 s es ancho de banda compartido con el runtime de React y Next, que no baja. En una prueba anterior, un hero móvil de 640 px no tuvo efecto.
+- **Presupuesto fijado (regla del usuario: lo logrado con un margen pequeño):** LCP ≤ **3400 ms** en modo simulado (mediana de 3182 ms + ~7 %). La meta de 2,5 s queda para el p75 de campo.
+- **Verificado:** `npm run lighthouse` con LCP de 3190 ms (≤ 3400), TBT de 140 ms y CLS 0; Rendimiento 92 y las demás categorías en 100; salida 0. Prueba unitaria ajustada (un LCP de 3450 ms falla).
+- **Actualizados:** `lighthouse-presupuesto.mjs`, NFR-01 en `01`, `03-plan.md`, `CLAUDE.md` y estado.
+- Los servidores de medición que quedaron en los puertos 4191 y 4192 se detuvieron.
 
 ---
 

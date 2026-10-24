@@ -37,7 +37,7 @@ describe("presupuesto de laboratorio de Lighthouse (T-75, R-01)", () => {
   });
 
   it("falla si el LCP supera su presupuesto aunque las categorías den ≥ 90", () => {
-    expect(fallidos([corrida(3600), corrida(3700), corrida(3200)])).toEqual([
+    expect(fallidos([corrida(3450), corrida(3500), corrida(3200)])).toEqual([
       "largest-contentful-paint",
     ]);
   });

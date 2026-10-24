@@ -11,10 +11,12 @@ export const PRESUPUESTO = {
     "best-practices": 90,
     seo: 90,
   },
-  // Métricas: máximo permitido. LCP provisional hasta T-76 (decisión del usuario,
-  // 2026-10-24); CLS y TBT con los umbrales "buenos" de Lighthouse.
+  // Métricas: máximo permitido. LCP fijado en T-76 en lo logrado con un margen pequeño
+  // (mediana de 3182 ms + ~7 %; decisión del usuario, 2026-10-24). El modo simulado
+  // infla el LCP: con throttling real (--throttling-method=devtools) mide ~2,7 s.
+  // CLS y TBT con los umbrales "buenos" de Lighthouse.
   metricas: {
-    "largest-contentful-paint": { max: 3500, unidad: "ms" },
+    "largest-contentful-paint": { max: 3400, unidad: "ms" },
     "cumulative-layout-shift": { max: 0.1, unidad: "" },
     "total-blocking-time": { max: 200, unidad: "ms" },
   },

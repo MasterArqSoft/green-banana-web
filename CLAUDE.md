@@ -44,7 +44,7 @@ npm run format         # Prettier (escribe); format:check solo verifica
 npm run validate       # TODO junto: format:check, lint, typecheck, test, build:prefijo, build, budget, playwright test, test:prefijo y audit:deps. Córrelo antes de cada commit importante; la pipeline de R-10 lo reutilizará
 npm run audit:deps     # npm audit completo (producción y desarrollo), falla con altas o críticas
 npm run budget         # peso inicial por página (gzip) ≤ 300 KB; requiere out/ construido. budget:prefijo mide out-pages/ (lo publicado)
-npm run lighthouse     # Lighthouse móvil, mediana de 3 corridas (LH_RUNS): 4 categorías ≥ 90 (AC-08) y presupuesto de métricas de scripts/lighthouse-presupuesto.mjs (LCP ≤ 3,5 s provisional, CLS ≤ 0,1, TBT ≤ 200 ms; T-75); requiere out/; no está en validate (lento). Fuera de producción omite is-crawlable (la demo es noindex)
+npm run lighthouse     # Lighthouse móvil, mediana de 3 corridas (LH_RUNS): 4 categorías ≥ 90 (AC-08) y presupuesto de métricas de scripts/lighthouse-presupuesto.mjs (LCP ≤ 3,4 s, CLS ≤ 0,1, TBT ≤ 200 ms; T-75 y T-76; el modo simulado infla el LCP, con throttling real mide ~2,7 s); requiere out/; no está en validate (lento). Fuera de producción omite is-crawlable (la demo es noindex)
 npm run images         # genera public/images/ desde fotos-originales/ (originales fuera de Git)
 npm run icons          # regenera src/app/favicon.ico y apple-icon.png desde icon.svg (solo si cambia el ícono)
 npm test               # pruebas unitarias (Vitest, tests/unit/**/*.test.{ts,tsx}); test:watch en modo vigilancia

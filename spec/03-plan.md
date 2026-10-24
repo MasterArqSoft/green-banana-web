@@ -315,7 +315,7 @@ Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm
 | Producción | `main` | Publicación tras aprobación; falla si `phoneIsPlaceholder` es `true` |
 
 **Pasos del pipeline (independientes del proveedor):** instalar → validar esquemas de contenido → lint y tipos → pruebas unitarias → build → pruebas e2e (Playwright) → Lighthouse CI con umbrales → `npm audit` → despliegue. Se configura cuando se defina R-10.
-**Umbrales de bloqueo:** Lighthouse móvil (mediana de 3 corridas) < 90 en cualquiera de las cuatro categorías o fuera del presupuesto de laboratorio de métricas (`scripts/lighthouse-presupuesto.mjs`: LCP ≤ 3,5 s provisional hasta T-76, CLS ≤ 0,1, TBT ≤ 200 ms; T-75), o vulnerabilidades altas o críticas.
+**Umbrales de bloqueo:** Lighthouse móvil (mediana de 3 corridas) < 90 en cualquiera de las cuatro categorías o fuera del presupuesto de laboratorio de métricas (`scripts/lighthouse-presupuesto.mjs`: LCP ≤ 3,4 s, CLS ≤ 0,1, TBT ≤ 200 ms; T-75 y T-76), o vulnerabilidades altas o críticas.
 
 ## 11. Riesgos y hallazgos
 
