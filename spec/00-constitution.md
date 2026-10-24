@@ -1,6 +1,6 @@
 # Constitución del proyecto: Landing Guineo Verde
 
-**Versión:** 1.4 · **Fecha:** 2026-10-18 · **Estado:** Borrador para aprobación
+**Versión:** 1.5 · **Fecha:** 2026-10-24 · **Estado:** Borrador para aprobación
 
 ## Índice
 1. Propósito
@@ -22,7 +22,7 @@ El objetivo es dar a conocer el negocio, aumentar su visibilidad y apoyar las ac
 | P2 | **Cumplimiento primero** | Ley 1480 (identidad del vendedor, precio total, envío separado, PQR, enlace SIC, peso/origen/usos del producto). Exclusión de retracto para perecederos informada de forma expresa. Precio total informado por teléfono: validación jurídica pendiente antes de producción (D-01). |
 | P3 | **Sin afirmaciones de salud sin respaldo** | Solo formulaciones como "fuente de almidón resistente". Nada de "controla la diabetes" o similares. |
 | P4 | **Mobile-first** | La mayoría del tráfico llegará desde redes y móvil. Se diseña y prueba primero a 360 px. |
-| P5 | **Rendimiento medible** | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms en móvil 4G (p75). Peso inicial ≤ 300 KB sin imágenes diferidas. |
+| P5 | **Rendimiento medible** | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms en móvil 4G (p75). Peso inicial ≤ 300 KB transferido con gzip (HTML, JS, CSS y fuentes precargadas). La foto del hero (imagen LCP) tiene su propio límite, ≤ 120 KB por archivo; las demás imágenes son diferidas y no cuentan. Se informa también el total con el hero (decisión del usuario, 2026-10-24, T-73). |
 | P6 | **Seguridad desde el diseño** | OWASP ASVS nivel 1 como mínimo: cabeceras, CSP, validación de entradas, sin secretos en el cliente, dependencias auditadas. |
 | P7 | **Accesibilidad** | WCAG 2.2 AA: contraste, foco visible, navegación por teclado, textos alternativos. |
 | P8 | **Datos personales** | Ley 1581 de 2012: aviso de privacidad, consentimiento explícito en formularios, mínimo de datos. |

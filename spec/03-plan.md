@@ -284,7 +284,7 @@ default-src 'self'; script-src 'self' 'sha256-…'; style-src 'self' 'unsafe-inl
 | CSS | Tailwind con purga, en un archivo enlazado. El CSS en línea (`experimental.inlineCss`) se probó y se descartó: duplica el CSS en el HTML |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
 | SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt`. La URL base es `url` en `site.json`. Fuera de producción (demo con datos ficticios, D-11) la página lleva `noindex` y `robots.txt` bloquea el rastreo; con `SITE_ENV=production` se permite y se publica el sitemap |
-| Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB |
+| Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB por archivo, que `budget` también verifica (P5). `budget` informa además el total con la foto del hero de cada viewport (2026-10-24: 311,5 KB en móvil y 347,3 KB en escritorio), para no leer los 300 KB como la carga completa (T-73) |
 
 ## 9. Analítica (roadmap R-07, fuera de Fase 1)
 

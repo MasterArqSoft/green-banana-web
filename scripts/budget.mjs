@@ -1,9 +1,11 @@
 // Presupuesto de peso inicial (P5, spec/03-plan.md §8): suma, comprimido con gzip
 // como lo sirve el hosting, el HTML de cada página y los JS, CSS y fuentes que
-// precarga. Las imágenes diferidas no cuentan. Falla si alguna página supera el límite.
+// precarga. Las imágenes diferidas no cuentan, y la foto del hero tiene su propio límite.
+// Falla si alguna página supera el límite o si alguna versión del hero supera el suyo.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
+import { IMAGES } from "../src/lib/images.ts";
 
 const LIMIT_KB = 300;
 const out = join(process.cwd(), "out");
@@ -16,8 +18,8 @@ const pages = [
 
 const transferred = (file) => {
   const data = readFileSync(join(out, file));
-  // woff2 ya viene comprimido; el hosting no lo vuelve a comprimir.
-  return file.endsWith(".woff2")
+  // woff2 y las imágenes ya vienen comprimidos; el hosting no los vuelve a comprimir.
+  return /\.(woff2|avif|webp|jpg|png)$/.test(file)
     ? data.length
     : gzipSync(data, { level: 9 }).length;
 };
@@ -50,5 +52,30 @@ for (const page of pages) {
   console.log(
     `${ok ? "✓" : "✗"} ${page}: ${total.toFixed(1)} KB de ${LIMIT_KB} (${detail})`,
   );
+  // La landing además descarga la foto del hero (la imagen LCP, no diferida). Tiene su
+  // propio límite (maxKB en images.ts) y no entra en los 300 KB (P5, decisión del
+  // usuario del 2026-10-24, T-73). Se informa el total para no leer el indicador como
+  // la carga completa. El navegador elige AVIF; los demás formatos son respaldo.
+  if (page === "index.html") {
+    for (const [viewport, spec] of [
+      ["móvil", IMAGES.heroMobile],
+      ["escritorio", IMAGES.heroDesktop],
+    ]) {
+      const avif = transferred(`images/${spec.output}.avif`) / 1024;
+      console.log(
+        `  con la foto del hero en ${viewport} (AVIF ${avif.toFixed(1)} KB): ${(total + avif).toFixed(1)} KB (informativo)`,
+      );
+      for (const format of spec.formats) {
+        const kb = transferred(`images/${spec.output}.${format}`) / 1024;
+        const okHero = kb <= spec.maxKB;
+        failed ||= !okHero;
+        if (!okHero) {
+          console.log(
+            `✗ hero ${viewport} ${format}: ${kb.toFixed(1)} KB de ${spec.maxKB}`,
+          );
+        }
+      }
+    }
+  }
 }
 process.exit(failed ? 1 : 0);

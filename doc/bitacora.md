@@ -84,6 +84,17 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   Si el servicio de npm se cae, se vuelve a correr el job.
 - **Actualizados:** `CLAUDE.md` (CI, Dependabot y D-01 a D-14) y `03-plan.md` (A06 y CI).
 - **Verificado:** `npm run audit:deps` local, 0 vulnerabilidades. El paso nuevo se comprueba en GitHub Actions con el push.
+- Commit `d2c0ee0`.
+
+### T-73: el presupuesto y la foto del hero (H-02)
+- **Contradicción resuelta:** la constitución (P5, "≤ 300 KB sin imágenes diferidas") contaba el hero, que no es diferido; el plan (`03` §8) lo dejaba fuera con su propio límite de 120 KB. **Decisión del usuario:** el hero va aparte. P5 queda redactado como el plan; `00` pasa a la versión 1.5.
+- **`scripts/budget.mjs`:**
+  - toma las fotos del hero de `images.ts` (la misma fuente que el componente y `npm run images`);
+  - informa el total con el AVIF de cada viewport;
+  - falla si alguna versión del hero (AVIF, WebP o JPG) supera su `maxKB`;
+  - corregido: las imágenes, como las fuentes, se miden sin gzip.
+- **Medido:** landing 266,1 KB de 300; con el hero, **311,5 KB en móvil** (AVIF de 45,4 KB) y **347,3 KB en escritorio** (AVIF de 81,2 KB). Las versiones del hero están dentro de 120 KB; el JPG de escritorio es el más cercano, con 119 KB.
+- **Actualizados:** `00-constitution.md`, `03-plan.md` §8 y `CLAUDE.md`.
 
 ---
 
