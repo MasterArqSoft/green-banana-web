@@ -77,6 +77,29 @@ test.describe("móvil a 360 px", () => {
     await expect(floating).toHaveAttribute("inert", "");
   });
 
+  test("al volver de una página legal, el botón flotante sigue al hero nuevo (H-11, T-68)", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const floating = page.locator("body > div[class*='fixed']");
+    // Navegación del cliente: el layout (y el componente del flotante) persiste.
+    await page
+      .locator("#pie")
+      .getByRole("link", { name: "Privacidad" })
+      .click();
+    await expect(page).toHaveURL(/\/privacidad$/);
+    // Sin hero en la página, el botón no se muestra.
+    await expect(floating).toHaveAttribute("inert", "");
+
+    await page.getByRole("link", { name: "Volver al inicio" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator("#hero")).toBeInViewport();
+    await expect(floating).toHaveAttribute("inert", "");
+
+    await page.locator("#presentaciones").scrollIntoViewIfNeeded();
+    await expect(floating).not.toHaveAttribute("inert", "");
+  });
+
   test("«Ver origen» lleva a la sección sin que la barra fija tape el título", async ({
     page,
   }) => {

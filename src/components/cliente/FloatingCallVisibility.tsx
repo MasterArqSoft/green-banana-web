@@ -1,30 +1,48 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+
+type Observado = { ruta: string; hero: boolean; pie: boolean };
 
 // Uno de los dos componentes cliente (el otro es MapaFincasInteractivo). Muestra el botón flotante en móvil
 // cuando el hero (#hero) ya salió de la pantalla y el pie (#pie) aún no entra,
 // para no taparlo (FR-17). Sin JavaScript el botón queda oculto: los demás
 // botones Llamar siguen disponibles.
+// El layout persiste al navegar entre páginas: en cada ruta se vuelven a buscar el
+// hero y el pie, que son nodos nuevos (H-11, T-68). Lo observado se guarda con su ruta;
+// si no corresponde a la página actual (p. ej. una legal, sin hero), el botón no se muestra.
 export function FloatingCallVisibility({ children }: { children: ReactNode }) {
-  const [heroVisible, setHeroVisible] = useState(true);
-  const [footerVisible, setFooterVisible] = useState(false);
+  const ruta = usePathname();
+  const [observado, setObservado] = useState<Observado>({
+    ruta: "",
+    hero: true,
+    pie: false,
+  });
 
   useEffect(() => {
     const hero = document.getElementById("hero");
     const footer = document.getElementById("pie");
+    if (!hero) return;
     const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target === hero) setHeroVisible(entry.isIntersecting);
-        if (entry.target === footer) setFooterVisible(entry.isIntersecting);
-      }
+      setObservado((previo) => {
+        let siguiente =
+          previo.ruta === ruta ? previo : { ruta, hero: true, pie: false };
+        for (const entry of entries) {
+          if (entry.target === hero)
+            siguiente = { ...siguiente, hero: entry.isIntersecting };
+          if (entry.target === footer)
+            siguiente = { ...siguiente, pie: entry.isIntersecting };
+        }
+        return siguiente;
+      });
     });
-    if (hero) observer.observe(hero);
+    observer.observe(hero);
     if (footer) observer.observe(footer);
     return () => observer.disconnect();
-  }, []);
+  }, [ruta]);
 
-  const visible = !heroVisible && !footerVisible;
+  const visible = observado.ruta === ruta && !observado.hero && !observado.pie;
   return (
     <div
       // Oculto: fuera de la pantalla, sin foco ni lectura (inert).

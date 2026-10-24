@@ -5,6 +5,28 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: Fase 9, auditoría independiente (T-68 a T-74)
+
+### Contexto
+- El usuario entregó una auditoría independiente de código y navegador, hecha sobre `59543dc`, antes del commit de la Fase 8. Trae 11 hallazgos (H-01 a H-11) y una carpeta con capturas, el JSON del DOM y el informe. Llegó en dos versiones: la segunda amplía la primera con la revisión en navegador.
+- Se verificó cada hallazgo en el código, los specs y GitHub; los 11 siguen vigentes en `f5638ef`. Además, `main` sigue sin protección (la API de GitHub responde "Branch not protected").
+- **Decisiones del usuario:**
+  - H-02: el hero se cuenta aparte, con su propio límite de 120 KB, y se alinea P5;
+  - H-08: `npm audit` bloquea la publicación;
+  - H-07: el número ficticio se queda hasta RP-01.
+- Sin tareas: H-05, H-06 y H-09, porque ya estaban registrados. Plan en `04-tasks.md`, Fase 9.
+
+### T-68: botón flotante al volver de una página legal (H-11)
+- **Causa:** `FloatingCallVisibility` vive en el layout, que persiste al navegar, y buscaba `#hero` y `#pie` una sola vez (`useEffect([])`). Al volver a la landing, el hero es un nodo nuevo que nadie observaba.
+- **Al escribir la prueba se encontró un caso más:** ya en Privacidad el botón quedaba visible. El hero había salido de pantalla en la landing y el estado no se reiniciaba al cambiar de página. Si se abría Privacidad directamente, en cambio, el botón no aparecía.
+- **Corrección:** se observa de nuevo en cada ruta (`usePathname`). Lo observado se guarda junto con su ruta; si no corresponde a la página actual (por ejemplo, una página legal sin hero), el botón no se muestra.
+  - Se evitó llamar a `setState` en el cuerpo del efecto.
+  - Regla única: sin hero, no hay botón flotante.
+- **Prueba nueva en `layout.spec.ts` (móvil):** landing → Privacidad (el botón queda oculto) → "Volver al inicio" (oculto con el hero en pantalla) → scroll (visible). Primero se comprobó que fallaba con el código anterior.
+- **Verificado:** 76 e2e (8 omitidas por perfil), 319 unitarias y tipos sin errores.
+
+---
+
 ## 2026-10-24: Fase 8, hallazgos de la auditoría externa (T-58 a T-67)
 
 ### Contexto

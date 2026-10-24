@@ -14,7 +14,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Fase 7: Cambio v1.5 y Fase 8: Auditoría externa
+8. Fase 7: Cambio v1.5, Fase 8: Auditoría externa y Fase 9: Auditoría independiente
 9. Resumen y estado de avance
 10. Roadmap (fuera de la Fase 1)
 11. Roadmap de producción (RP)
@@ -141,6 +141,27 @@ Clasificación de los hallazgos:
 
 Cierre de la fase: `npm run validate`, `budget` y `lighthouse`; entrada en `doc/bitacora.md` y estado en esta tabla.
 
+## Fase 9: Auditoría independiente (2026-10-24)
+
+Origen: auditoría independiente de código y navegador sobre `59543dc` (11 hallazgos, H-01 a H-11; informe y capturas entregados por el usuario, no versionados). Se verificó que siguen vigentes en `f5638ef`. Aprobada por el usuario el 2026-10-24.
+
+Decisiones del usuario:
+- **H-02:** la foto del hero se cuenta aparte (≤ 120 KB) y se alinea P5 de la constitución con `03` §8.
+- **H-08:** `npm audit` pasa a bloquear la publicación (cambia la decisión de confiar solo en Dependabot).
+- **H-07:** el número ficticio de la demo se mantiene hasta RP-01.
+
+Sin tareas: H-05 (RP-01), H-06 (R-07) y H-09 (T-32, R-08), ya registrados.
+
+| ID | Tarea | Hallazgo / Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-68 | `FloatingCallVisibility` vuelve a buscar `#hero` y `#pie` en cada cambio de ruta. Sin hero en la página, el botón no se muestra. e2e: landing → Privacidad → "Volver al inicio" con el botón oculto, y visible después del scroll | H-11, FR-17 | 2 | – |
+| T-69 | Mapa: si no carga ninguna tesela (`tileerror` sin `tileload`), pasa a error, destruye la instancia y vuelve el mapa ilustrado con "Reintentar" (texto en `copy.json`). Cada intento limpia la instancia anterior. e2e con teselas HTTP 500 y recuperación | H-03, H-04, FR-24 | 4 | – |
+| T-70 | La política de privacidad (borrador) describe la conexión opcional con OpenStreetMap: cuándo, a quién, qué dato y la alternativa. Prueba de coherencia con `copy.map.consent`. Revisión jurídica con T-05 y D-13 | H-10, NFR-09 | 1 | – |
+| T-71 | Publicar el artefacto verificado: `verificar` construye también con el prefijo, `server.mjs` lo sirve bajo `/green-banana-web/`, corre una prueba de humo, y ese mismo `out/` se sube a Pages (el job `build` deja de reconstruir) | H-01, R-10 | 4 | – |
+| T-72 | `npm run audit:deps` bloqueante en `verificar`; política de excepciones en `05` (como D-12) | H-08, NFR-04 | 1 | – |
+| T-73 | `npm run budget` informa también el total con la imagen LCP de cada viewport; P5 de `00` alineado con `03` §8 | H-02, P5 | 1 | – |
+| T-74 | Cierre: `validate`, `lighthouse`, revisión de `arquitecto-software`, bitácora y estado | CLAUDE.md | 1 | T-68 a T-73 |
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -154,7 +175,8 @@ Cierre de la fase: `npm run validate`, `budget` y `lighthouse`; entrada en `doc/
 | 6. Lanzamiento | 7 |
 | 7. Cambio v1.5 (navegación y mapa) | 13,5 |
 | 8. Auditoría externa | 11,5 |
-| **Total** | **~122 h** |
+| 9. Auditoría independiente | 14 |
+| **Total** | **~136 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -171,6 +193,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+| **Fase 9 (auditoría independiente)** | Hecha: T-68 (2026-10-24). Pendientes: T-69 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |
 | **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |
 
