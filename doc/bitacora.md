@@ -37,11 +37,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 ### Archivos tocados
 - `doc/skills-candidatas/07-owasp-security.md`, `08-trailofbits-seguridad.md`, `09-claude-seo.md` y `10-qa-skills.md` (nuevos).
 - `doc/skills-candidatas/README.md`, `skills-lock.json`, `CLAUDE.md` y esta bitácora.
+- `.agents/product-marketing.md` y `.agents/qa-project-context.md` (nuevos); `.prettierignore`.
 - `.claude/skills/` (fuera de Git).
 
+### Contexto para las skills
+- `.agents/product-marketing.md`: lo leen `copywriting` y `cro`. Contiene negocio, única conversión (la llamada), público, tono y objeciones, más la lista de lo prohibido: P1, P3, FR-12 y todo lo que está en el roadmap.
+- `.agents/qa-project-context.md`: lo leen `visual-testing` y `exploratory-testing`. Contiene páginas, pruebas existentes, zonas visualmente críticas, contenido dinámico (teselas interceptadas, `lazy`) y la regla de no usar servicios de pago.
+- Los dos aclaran que no son fuente de verdad. `.agents/` va en `.prettierignore`, como el resto de la documentación escrita a mano.
+
+### Primera revisión con `owasp-security` (CI, dependencias y configuración)
+- **Resultado: nada explotable.**
+- **Superficie:** no hay entradas de usuario en tiempo de ejecución. El contenido JSON lo controla el repositorio, así que no es una fuente de inyección.
+- **Comprobado:**
+  - `pages.yml`: `pull_request` (no `pull_request_target`), `permissions: contents: read` por defecto, acciones fijadas por SHA, `persist-credentials: false`, `npm ci` y ninguna interpolación `${{ }}` de campos del PR en `run:`.
+  - Dependencias: `npm audit` sin vulnerabilidades; `npm audit signatures` con 369 firmas verificadas y 98 atestaciones; todo se resuelve desde `registry.npmjs.org`. El único paquete con script de instalación es `fsevents`, opcional y solo de macOS.
+  - JSON-LD: `jsonLd()` escapa `<`.
+  - Popup del mapa: se arma con `textContent`. Teselas por HTTPS.
+- **Defensa en profundidad, ya registrada:**
+  - sin CSP ni cabeceras (T-32, D-11, bloqueado por R-08);
+  - `main` sin protección (la configura el usuario).
+- **Detalle encontrado:** `unrs-resolver` ya no está en `package-lock.json`. La entrada de `allowScripts` en `package.json` y la frase de `CLAUDE.md` que la menciona quedaron obsoletas; quitarlas queda pendiente de confirmación del usuario.
+
 ### Abierto
-- Crear `.agents/product-marketing.md` y `.agents/qa-project-context.md` con el contexto del negocio y las prohibiciones P1 y P3. `copywriting`, `cro`, `visual-testing` y `exploratory-testing` los leen si existen.
 - Decidir dónde se generan las capturas de referencia de `visual-testing`: Windows y Linux renderizan distinto.
+- Quitar o no la entrada obsoleta de `allowScripts`.
 - Instalar `uv` si se quiere `supply-chain-risk-auditor`.
 
 ---
