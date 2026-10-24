@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // T-38: auditoría automática de accesibilidad con axe (WCAG 2.2 AA, NFR-02).
 // La prueba con lector de pantalla es manual (ver doc/bitacora.md).

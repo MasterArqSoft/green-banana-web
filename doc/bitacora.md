@@ -95,6 +95,23 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - corregido: las imágenes, como las fuentes, se miden sin gzip.
 - **Medido:** landing 266,1 KB de 300; con el hero, **311,5 KB en móvil** (AVIF de 45,4 KB) y **347,3 KB en escritorio** (AVIF de 81,2 KB). Las versiones del hero están dentro de 120 KB; el JPG de escritorio es el más cercano, con 119 KB.
 - **Actualizados:** `00-constitution.md`, `03-plan.md` §8 y `CLAUDE.md`.
+- Commit `97850a3`.
+
+### T-74: cierre, revisión de arquitectura y correcciones
+- **Verificado antes de la revisión:**
+  - `validate` completo: 320 unitarias, 80 e2e, 18 de humo y 0 vulnerabilidades;
+  - Lighthouse móvil, 2 corridas: 92 y 91, con las demás categorías en 100; LCP de laboratorio de 3,2 a 3,3 s.
+- **Agente `arquitecto-software`: aprobado con observaciones.** Sin bloqueantes, 2 importantes y 4 sugerencias. El usuario pidió aplicar todas.
+  1. **Importante, error real:** cuando no cargaba ninguna tesela, `fallar()` corría dentro del evento `load` de Leaflet. `map.remove()` dejaba `_map` en `null` y Leaflet, al volver del evento, lanzaba `TypeError: Cannot read properties of null (reading '_fadeAnimated')`. La interfaz se veía bien y la e2e no lo detectaba porque no escuchaba `pageerror`. **Solución:**
+     - `tests/e2e/fixtures.ts`, un *fixture* automático que hace fallar **toda** prueba e2e ante un error de JavaScript sin capturar. Las 6 specs importan `test` y `expect` de ahí;
+     - se reprodujo el error con el *fixture* (solo esa prueba fallaba) y se corrigió difiriendo la destrucción (`setTimeout(fallar, 0)`).
+  2. **Importante:** `04-tasks.md` describía T-69 con `tileerror` y T-71 con `out/`. Corregido.
+  3. **Espera de 15 s:** si OpenStreetMap acepta la conexión y nunca responde, `load` no llega. Ahora, a los 15 s sin ninguna tesela, el mapa también pasa a error. El temporizador se cancela con la primera tesela, en cada intento y al desmontar. e2e con `page.clock` y teselas que nunca responden.
+  4. **Sitemap y canonical de la demo:** el canonical llevaba barra final (Next la agrega con `trailingSlash`) y el sitemap no. `absoluteUrl()` agrega la barra a las páginas cuando hay `PAGES_BASE_PATH`, la misma condición de `next.config.ts`; los archivos con extensión no la llevan. Hay prueba unitaria y una comprobación en la prueba de humo (el `<loc>` coincide con el canonical). Producción no cambia.
+  5. **Presupuesto del artefacto publicado:** `budget.mjs` acepta la carpeta como argumento y encuentra las páginas con barra final (`terminos/index.html`). `npm run budget:prefijo` (`out-pages/`: 266,3 KB) corre en `verificar` y en `validate`.
+  6. **`CLAUDE.md`:** la lista de pruebas e2e suma `prefijo.spec.ts`, la regla del *fixture* y `budget:prefijo`.
+- **Verificado después de las correcciones:** `validate` completo, con 321 unitarias, 82 e2e (8 omitidas por perfil) y 18 de humo, sin ningún `pageerror`; presupuesto de 266,2 KB (`out/`) y 266,3 KB (`out-pages/`); 0 vulnerabilidades.
+- **Fase 9 cerrada:** H-01, H-02, H-03, H-04, H-08, H-10 y H-11 resueltos. H-05, H-06, H-07 y H-09 siguen como decisiones o pendientes ya registrados (RP-01, R-07, R-08 y T-32).
 
 ---
 

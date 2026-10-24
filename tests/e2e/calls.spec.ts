@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import site from "../../src/content/site.json";
 
 // T-37: botones de llamada en todos los puntos de contacto (AC-01 a AC-03),

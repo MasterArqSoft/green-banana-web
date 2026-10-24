@@ -16,6 +16,8 @@ import { fill } from "@/lib/template";
 type Estado = "idle" | "loading" | "ready" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+// Tiempo máximo sin ninguna tesela antes de dar el mapa por caído (revisión de la Fase 9).
+const ESPERA_TESELAS_MS = 15_000;
 
 export function MapaFincasInteractivo({
   avisoId,
@@ -41,6 +43,7 @@ export function MapaFincasInteractivo({
   const montado = useRef(true);
   const region = useRef<HTMLDivElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
+  const espera = useRef<ReturnType<typeof setTimeout> | null>(null);
   // El mapa ilustrado se pide solo cuando la sección se acerca a la pantalla: con
   // loading="lazy", Chrome lo descargaba en la carga inicial y competía con el LCP.
   const [cercano, setCercano] = useState(false);
@@ -65,10 +68,16 @@ export function MapaFincasInteractivo({
     montado.current = true;
     return () => {
       montado.current = false;
+      if (espera.current) clearTimeout(espera.current);
       mapa.current?.remove();
       mapa.current = null;
     };
   }, []);
+
+  function cancelarEspera() {
+    if (espera.current) clearTimeout(espera.current);
+    espera.current = null;
+  }
 
   // Tras un error, el foco pasa a "Reintentar": el botón anterior ya no existe.
   useEffect(() => {
@@ -80,6 +89,7 @@ export function MapaFincasInteractivo({
   // remove() no quita las clases que Leaflet agregó al contenedor (fondo gris): un
   // `key` nuevo hace que React lo reemplace por un nodo limpio.
   function fallar() {
+    cancelarEspera();
     mapa.current?.remove();
     mapa.current = null;
     if (!montado.current) return;
@@ -89,6 +99,7 @@ export function MapaFincasInteractivo({
 
   async function cargarMapa() {
     setEstado("loading");
+    cancelarEspera();
     mapa.current?.remove();
     mapa.current = null;
     try {
@@ -112,18 +123,27 @@ export function MapaFincasInteractivo({
       // "load" llega cuando terminan las teselas visibles, también las que fallaron.
       // Si ninguna cargó (OSM caído o bloqueado), el mapa quedaría gris: pasa a error
       // (H-03). Un fallo parcial deja huecos, pero no reemplaza el mapa entero.
+      // La destrucción espera a que Leaflet termine su evento: al volver de "load",
+      // Leaflet todavía usa el mapa y lanzaba un TypeError si ya no existía.
       let teselasCargadas = 0;
+      const sinTeselas = () => teselasCargadas === 0 && mapa.current === map;
       L.tileLayer(TILES, {
         maxZoom: 19,
         attribution: textos.attribution,
       })
         .on("tileload", () => {
           teselasCargadas += 1;
+          cancelarEspera();
         })
         .on("load", () => {
-          if (teselasCargadas === 0 && mapa.current === map) fallar();
+          if (sinTeselas()) setTimeout(fallar, 0);
         })
         .addTo(map);
+      // Si OSM acepta la conexión y nunca responde, "load" no llega: tras la espera,
+      // también pasa a error.
+      espera.current = setTimeout(() => {
+        if (sinTeselas()) fallar();
+      }, ESPERA_TESELAS_MS);
 
       // Leaflet escribe "Close popup" en el botón de cierre; se reemplaza por copy.json.
       map.on("popupopen", (event) => {

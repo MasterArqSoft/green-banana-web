@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import copy from "../../src/content/copy.json";
 
 // Prueba de humo del artefacto publicado en GitHub Pages (T-71, H-01). Corre con
@@ -125,6 +126,15 @@ test.describe("artefacto con prefijo de GitHub Pages (T-71)", () => {
     for (const archivo of ["favicon.ico", "robots.txt", "sitemap.xml"]) {
       expect((await page.request.get(archivo)).status()).toBe(200);
     }
+    // El sitemap usa las mismas URL que el canonical de cada página (con barra final).
+    const sitemap = await (await page.request.get("sitemap.xml")).text();
+    await page.goto("terminos/");
+    const canonical = await page
+      .locator('link[rel="canonical"]')
+      .getAttribute("href");
+    expect(canonical).toMatch(/\/terminos\/$/);
+    expect(sitemap).toContain(`<loc>${canonical}</loc>`);
+
     const security = await page.request.get(".well-known/security.txt");
     expect(security.status()).toBe(200);
     expect(await security.text()).toContain(

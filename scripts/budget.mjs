@@ -2,19 +2,23 @@
 // como lo sirve el hosting, el HTML de cada página y los JS, CSS y fuentes que
 // precarga. Las imágenes diferidas no cuentan, y la foto del hero tiene su propio límite.
 // Falla si alguna página supera el límite o si alguna versión del hero supera el suyo.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { IMAGES } from "../src/lib/images.ts";
 
 const LIMIT_KB = 300;
-const out = join(process.cwd(), "out");
-const pages = [
-  "index.html",
-  "terminos.html",
-  "privacidad.html",
-  "garantia.html",
-];
+// Carpeta a medir: out/ por defecto, u out-pages/ (el artefacto que publica GitHub
+// Pages, con prefijo y barra final) con `node scripts/budget.mjs out-pages`.
+const outDir = process.argv[2] ?? "out";
+const out = join(process.cwd(), outDir);
+// Con barra final (trailingSlash), cada página queda en <ruta>/index.html.
+const pages = ["index", "terminos", "privacidad", "garantia"].map((page) =>
+  page === "index" || existsSync(join(out, `${page}.html`))
+    ? `${page}.html`
+    : `${page}/index.html`,
+);
+console.log(`Presupuesto de ${outDir}/`);
 
 const transferred = (file) => {
   const data = readFileSync(join(out, file));

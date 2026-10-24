@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import copy from "../../src/content/copy.json";
 
 // T-66: CSP por <meta> (SEC-01 parcial). Cualquier violación falla: un script en línea

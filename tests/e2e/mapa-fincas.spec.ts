@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import copy from "../../src/content/copy.json";
 
 // T-55: mapa de fincas (FR-24) y navegación de retorno (FR-19).
@@ -157,6 +158,24 @@ test.describe("errores del mapa y reintento (H-03, H-04, T-69)", () => {
     await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
     await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
     await expect(reintentar).toHaveCount(0);
+  });
+
+  test("si OpenStreetMap no responde, pasa a error tras la espera", async ({
+    page,
+  }) => {
+    // Las teselas quedan pendientes para siempre; el reloj de la página se adelanta.
+    await page.clock.install();
+    await page.route(TILE, () => {});
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-container")).toBeVisible();
+    await page.clock.runFor(16_000);
+    await expect(page.locator("#mapa-fincas [role='status']")).toHaveText(
+      copy.map.error,
+    );
+    await expect(
+      page.getByRole("button", { name: copy.map.retry }),
+    ).toBeVisible();
   });
 
   test("si falla la descarga de Leaflet, también se puede reintentar", async ({

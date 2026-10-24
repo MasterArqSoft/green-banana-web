@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // T-33: composición y revisión móvil a 360 px.
 const pages = ["/", "/terminos", "/privacidad", "/garantia"];

@@ -155,9 +155,9 @@ Sin tareas: H-05 (RP-01), H-06 (R-07) y H-09 (T-32, R-08), ya registrados.
 | ID | Tarea | Hallazgo / Req. | Est. | Dep. |
 |---|---|---|---|---|
 | T-68 | `FloatingCallVisibility` vuelve a buscar `#hero` y `#pie` en cada cambio de ruta. Sin hero en la página, el botón no se muestra. e2e: landing → Privacidad → "Volver al inicio" con el botón oculto, y visible después del scroll | H-11, FR-17 | 2 | – |
-| T-69 | Mapa: si no carga ninguna tesela (`tileerror` sin `tileload`), pasa a error, destruye la instancia y vuelve el mapa ilustrado con "Reintentar" (texto en `copy.json`). Cada intento limpia la instancia anterior. e2e con teselas HTTP 500 y recuperación | H-03, H-04, FR-24 | 4 | – |
+| T-69 | Mapa: si no carga ninguna tesela (evento `load` de la capa sin ningún `tileload`, o 15 s sin respuesta), pasa a error, destruye la instancia y vuelve el mapa ilustrado con "Reintentar" (texto en `copy.json`). Cada intento limpia la instancia anterior. e2e con teselas HTTP 500 y recuperación | H-03, H-04, FR-24 | 4 | – |
 | T-70 | La política de privacidad (borrador) describe la conexión opcional con OpenStreetMap: cuándo, a quién, qué dato y la alternativa. Prueba de coherencia con `copy.map.consent`. Revisión jurídica con T-05 y D-13 | H-10, NFR-09 | 1 | – |
-| T-71 | Publicar el artefacto verificado: `verificar` construye también con el prefijo, `server.mjs` lo sirve bajo `/green-banana-web/`, corre una prueba de humo, y ese mismo `out/` se sube a Pages (el job `build` deja de reconstruir) | H-01, R-10 | 4 | – |
+| T-71 | Publicar el artefacto verificado: `verificar` construye también con el prefijo, `server.mjs` lo sirve bajo `/green-banana-web/`, corre una prueba de humo, y ese mismo `out-pages/` se sube a Pages (el job `build` deja de reconstruir) | H-01, R-10 | 4 | – |
 | T-72 | `npm run audit:deps` bloqueante en `verificar`; política de excepciones en `05` (como D-12) | H-08, NFR-04 | 1 | – |
 | T-73 | `npm run budget` informa también el total con la imagen LCP de cada viewport; P5 de `00` alineado con `03` §8 | H-02, P5 | 1 | – |
 | T-74 | Cierre: `validate`, `lighthouse`, revisión de `arquitecto-software`, bitácora y estado | CLAUDE.md | 1 | T-68 a T-73 |
@@ -193,7 +193,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
-| **Fase 9 (auditoría independiente)** | Hechas: T-68 a T-73 (2026-10-24). Pendiente: T-74 |
+| **Fase 9 (auditoría independiente)** | Completa (2026-10-24): T-68 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |
 | **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |
 

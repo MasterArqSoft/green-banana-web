@@ -16,10 +16,11 @@
     "format:check": "prettier --check .",
     "audit:deps": "npm audit --audit-level=high",
     "budget": "node scripts/budget.mjs",
+    "budget:prefijo": "node scripts/budget.mjs out-pages",
     "lighthouse": "node scripts/lighthouse.mjs",
     "images": "node scripts/images.mjs",
     "icons": "node scripts/icons.mjs",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build:prefijo && npm run build && npm run budget && playwright test && npm run test:prefijo && npm run audit:deps",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build:prefijo && npm run build && npm run budget && playwright test && npm run test:prefijo && npm run budget:prefijo && npm run audit:deps",
     "prepare": "husky"
   },
   "dependencies": {

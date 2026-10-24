@@ -9,6 +9,18 @@ describe("SEO (T-31, NFR-03)", () => {
     expect(ogImage().url).toBe(`${site.url}/images/og.jpg`);
   });
 
+  it("con el prefijo de la demo, las páginas llevan barra final y los archivos no", async () => {
+    vi.stubEnv("PAGES_BASE_PATH", "/green-banana-web");
+    vi.resetModules();
+    const seo = await import("@/lib/seo");
+    expect(seo.absoluteUrl("/")).toBe(`${site.url}/`);
+    expect(seo.absoluteUrl("/terminos")).toBe(`${site.url}/terminos/`);
+    expect(seo.absoluteUrl("/sitemap.xml")).toBe(`${site.url}/sitemap.xml`);
+    expect(seo.ogImage().url).toBe(`${site.url}/images/og.jpg`);
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
   it("el título incluye la ciudad y la marca", () => {
     expect(seoTitle()).toContain(site.acopio.city);
     expect(seoTitle()).toContain(site.brand);
