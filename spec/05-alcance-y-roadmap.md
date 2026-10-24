@@ -55,7 +55,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
 | Demostración del POC/MVP | Publicación pública en GitHub Pages (https://masterarqsoft.github.io/green-banana-web/) con datos ficticios, desplegada por GitHub Actions en cada push a `main`. Conflicto abierto: D-11 |
 | Repositorio | GitHub, público (cuenta MasterArqSoft, `green-banana-web`), desde T-07 |
-| Mapa de fincas (FR-24) | Leaflet con teselas de OpenStreetMap, carga solo al pulsar "Ver mapa", con aviso. Aprobado el 2026-10-19 (D-13); revisión jurídica pendiente. Plan B: mapa estático sin terceros. Si falla la descarga de Leaflet, no carga ninguna tesela o no hay respuesta en 15 s, vuelve al mapa ilustrado con "Reintentar" (T-69). Un fallo parcial de teselas deja huecos sin aviso: aceptado por el usuario el 2026-10-24 (H-03), porque la lista de fincas siempre está visible |
+| Mapa de fincas (FR-24) | Leaflet con teselas de OpenStreetMap, carga solo al pulsar "Ver mapa", con aviso. Aprobado el 2026-10-19 (D-13); revisión jurídica pendiente. Plan B: mapa estático sin terceros. Si falla la descarga de Leaflet, o si en la vista actual (al cargar, desplazar o acercar) no hay ninguna tesela válida al terminar el lote o a los 15 s, vuelve al mapa ilustrado con "Reintentar" (T-69, T-79). Un fallo parcial muestra un aviso discreto con "Reintentar" y el mapa sigue usable: H-03 reabierto y corregido por decisión del usuario del 2026-10-24 (antes se aceptaban los huecos sin aviso) |
 | Proveedor de CI/CD (R-10) | GitHub Actions, por la regla "repositorio y pipeline en el mismo proveedor". Se configura cuando haya varios entornos |
 
 ## 5. Riesgos y pendientes

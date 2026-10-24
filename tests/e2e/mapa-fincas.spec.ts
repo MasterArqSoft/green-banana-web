@@ -231,7 +231,6 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
   test("fallo parcial: avisa sin quitar el mapa y «Reintentar» recupera las teselas", async ({
     page,
   }) => {
-    test.fail(true, "T-78: falla hasta la corrección de T-79");
     const control = await teselas(page, 1);
     control.fallar = true;
     await page.goto("/");
@@ -254,7 +253,6 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
   test("carga bien y falla todo al acercar: avisa y «Reintentar» crea un solo mapa", async ({
     page,
   }) => {
-    test.fail(true, "T-78: falla hasta la corrección de T-79");
     const control = await teselas(page);
     await page.goto("/");
     await page.getByRole("button", { name: copy.map.showButton }).click();
@@ -262,10 +260,8 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
     await page.waitForLoadState("networkidle");
 
     control.fallar = true;
-    const acercar = page.getByRole("button", { name: copy.map.zoomIn });
-    await acercar.click();
-    await page.waitForLoadState("networkidle");
-    await acercar.click();
+    // Al acercar, todas las teselas del nuevo zoom fallan: basta un clic.
+    await page.getByRole("button", { name: copy.map.zoomIn }).click();
 
     await expect(estado(page)).toHaveText(copy.map.error);
     const reintentar = page.getByRole("button", { name: copy.map.retry });
@@ -282,7 +278,6 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
   test("carga bien y falla todo al desplazar con el teclado: no queda gris en silencio", async ({
     page,
   }) => {
-    test.fail(true, "T-78: falla hasta la corrección de T-79");
     const control = await teselas(page);
     await page.goto("/");
     await page.getByRole("button", { name: copy.map.showButton }).click();
@@ -292,10 +287,12 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
     control.fallar = true;
     const mapa = page.locator(".leaflet-container");
     await mapa.focus();
-    // 12 × 80 px (keyboardPanDelta): más que el ancho del mapa, todas las teselas son nuevas.
-    for (let i = 0; i < 12 && (await mapa.count()) > 0; i++) {
+    // Hasta 20 × 80 px (keyboardPanDelta), más que el ancho del mapa: al final todas las
+    // teselas de la vista son nuevas. Por el camino hay un fallo parcial (columnas viejas
+    // todavía visibles); al quedar sin ninguna válida, el mapa pasa a error.
+    for (let i = 0; i < 20 && (await mapa.count()) > 0; i++) {
       await page.keyboard.press("ArrowRight");
-      await page.waitForTimeout(150);
+      await page.waitForTimeout(300);
     }
     await expect(estado(page)).toHaveText(copy.map.error);
     await expect(
@@ -306,7 +303,6 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
   test("una tesela carga y las demás no responden: tras la espera, avisa del fallo parcial", async ({
     page,
   }) => {
-    test.fail(true, "T-78: falla hasta la corrección de T-79");
     await page.clock.install();
     // Solo la primera tesela se responde; las demás quedan pendientes.
     let servidas = 0;

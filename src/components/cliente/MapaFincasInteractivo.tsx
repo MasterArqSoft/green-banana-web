@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Map as LeafletMap } from "leaflet";
+import type { Coords, Map as LeafletMap, TileLayer } from "leaflet";
 import type { Fincas, MapaTextos, Ubicacion } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
@@ -14,9 +14,12 @@ import { fill } from "@/lib/template";
 // servidor) y el botón (AC-19).
 
 type Estado = "idle" | "loading" | "ready" | "error";
+// Estado de cada tesela de la capa, por coordenadas (z/x/y).
+type Tesela = "pendiente" | "ok" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-// Tiempo máximo sin ninguna tesela antes de dar el mapa por caído (revisión de la Fase 9).
+// Tiempo máximo de cada carga de teselas (lote) antes de evaluar la vista con lo que haya
+// llegado: lo pendiente cuenta como fallido (revisión de la Fase 9, T-79).
 const ESPERA_TESELAS_MS = 15_000;
 
 export function MapaFincasInteractivo({
@@ -38,8 +41,11 @@ export function MapaFincasInteractivo({
 }) {
   const [estado, setEstado] = useState<Estado>("idle");
   const [intento, setIntento] = useState(0);
+  // Con el mapa listo, si faltan teselas en la vista se muestra un aviso discreto (H-03).
+  const [parcial, setParcial] = useState(false);
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<LeafletMap | null>(null);
+  const capa = useRef<TileLayer | null>(null);
   const montado = useRef(true);
   const region = useRef<HTMLDivElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
@@ -92,16 +98,28 @@ export function MapaFincasInteractivo({
     cancelarEspera();
     mapa.current?.remove();
     mapa.current = null;
+    capa.current = null;
     if (!montado.current) return;
     setIntento((n) => n + 1);
+    setParcial(false);
     setEstado("error");
+  }
+
+  // "Reintentar" del aviso parcial: vuelve a pedir las teselas sin destruir el mapa ni
+  // los marcadores. Nunca se reintenta solo, para no generar peticiones en bucle.
+  function recargarTeselas() {
+    setParcial(false);
+    contenedor.current?.focus();
+    capa.current?.redraw();
   }
 
   async function cargarMapa() {
     setEstado("loading");
+    setParcial(false);
     cancelarEspera();
     mapa.current?.remove();
     mapa.current = null;
+    capa.current = null;
     try {
       const [{ default: L }] = await Promise.all([
         import("leaflet"),
@@ -120,30 +138,84 @@ export function MapaFincasInteractivo({
         .addTo(map);
       // Atribución siempre visible y sin el prefijo de Leaflet (AC-18).
       L.control.attribution({ prefix: false }).addTo(map);
-      // "load" llega cuando terminan las teselas visibles, también las que fallaron.
-      // Si ninguna cargó (OSM caído o bloqueado), el mapa quedaría gris: pasa a error
-      // (H-03). Un fallo parcial deja huecos, pero no reemplaza el mapa entero.
-      // La destrucción espera a que Leaflet termine su evento: al volver de "load",
-      // Leaflet todavía usa el mapa y lanzaba un TypeError si ya no existía.
-      let teselasCargadas = 0;
-      const sinTeselas = () => teselasCargadas === 0 && mapa.current === map;
-      L.tileLayer(TILES, {
+      // Salud de la vista actual (MAP-01, MAP-02, T-79). Se registra el estado de cada
+      // tesela con los eventos públicos de Leaflet y, al terminar cada lote ("load", que
+      // llega también si fallaron) o al vencer la espera, se miran solo las teselas de la
+      // vista y del zoom actuales. Un contador acumulado no sirve: una tesela correcta al
+      // principio ocultaba que después fallaran todas. Sin ninguna tesela válida en la
+      // vista, pasa a error; con algunas, el mapa queda usable con un aviso.
+      const teselas = new Map<string, Tesela>();
+      const clave = ({ x, y, z }: Coords) => `${z}/${x}/${y}`;
+      const layer = L.tileLayer(TILES, {
         maxZoom: 19,
         attribution: textos.attribution,
-      })
-        .on("tileload", () => {
-          teselasCargadas += 1;
+      });
+      capa.current = layer;
+
+      // Mientras el mapa se mueve (desplazamiento o animación de zoom) la vista no está
+      // asentada y destruirlo lanza un TypeError de Leaflet (`_leaflet_pos`): la
+      // evaluación se aplaza hasta "moveend".
+      let moviendo = false;
+      let aplazada = false;
+      map
+        .on("movestart", () => (moviendo = true))
+        .on("moveend", () => {
+          moviendo = false;
+          if (aplazada) {
+            aplazada = false;
+            setTimeout(evaluar, 0);
+          }
+        });
+
+      function evaluar() {
+        if (mapa.current !== map) return;
+        if (moviendo) {
+          aplazada = true;
+          return;
+        }
+        cancelarEspera();
+        const zoomActual = Math.round(map.getZoom());
+        const tam = layer.getTileSize();
+        const vista = map.getPixelBounds();
+        const enVista = (x: number, y: number) =>
+          x >= Math.floor(vista.min!.x / tam.x) &&
+          x <= Math.floor((vista.max!.x - 1) / tam.x) &&
+          y >= Math.floor(vista.min!.y / tam.y) &&
+          y <= Math.floor((vista.max!.y - 1) / tam.y);
+        let validas = 0;
+        let fallidas = 0;
+        for (const [id, estadoTesela] of teselas) {
+          const [z, x, y] = id.split("/").map(Number);
+          if (z !== zoomActual || !enVista(x, y)) continue;
+          if (estadoTesela === "ok") validas += 1;
+          else fallidas += 1;
+        }
+        if (validas === 0 && fallidas > 0) {
+          fallar();
+          return;
+        }
+        setParcial(fallidas > 0);
+        setEstado("ready");
+      }
+
+      layer
+        .on("tileloadstart", (e) => teselas.set(clave(e.coords), "pendiente"))
+        .on("tileload", (e) => teselas.set(clave(e.coords), "ok"))
+        .on("tileerror", (e) => teselas.set(clave(e.coords), "error"))
+        .on("tileunload", (e) => teselas.delete(clave(e.coords)))
+        // Cada lote nuevo (desplazar, acercar, reintentar) tiene su propia espera: si el
+        // proveedor acepta la conexión y no responde, "load" no llega.
+        .on("loading", () => {
           cancelarEspera();
+          espera.current = setTimeout(evaluar, ESPERA_TESELAS_MS);
         })
+        // La evaluación espera a que Leaflet termine su evento: si destruye el mapa al
+        // volver de "load", Leaflet todavía lo usa y lanza un TypeError.
         .on("load", () => {
-          if (sinTeselas()) setTimeout(fallar, 0);
+          cancelarEspera();
+          setTimeout(evaluar, 0);
         })
         .addTo(map);
-      // Si OSM acepta la conexión y nunca responde, "load" no llega: tras la espera,
-      // también pasa a error.
-      espera.current = setTimeout(() => {
-        if (sinTeselas()) fallar();
-      }, ESPERA_TESELAS_MS);
 
       // Leaflet escribe "Close popup" en el botón de cierre; se reemplaza por copy.json.
       map.on("popupopen", (event) => {
@@ -187,14 +259,17 @@ export function MapaFincasInteractivo({
       } else {
         map.setView([centro.lat, centro.lng], zoom);
       }
-      setEstado("ready");
-      // El botón desaparece: el foco pasa al mapa para no perderse.
+      // "ready" llega con la primera evaluación de teselas, no al crear el mapa: hasta
+      // entonces siguen el mapa ilustrado y "Cargando mapa…". Si ningún lote llegó a
+      // empezar, la espera evalúa igual. El botón desaparece: el foco pasa al mapa.
+      espera.current ??= setTimeout(evaluar, ESPERA_TESELAS_MS);
       contenedor.current.focus();
     } catch {
       fallar();
     }
   }
 
+  const listo = estado === "ready";
   return (
     // Altura reservada desde el primer render para no mover la página (CLS). En
     // escritorio toma la altura de la lista (celda de la grilla) con un mínimo.
@@ -206,8 +281,10 @@ export function MapaFincasInteractivo({
       aria-label={textos.title}
       className="relative isolate h-[33rem] w-full overflow-hidden rounded-card bg-hoja-claro shadow-suave md:h-full md:min-h-[28rem]"
     >
-      <div key={intento} ref={contenedor} className="size-full" />
-      {estado !== "ready" && (
+      {/* z-0 encierra los paneles de Leaflet (z-index 400 a 1000): el mapa ilustrado y
+          los avisos, que van después, quedan encima mientras carga o si falta algo. */}
+      <div key={intento} ref={contenedor} className="relative z-0 size-full" />
+      {!listo && (
         <>
           {/* Mapa ilustrado de la zona (decorativo: la lista y el aviso llevan la
               información). Se pide al acercarse a la sección; no cuenta en el peso inicial. En móvil,
@@ -229,37 +306,56 @@ export function MapaFincasInteractivo({
           <p className="absolute top-[19.6rem] right-2 rounded bg-white/85 px-1.5 text-xs md:top-2">
             {textos.attribution}
           </p>
-
-          {/* Aviso antes del botón (AC-19). En escritorio, tarjeta compacta abajo a la
-              izquierda, como un control del mapa: el mapa es lo principal. */}
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t border-hoja/10 bg-white p-4 md:inset-x-auto md:bottom-5 md:left-5 md:max-w-xs md:rounded-card md:border-0 md:bg-white/90 md:shadow-suave md:backdrop-blur-sm">
-            {aviso}
-            {(estado === "idle" || estado === "error") && (
-              <button
-                ref={boton}
-                type="button"
-                onClick={cargarMapa}
-                aria-describedby={avisoId}
-                className="inline-flex min-h-11 items-center justify-center rounded-control bg-hoja px-5 font-semibold text-white"
-              >
-                {estado === "error" ? textos.retry : textos.showButton}
-              </button>
-            )}
-            {/* Siempre en el árbol de accesibilidad para que se anuncie al cambiar. */}
-            <p
-              role="status"
-              className={
-                estado === "idle"
-                  ? "sr-only"
-                  : "text-sm font-semibold text-hoja"
-              }
-            >
-              {estado === "loading" && textos.loading}
-              {estado === "error" && textos.error}
-            </p>
-          </div>
         </>
       )}
+
+      {/* Un solo panel, siempre montado, para que el lector de pantalla anuncie cada
+          cambio del estado: antes de "Ver mapa" y tras un error, el aviso (AC-19) con el
+          botón; con el mapa listo, oculto, o un aviso discreto abajo a la izquierda si
+          faltan teselas (H-03, T-79), sin tapar el zoom ni la atribución. En escritorio, tarjeta compacta abajo a la izquierda. */}
+      <div
+        className={
+          !listo
+            ? "absolute inset-x-0 bottom-0 flex flex-col gap-2 border-t border-hoja/10 bg-white p-4 md:inset-x-auto md:bottom-5 md:left-5 md:max-w-xs md:rounded-card md:border-0 md:bg-white/90 md:shadow-suave md:backdrop-blur-sm"
+            : parcial
+              ? "absolute inset-x-2 bottom-7 flex items-center gap-3 rounded-card bg-white/95 px-3 py-2 shadow-suave md:right-auto md:bottom-2"
+              : "sr-only"
+        }
+      >
+        {!listo && aviso}
+        {(estado === "idle" || estado === "error") && (
+          <button
+            ref={boton}
+            type="button"
+            onClick={cargarMapa}
+            aria-describedby={avisoId}
+            className="inline-flex min-h-11 items-center justify-center rounded-control bg-hoja px-5 font-semibold text-white"
+          >
+            {estado === "error" ? textos.retry : textos.showButton}
+          </button>
+        )}
+        <p
+          role="status"
+          className={
+            estado === "idle" || (listo && !parcial)
+              ? "sr-only"
+              : "text-sm font-semibold text-hoja"
+          }
+        >
+          {estado === "loading" && textos.loading}
+          {estado === "error" && textos.error}
+          {listo && parcial && textos.partial}
+        </p>
+        {listo && parcial && (
+          <button
+            type="button"
+            onClick={recargarTeselas}
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-control bg-hoja px-4 font-semibold text-white"
+          >
+            {textos.retry}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

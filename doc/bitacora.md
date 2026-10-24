@@ -20,6 +20,20 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-79: salud del mapa por vista (MAP-01, MAP-02, H-03)
+- **`MapaFincasInteractivo.tsx`:** el contador acumulado se reemplaza por un registro del estado de cada tesela (`z/x/y` → pendiente, ok o error) con los eventos públicos de Leaflet `tileloadstart`, `tileload`, `tileerror` y `tileunload`.
+- **Evaluación:** al terminar cada lote (`load`, aplazado con `setTimeout(…, 0)`) o a los 15 s de empezarlo (`loading` inicia la espera de cada lote), cuenta solo las teselas del zoom actual dentro de `map.getPixelBounds()`:
+  - ninguna válida: `fallar()` (mapa ilustrado, error y "Reintentar" con foco), también tras desplazar o acercar;
+  - algunas fallidas o pendientes: el mapa sigue usable con el aviso `copy.map.partial` y "Reintentar", que llama a `layer.redraw()` sin destruir el mapa ni los marcadores. Nunca se reintenta solo.
+- **`ready` llega con la primera evaluación**, no al crear el mapa: mientras tanto siguen el mapa ilustrado y "Cargando mapa…". El contenedor de Leaflet lleva `relative z-0` para que sus paneles (z-index 400 a 1000) no tapen el mapa ilustrado ni los avisos.
+- **Un solo panel con `role="status"` siempre montado**, para que el lector de pantalla anuncie cada cambio (carga, parcial, error), también al pasar de mapa listo a error.
+- **Error encontrado por el fixture de `pageerror`:** destruir el mapa durante la animación de zoom lanzaba `Cannot read properties of undefined (reading '_leaflet_pos')`. La evaluación se aplaza mientras el mapa se mueve (`movestart`/`moveend`).
+- **Pruebas ajustadas:** el zoom necesita un solo clic (el primero ya deja sin teselas válidas y destruye el mapa); el desplazamiento con teclado avanzaba ~480 px con pausas de 150 ms, y quedaba una columna vieja visible (fallo parcial legítimo): ahora hasta 20 pulsaciones con 300 ms.
+- **Revisión visual:** arriba, el aviso tapaba el zoom y el marcador del acopio; quedó abajo a la izquierda, en una fila, sin tapar marcadores ni la atribución (capturas en móvil 360 px y escritorio).
+- **Verificado:** se quitaron los `test.fail()` de T-78; 30 pruebas del mapa pasan, repetidas 3 veces sin fallos (48 de 48 en los bloques de errores y salud); suite e2e completa 92 pasan y 8 omitidas por perfil.
+- `CLAUDE.md` y `05` (fila del mapa) describen la salud por vista y H-03 reabierto.
+- Archivos: `src/components/cliente/MapaFincasInteractivo.tsx`, `tests/e2e/mapa-fincas.spec.ts`, `CLAUDE.md`, `spec/05-alcance-y-roadmap.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-78: regresiones del mapa, escritas antes de la corrección
 - **`tests/e2e/mapa-fincas.spec.ts`**, nuevo bloque "salud del mapa por vista":
   - fallo parcial (una tesela correcta y el resto HTTP 500): aviso, mapa y marcadores siguen, axe sin infracciones y "Reintentar" recupera las teselas;
