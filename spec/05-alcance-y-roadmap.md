@@ -24,7 +24,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | A-02 | Cobertura | Acopio y distribución en Santa Marta. |
 | A-03 | Información legal | Identidad del vendedor, PQR, enlace SIC, exclusión de retracto para perecederos, aviso de privacidad (Ley 1581). Datos configurables con valores ficticios. |
 | A-04 | Contacto | Botón de llamada con número de `site.json`. Ficticio hasta RP-01. |
-| A-05 | No funcionales | Mobile-first, LCP ≤ 2.5 s, CLS ≤ 0.1, INP ≤ 200 ms, peso ≤ 300 KB, WCAG 2.2 AA, OWASP ASVS nivel 1. |
+| A-05 | No funcionales | Mobile-first, LCP ≤ 2.5 s, CLS ≤ 0.1, INP ≤ 200 ms (p75 de usuarios reales, medido en campo), peso ≤ 300 KB, WCAG 2.2 AA, OWASP ASVS nivel 1. En laboratorio, `npm run lighthouse` (mediana de 3 corridas) bloquea con LCP > 3,4 s, CLS > 0,1 o TBT > 200 ms: guarda contra regresiones fijada en lo logrado con margen (decisiones del usuario del 2026-10-24, T-75 y T-76). |
 | A-06 | Imágenes | Solo libres de derechos de autor o propias ficticias, hasta RP-02. |
 | A-07 | Navegación de retorno y mapa de fincas de origen | Enlace de la marca y "Volver al inicio" en las páginas legales (FR-19). Mapa de fincas ficticias de la zona bananera del Magdalena, cargado solo al pulsar "Ver mapa" con aviso previo (FR-24, D-13). |
 
@@ -55,7 +55,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
 | Demostración del POC/MVP | Publicación pública en GitHub Pages (https://masterarqsoft.github.io/green-banana-web/) con datos ficticios, desplegada por GitHub Actions en cada push a `main`. Conflicto abierto: D-11 |
 | Repositorio | GitHub, público (cuenta MasterArqSoft, `green-banana-web`), desde T-07 |
-| Mapa de fincas (FR-24) | Leaflet con teselas de OpenStreetMap, carga solo al pulsar "Ver mapa", con aviso. Aprobado el 2026-10-19 (D-13); revisión jurídica pendiente. Plan B: mapa estático sin terceros |
+| Mapa de fincas (FR-24) | Leaflet con teselas de OpenStreetMap, carga solo al pulsar "Ver mapa", con aviso. Aprobado el 2026-10-19 (D-13); revisión jurídica pendiente. Plan B: mapa estático sin terceros. Si falla la descarga de Leaflet, no carga ninguna tesela o no hay respuesta en 15 s, vuelve al mapa ilustrado con "Reintentar" (T-69). Un fallo parcial de teselas deja huecos sin aviso: aceptado por el usuario el 2026-10-24 (H-03), porque la lista de fincas siempre está visible |
 | Proveedor de CI/CD (R-10) | GitHub Actions, por la regla "repositorio y pipeline en el mismo proveedor". Se configura cuando haya varios entornos |
 
 ## 5. Riesgos y pendientes

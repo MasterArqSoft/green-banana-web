@@ -39,6 +39,18 @@ describe("tests/unit refleja src/ (CLAUDE.md, Pruebas)", () => {
   });
 });
 
+// La lógica pura de scripts/ se prueba en tests/unit/scripts/ (T-75). La prueba es
+// opcional (decisión del usuario, 2026-10-24), pero si existe debe tener su módulo.
+describe("tests/unit/scripts refleja scripts/", () => {
+  it.each(files("tests/unit/scripts"))(
+    "tests/unit/scripts/%s corresponde a un módulo de scripts/",
+    (file) => {
+      const modulo = join("scripts", file.replace(/\.test\.tsx?$/, ".mjs"));
+      expect(existsSync(modulo)).toBe(true);
+    },
+  );
+});
+
 describe("matriz de trazabilidad (spec/03-plan.md §12)", () => {
   const requisitos = [
     ...readFileSync("spec/01-spec.md", "utf8").matchAll(/^\| (FR-\d+) \|/gm),

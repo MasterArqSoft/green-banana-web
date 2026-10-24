@@ -56,6 +56,13 @@ createServer((req, res) => {
   });
   const stream = createReadStream(file);
   (gzip ? stream.pipe(createGzip()) : stream).pipe(res);
-}).listen(port, () =>
-  console.log(`${root} en http://localhost:${port}${basePath}/`),
-);
+})
+  // Puerto ocupado u otro error: termina con código 1 y un mensaje claro, en vez de
+  // morir en silencio y dejar que otro proceso responda en ese puerto.
+  .on("error", (error) => {
+    console.error(`server.mjs: ${error.message}`);
+    process.exit(1);
+  })
+  .listen(port, () =>
+    console.log(`${root} en http://localhost:${port}${basePath}/`),
+  );

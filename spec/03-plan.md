@@ -134,8 +134,10 @@ green-banana-web/
 │                        # claims.ts, tel.ts, seo.ts, legal.ts, images.ts, asset.ts, template.ts, format.ts,
 │                        # mapa-ilustrado.ts + mapa-base.json, csp.ts, security-txt.ts (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
-├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), build-prefijo.mjs, budget.mjs, lighthouse.mjs
-├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, ui/, seo/ y lib/; estructura.test.ts lo verifica)
+├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), build-prefijo.mjs, budget.mjs,
+│                        # lighthouse.mjs + lighthouse-presupuesto.mjs (lógica pura del presupuesto)
+├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, ui/, seo/ y lib/, más scripts/ para la
+│                        # lógica pura de los scripts; estructura.test.ts lo verifica)
 │                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
 ├─ doc/                  # bitácora y créditos (el resto, solo local)
@@ -154,7 +156,7 @@ ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), 
 - `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`);
 - todo `<Link>` declara `prefetch` (en la práctica `prefetch={false}`): con exportación estática, Next descargaba completas las páginas enlazadas al cargar, sin clic (T-61).
 
-`tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e; lista aprobada por el usuario el 2026-10-23, y agregarle algo requiere justificarlo en el PR), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12.
+`tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e; lista aprobada por el usuario el 2026-10-23, y agregarle algo requiere justificarlo en el PR), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12. En `tests/unit/scripts/`, la prueba de un script es **opcional** (decisión del usuario, 2026-10-24: hoy solo la tiene `lighthouse-presupuesto.mjs`), pero si existe debe corresponder a un módulo `.mjs` de `scripts/`.
 
 No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 

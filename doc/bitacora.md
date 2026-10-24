@@ -37,17 +37,38 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   | Experimento | LCP simulado | LCP con throttling real | Resultado |
   |---|---|---|---|
   | E1: foto del hero sin `decoding="async"` | 3191 ms | — | Sin efecto; revertido |
-  | E2: sin precarga de Inter (`preload: false`) | 3230 ms | 2,8–2,9 s (base: 2,7 s) | Empeora; revertido |
+  | E2: sin precarga de Inter (`preload: false`) | 3230 ms (+1,5 %, dentro del ruido de 3,15–3,22 s) | 2,8–2,9 s (base: 2,7 s) | No mejora; empeora solo con throttling real; revertido |
 
-- **Causa encontrada:**
+- **Diagnóstico:**
   - **Modo simulado (el que usa el control):** sin throttling, en local, los scripts llegan casi sin latencia y se ejecutan **antes del primer pintado**. En la traza del navegador: evaluación de 47 y 23 ms, layout de 34 ms, decodificación de la foto y pintado a los 242 ms. Lighthouse proyecta esa traza a 4G lenta y suma al LCP todo el JavaScript y la CPU ×4; por eso el LCP (3,2 s) coincide con el momento interactivo (3,2 s).
   - **Con throttling aplicado de verdad** (`--throttling-method=devtools`, misma red y CPU): LCP **2,7 s**, FCP 2,3 s y TBT de 350 a 400 ms (este modo penaliza más la latencia por petición y la CPU).
-  - **Cascada con throttling real:** HTML 0,68 s, CSS (bloquea el render) 1,43 s, fuentes 1,64 y 2,00 s, foto del hero pedida a los 0,69 s y terminada a los 2,65 s. La foto comparte los 1,5 Mbps con las fuentes (65 KB) y los chunks de JS (71 KB el mayor), que se piden a la vez.
-- **Conclusión:** ningún cambio de bajo riesgo mejora el LCP. Lo que falta para 2,5 s es ancho de banda compartido con el runtime de React y Next, que no baja. En una prueba anterior, un hero móvil de 640 px no tuvo efecto.
+  - **Cascada con throttling real:** HTML 0,68 s, CSS (bloquea el render) 1,43 s, fuentes 1,64 y 2,00 s, foto del hero pedida a los 0,69 s y terminada a los 2,65 s. La foto se descarga a la vez que las fuentes (65 KB) y los chunks de JS (71 KB el mayor).
+- **Conclusión (corregida tras la revisión de arquitectura):** **ninguno de los experimentos probados mejoró el LCP**: E1, E2 y, en una prueba anterior, el hero móvil de 640 px.
+  - Que lo que falta para 2,5 s sea ancho de banda compartido con el runtime es una **hipótesis no verificada**: ningún experimento la aisló, y E2, que libera 47 KB de ancho de banda, no mejoró, lo que la debilita.
+  - **No se probó** reducir las tareas largas de JS, previsto en T-76: sus fuentes son el runtime de React y Next y la hidratación, que no admiten un cambio de bajo riesgo en esta fase.
 - **Presupuesto fijado (regla del usuario: lo logrado con un margen pequeño):** LCP ≤ **3400 ms** en modo simulado (mediana de 3182 ms + ~7 %). La meta de 2,5 s queda para el p75 de campo.
 - **Verificado:** `npm run lighthouse` con LCP de 3190 ms (≤ 3400), TBT de 140 ms y CLS 0; Rendimiento 92 y las demás categorías en 100; salida 0. Prueba unitaria ajustada (un LCP de 3450 ms falla).
 - **Actualizados:** `lighthouse-presupuesto.mjs`, NFR-01 en `01`, `03-plan.md`, `CLAUDE.md` y estado.
 - Los servidores de medición que quedaron en los puertos 4191 y 4192 se detuvieron.
+- Commit `5584f9d`.
+
+### T-77: cierre, revisión de arquitectura y correcciones
+- **Decisión H-03 registrada** en `05` (fila del mapa de fincas) y en `CLAUDE.md`: un fallo parcial de teselas deja huecos sin aviso.
+- **`validate` completo antes de la revisión:** 326 unitarias, 82 e2e, 18 de humo, 266,3 KB y 0 vulnerabilidades.
+- **Agente `arquitecto-software`: aprobado con observaciones.** El usuario pidió aplicar todas.
+  1. **El script de Lighthouse no comprobaba que su servidor arrancó.** Con el puerto ocupado, el servidor moría sin avisar y Lighthouse podía medir otro sitio (aprobado falso).
+     - `server.mjs` termina con código 1 y un mensaje claro ante un error de `listen`;
+     - `lighthouse.mjs` espera el mensaje con que el servidor confirma que escucha (sondear el puerto no basta: respondería el proceso que lo ocupa), aborta si muere o no confirma en 10 s y mata el servidor con Ctrl+C;
+     - **comprobado:** con el puerto 4190 ocupado, el script aborta con `listen EADDRINUSE` y salida 1.
+  2. **`estructura.test.ts` no cubría `tests/unit/scripts/`.** Ahora verifica que cada prueba de esa carpeta tenga su `.mjs` en `scripts/`; se comprobó con una prueba huérfana, que falla. **Decisión del usuario:** la prueba de un script es opcional, pero si existe debe tener su módulo. Actualizados el árbol y la regla en `03-plan.md` (§4) y `CLAUDE.md`.
+  3. **La conclusión de T-76 iba más allá de lo probado.** Se reformuló: experimentos probados, hipótesis no verificada, E2 dentro del ruido en modo simulado y tareas largas de JS sin probar.
+  4. `LH_RUNS` se valida: entero ≥ 1, o un error claro.
+  5. Cada corrida borra el informe anterior y aborta si Lighthouse devuelve `runtimeError`.
+  6. La prueba unitaria suma el límite exacto (3400 ms pasa), un caso negativo de CLS y `toBe(3400)`, para que cambiar el presupuesto sea explícito.
+  7. `CLAUDE.md`: Rendimiento 92–93.
+- **Decisión del usuario:** el presupuesto de laboratorio queda registrado también en `05` (A-05), junto a la meta de campo.
+- **Verificado después de las correcciones:** `validate` completo, con 328 unitarias, 82 e2e (8 omitidas por perfil), 18 de humo, 266,3 KB y 0 vulnerabilidades. `npm run lighthouse`: Rendimiento 93, LCP de 3170 ms (≤ 3400), TBT de 119 ms y CLS 0; salida 0.
+- **Fase 10 cerrada:** R-01 resuelto (el control vigila las métricas y el presupuesto está fijado) y H-03 cerrado con la decisión del usuario. Siguen pendientes las decisiones ya registradas: RP-01 a RP-05, R-07, R-08 y T-32.
 
 ---
 

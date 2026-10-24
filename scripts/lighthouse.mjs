@@ -12,10 +12,17 @@ import { chromium } from "@playwright/test";
 import { evaluar, PRESUPUESTO } from "./lighthouse-presupuesto.mjs";
 
 const RUNS = Number(process.env.LH_RUNS ?? 3);
+if (!Number.isInteger(RUNS) || RUNS < 1) {
+  throw new Error(
+    `LH_RUNS debe ser un entero ≥ 1 (recibido: ${process.env.LH_RUNS})`,
+  );
+}
 const port = 4190;
 const report = join(tmpdir(), "lighthouse-green-banana.json");
 
 function medir() {
+  // Sin restos de la corrida anterior: si esta falla a medias, no se lee el informe viejo.
+  rmSync(report, { force: true });
   execFileSync(
     "npx",
     [
@@ -39,6 +46,9 @@ function medir() {
     },
   );
   const result = JSON.parse(readFileSync(report, "utf8"));
+  if (result.runtimeError) {
+    throw new Error(`Lighthouse no pudo medir: ${result.runtimeError.message}`);
+  }
   const categorias = Object.fromEntries(
     Object.keys(PRESUPUESTO.categorias).map((id) => [
       id,
@@ -54,11 +64,35 @@ function medir() {
   return { categorias, metricas };
 }
 
+// Se espera el mensaje con que server.mjs confirma que escucha. Sondear el puerto no
+// basta: si otro proceso lo ocupara (p. ej. un servidor viejo con otro out/), respondería
+// él y se mediría el sitio equivocado. Si el servidor muere o no confirma en 10 s, se aborta.
 const server = spawn(process.execPath, ["tests/e2e/server.mjs"], {
   env: { ...process.env, PORT: String(port) },
-  stdio: "ignore",
+  stdio: ["ignore", "pipe", "pipe"],
 });
-await new Promise((resolve) => setTimeout(resolve, 1000));
+process.on("SIGINT", () => {
+  server.kill();
+  process.exit(130);
+});
+await new Promise((resolve, reject) => {
+  const limite = setTimeout(
+    () => reject(new Error("server.mjs no confirmó en 10 s")),
+    10_000,
+  );
+  let errores = "";
+  server.stderr.on("data", (chunk) => (errores += chunk));
+  server.stdout.on("data", (chunk) => {
+    if (String(chunk).includes(`http://localhost:${port}`)) {
+      clearTimeout(limite);
+      resolve();
+    }
+  });
+  server.once("exit", (code) => {
+    clearTimeout(limite);
+    reject(new Error(`server.mjs terminó (código ${code}): ${errores.trim()}`));
+  });
+});
 
 let failed = false;
 try {

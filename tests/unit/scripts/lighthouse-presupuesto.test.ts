@@ -5,7 +5,7 @@ import {
   PRESUPUESTO,
 } from "../../../scripts/lighthouse-presupuesto.mjs";
 
-const corrida = (lcp: number, tbt = 100, perf = 92) => ({
+const corrida = (lcp: number, tbt = 100, perf = 92, cls = 0) => ({
   categorias: {
     performance: perf,
     accessibility: 100,
@@ -14,7 +14,7 @@ const corrida = (lcp: number, tbt = 100, perf = 92) => ({
   },
   metricas: {
     "largest-contentful-paint": lcp,
-    "cumulative-layout-shift": 0,
+    "cumulative-layout-shift": cls,
     "total-blocking-time": tbt,
   },
 });
@@ -51,9 +51,15 @@ describe("presupuesto de laboratorio de Lighthouse (T-75, R-01)", () => {
     ]);
   });
 
-  it("la meta de campo de NFR-01 (2,5 s) no es el presupuesto de laboratorio", () => {
+  it("el límite exacto pasa (≤) y un CLS de 0,15 falla", () => {
+    expect(fallidos([corrida(3400), corrida(3400), corrida(3400)])).toEqual([]);
     expect(
-      PRESUPUESTO.metricas["largest-contentful-paint"].max,
-    ).toBeGreaterThan(2500);
+      fallidos([corrida(3200, 100, 92, 0.15), corrida(3200, 100, 92, 0.2)]),
+    ).toEqual(["cumulative-layout-shift"]);
+  });
+
+  it("el presupuesto de LCP es 3400 ms, no la meta de campo de 2,5 s (T-76)", () => {
+    // Cambiar el presupuesto es una decisión explícita: hay que actualizar esta prueba.
+    expect(PRESUPUESTO.metricas["largest-contentful-paint"].max).toBe(3400);
   });
 });
