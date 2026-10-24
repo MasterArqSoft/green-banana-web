@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.7 · **Fecha:** 2026-10-23 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.8 · **Fecha:** 2026-10-24 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
 
 ## Índice
 1. Contexto arquitectónico
@@ -126,15 +126,15 @@ green-banana-web/
 │  ├─ components/
 │  │  ├─ secciones/      # Una por sección de la página: TopBar, Hero, TrustBar, ProductCards, Origin,
 │  │  │                  # MapaFincas, Recipes, ..., FinalCta, Footer
-│  │  ├─ ui/             # Piezas reutilizables: CallButton, Picture, LegalPage, DemoBanner, FloatingCall
+│  │  ├─ ui/             # Piezas reutilizables: CallButton, Picture, LegalPage, NotFoundPage, DemoBanner, FloatingCall, SkipLink
 │  │  ├─ cliente/        # Los únicos componentes con "use client": FloatingCallVisibility, MapaFincasInteractivo
 │  │  └─ seo/            # Datos estructurados: LocalBusinessJsonLd
 │  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal, fincas
 │  └─ lib/               # Lógica pura sin React: content.ts (único acceso al contenido), schema.ts (Zod),
 │                        # claims.ts, tel.ts, seo.ts, legal.ts, images.ts, asset.ts, template.ts, format.ts,
-│                        # mapa-ilustrado.ts + mapa-base.json (analytics.ts entra con R-07)
+│                        # mapa-ilustrado.ts + mapa-base.json, csp.ts, security-txt.ts (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
-├─ scripts/              # images.mjs, budget.mjs, lighthouse.mjs
+├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), budget.mjs, lighthouse.mjs
 ├─ tests/                # unit/ (Vitest; refleja src/: components/secciones/, ui/, seo/ y lib/; estructura.test.ts lo verifica)
 │                        # y e2e/ (Playwright + server.mjs)
 ├─ spec/                 # 00 a 05 (05 = alcance y roadmap)
@@ -151,7 +151,8 @@ ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), 
 - los JSON de `src/content/` solo se importan en `src/lib/content.ts`. La regla vale dentro de `src/`, no en `scripts/` ni en `tests/` (decisión del usuario, 2026-10-23): `scripts/images.mjs` corre en Node sin el alias `@/`, y las pruebas alteran los JSON para comprobar que los esquemas los rechazan. Lo que llega al navegador queda protegido, y `testimonialImage` valida `photo` antes de que el script arme la ruta;
 - `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
 - `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format` y `tel`;
-- `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`).
+- `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`);
+- todo `<Link>` declara `prefetch` (en la práctica `prefetch={false}`): con exportación estática, Next descargaba completas las páginas enlazadas al cargar, sin clic (T-61).
 
 `tests/unit/estructura.test.ts` comprueba que cada módulo de `components/` y `lib/` tenga su prueba en la carpeta equivalente de `tests/unit/` (salvo `components/cliente/`, que necesita navegador y se prueba con e2e; lista aprobada por el usuario el 2026-10-23, y agregarle algo requiere justificarlo en el PR), que no haya pruebas sin módulo, y que cada FR de `01-spec.md` aparezca en la matriz de §12.
 
@@ -262,10 +263,15 @@ Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content
 | Disponibilidad | Sitio estático en CDN | NFR-06 |
 | Suplantación o falsificación de marca | Dominio propio con HTTPS | P6 |
 
-CSP de partida (Fase 1, sin terceros de formulario; `img-src` admite las teselas de OpenStreetMap del mapa de fincas, D6 y T-32). Next.js puede requerir scripts en línea: validar en T-32 si se usan hashes o `'unsafe-inline'`:
+**CSP (T-66, 2026-10-24).** Next.js deja scripts en línea en cada página, así que se usan **hashes** y no `'unsafe-inline'`. `scripts/csp.mjs` corre dentro de `npm run build`, después de `next build`: calcula el hash de cada script en línea ejecutable de cada HTML de `out/` y agrega la política por `<meta>` (`src/lib/csp.ts`). La política, igual en todas las páginas salvo los hashes:
 ```
-default-src 'self'; script-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+default-src 'self'; script-src 'self' 'sha256-…'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'
 ```
+- `style-src 'unsafe-inline'`: la página 404 de Next trae `<style>` y atributos `style`, y Leaflet posiciona el mapa con estilos en línea.
+- Por `<meta>` no aplican `frame-ancestors` (anti-clickjacking) ni las demás cabeceras. Llegan con el hosting de producción (T-32, R-08): `frame-ancestors 'none'`, HSTS, `X-Content-Type-Options` y `Permissions-Policy`.
+- **Decisión pendiente para T-32 [POR CONFIRMAR]:** los hashes cambian por página y por build, así que no pueden vivir fijos en la configuración del hosting. Si conviven la `<meta>` y una cabecera CSP, el navegador aplica las dos y gana la más restrictiva. Opciones: (a) que `scripts/csp.mjs` genere también la cabecera por página (`_headers` en Cloudflare Pages o `staticwebapp.config.json` en Azure); (b) dejar `script-src` solo en la `<meta>` y poner en la cabecera únicamente `frame-ancestors` y las demás.
+- `Referrer-Policy` ya se declara por `<meta>` (`metadata.referrer`, T-62).
+- `tests/e2e/csp.spec.ts` falla con cualquier violación en las 4 páginas, la 404, el mapa cargado y la navegación entre páginas.
 
 ## 8. Rendimiento y SEO
 

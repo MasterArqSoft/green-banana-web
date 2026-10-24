@@ -5,6 +5,90 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: Fase 8, hallazgos de la auditoría externa (T-58 a T-67)
+
+### Contexto
+- El usuario entregó una auditoría pasiva, de caja negra, de la demo publicada el 2026-10-23: 45 hallazgos (PERF, UX, SEO, MKT, SEC).
+- Se contrastaron uno por uno con el código y los specs:
+  - **7 ya estaban resueltos.** UX-01: el build de producción falla con marcadores. SEO-01: `robots` por `SITE_ENV`. SEC-08: verificado con `owasp-security`. También PERF-01 y PERF-02 en parte, SEO-08 y SEC-10;
+  - **14 dependen del usuario o del negocio:** RP-01, R-08/T-32, T-36, RP-03, T-03, FR-12 y la protección de `main`;
+  - **10 están fuera de la Fase 1:** WhatsApp, precios, analítica, formulario, páginas de recetas y navegación interna;
+  - **4 no se adoptan:** JavaScript < 70 KB (el runtime no baja), payload RSC, quitar el preload de Inter y el marco OWASP 2021 (se usa el 2025);
+  - **10 se convirtieron en tareas** (Fase 8 en `04-tasks.md`). El usuario aprobó el plan e incluir T-66.
+
+### Qué se hizo
+- **T-58, "Saltar al contenido":** `ui/SkipLink.tsx` (`copy.navigation.skipToContent`) es el primer elemento enfocable. Lleva al `<main id="contenido">` de la landing y de las páginas legales (`MAIN_ID`).
+- **T-59, nombre accesible por presentación:** `CallButton` acepta `context`, y el nombre queda "Llamar para precio: Kilo, al +57…" (`copy.callButton.accessibleNameWithContext`).
+  - Se descartó `aria-describedby`, que era el plan inicial: la lista de enlaces del lector de pantalla muestra solo el nombre y seguiría viendo cuatro botones iguales.
+  - El nombre empieza con el texto visible (WCAG 2.5.3).
+- **T-60:** el texto de la barra superior pasa de 12 a 14 px en móvil.
+- **T-61, prefetch:** medido con Playwright. Al cargar la landing, Next descargaba la página de inicio completa y las tres legales, cada una con sus segmentos: **13 peticiones sin clic**. El auditor solo había visto una.
+  - Ahora hay `prefetch={false}` en la marca, en los tres enlaces legales del pie y en "Volver al inicio": ninguna descarga sin clic.
+  - Prueba nueva en `layout.spec.ts`.
+- **T-62:** `metadata.referrer: "strict-origin-when-cross-origin"` por `<meta>`.
+- **T-63:** `scripts/icons.mjs` (`npm run icons`) genera, desde `icon.svg`:
+  - `favicon.ico`: 16, 32 y 48 px, PNG dentro de un ICO armado a mano, porque sharp no escribe ICO;
+  - `apple-icon.png`: 180 px con fondo hoja, para que iOS no pinte esquinas negras.
+  
+  Next los publica con su `<link>`. Registrados en `creditos.md`.
+- **T-64:** fuera `copy.seo.keywords` (y su esquema) y el `hreflang` autorreferente.
+- **T-65:** el JSON-LD `LocalBusiness` suma `image` (og.jpg) y `geo` (acopio de `fincas.json`). Sin `priceRange` ni catálogo de ofertas (R-01). **Las coordenadas del acopio hoy son las del centro de Santa Marta: hay que reemplazarlas por las reales en RP-01.**
+- **T-66, CSP por `<meta>` con hashes:**
+  - `src/lib/csp.ts` define la política; `scripts/csp.mjs` corre dentro de `npm run build` y la inserta después del charset en cada HTML de `out/`;
+  - la landing tiene 6 scripts en línea y 2 JSON-LD, que no necesitan hash porque no se ejecutan;
+  - `style-src 'unsafe-inline'`, por la 404 de Next y por Leaflet;
+  - sin `frame-ancestors` ni `upgrade-insecure-requests`: por `<meta>` el primero se ignora con error en consola y el segundo rompe las pruebas en http;
+  - `test:e2e` pasa a usar `npm run build`;
+  - `tests/e2e/csp.spec.ts` revisa las 4 páginas, la 404, el mapa con teselas y la navegación. Se comprobó que falla si se quitan los hashes (aparecen las violaciones `script-src-elem inline`).
+- **T-67, `security.txt` (RFC 9116):**
+  - `src/lib/security-txt.ts` y la ruta `src/app/.well-known/security.txt/` generan Contact desde `site.json`, Expires a 180 días desde el build, idioma y Canonical;
+  - **`upload-pages-artifact` excluye las carpetas ocultas por defecto** (se verificó en su `action.yml` v5.0.0): `pages.yml` ahora usa `include-hidden-files: true`;
+  - en `github.io` queda bajo `/green-banana-web/` y no tiene efecto, igual que `robots.txt`. Sirve con dominio propio (RP-01).
+
+### Verificado
+- `npm run validate` completo, después de las correcciones de la revisión: formato, lint, tipos, 319 pruebas unitarias en 39 archivos, build con CSP, presupuesto, 75 e2e y 0 vulnerabilidades.
+- Presupuesto: landing 265,9 KB de 300 (antes 265; la `<meta>` de la CSP suma ~0,6 KB).
+- Lighthouse móvil, 3 corridas: Rendimiento 91, 92 y 92; las demás categorías en 100. LCP de laboratorio 3,2 s, igual que en las mediciones anteriores (sin regresión).
+
+### Archivos tocados
+- **Nuevos:**
+  - `src/components/ui/SkipLink.tsx`, `src/components/ui/NotFoundPage.tsx`, `src/app/not-found.tsx`, `src/lib/csp.ts`, `src/lib/security-txt.ts` y `src/app/.well-known/security.txt/route.ts`;
+  - `src/app/favicon.ico`, `src/app/apple-icon.png`, `scripts/icons.mjs` y `scripts/csp.mjs`;
+  - pruebas: `tests/unit/components/ui/SkipLink.test.tsx`, `NotFoundPage.test.tsx`, `tests/unit/lib/csp.test.ts`, `tests/unit/lib/security-txt.test.ts` y `tests/e2e/csp.spec.ts`.
+- **Modificados:**
+  - `src/app/layout.tsx` y `page.tsx`;
+  - componentes `CallButton`, `LegalPage`, `ProductCards`, `TopBar`, `Footer` y `LocalBusinessJsonLd`;
+  - `copy.json`, `schema.ts`, `package.json` (`build`, `test:e2e`, `icons`) y `.github/workflows/pages.yml`;
+  - pruebas existentes: `calls.spec.ts`, `layout.spec.ts` y las unitarias de `CallButton`, `ProductCards`, `LegalPage` y `LocalBusinessJsonLd`.
+- **Documentación:** `spec/03-plan.md` (v1.8: CSP, estructura, regla de `<Link>`), `spec/04-tasks.md` (Fase 8 y estado), `spec/05-alcance-y-roadmap.md` (D-11), `spec/02-content-spec.md` (§7), `eslint.config.mjs`, `CLAUDE.md`, `doc/creditos.md` y esta bitácora.
+
+### Revisión del agente `arquitecto-software` y correcciones (antes del commit)
+- **Veredicto: aprobado con observaciones.** Sin bloqueantes. El usuario pidió aplicar todas las observaciones antes del commit y eligió una 404 propia.
+- **Importantes:**
+  1. "Saltar al contenido" en la 404 apuntaba a un destino inexistente: la 404 por defecto de Next no tiene `<main>`. **Solución:**
+     - 404 propia: `src/app/not-found.tsx` → `ui/NotFoundPage.tsx`, textos en `copy.notFound` (título y texto), "Volver al inicio" y `<main id="contenido">`;
+     - `layout.spec.ts` exige el enlace y su destino en las 5 rutas;
+     - `a11y.spec.ts` suma `/no-existe` a la revisión con axe.
+  2. D-11 en `05` seguía diciendo que la CSP estaba abierta. Ahora dice "mitigado en parte" y lista lo que solo va por cabecera.
+  3. `02` §7 pedía `hreflang="es-CO"`. Se quitó, se aclaró por qué no aplica y se dejó constancia de que las palabras clave guían el copy pero no se publican.
+- **Sugerencias:**
+  - **CSP más robusta:**
+    - el regex exige un espacio antes de `src=` y `type=` (así `data-src=` ya no se confunde);
+    - `applyCsp` falla si queda un `<script>` antes de la `<meta>`;
+    - `csp.mjs` falla si `out/` no tiene HTML.
+    
+    Tres pruebas unitarias nuevas, incluida una que lee `MapaFincasInteractivo.tsx` y compara `TILES` con `TILE_ORIGIN`.
+  - **`03` §7:** se corrigió el texto sobre los hashes en T-32, que no pueden vivir fijos en el hosting, y se registró la decisión pendiente (a) cabecera generada por página o (b) `script-src` solo en `<meta>` [POR CONFIRMAR].
+  - **`security-txt.ts`:** el Canonical sale del `site` recibido; ya no importa `seo.ts`.
+  - **`icons.mjs`:** lee `--color-hoja` de `globals.css` en vez de copiarlo. Los íconos regenerados son idénticos.
+  - **Regla de ESLint:** todo `<Link>` debe declarar `prefetch` (`LINK_PREFETCH` en `eslint.config.mjs`). Se comprobó con un archivo de prueba que falla sin el atributo.
+
+### Abierto
+- Lo que depende del usuario (grupo C del plan): primero **R-08** (hosting, que cierra las cabeceras y `frame-ancestors`, y define la opción de CSP de T-32) y **RP-01** (dominio).
+- Cambios de alcance propuestos por la auditoría, a decidir: páginas de recetas con `Recipe` (posible R-11) y navegación interna (UX-04).
+
+---
+
 ## 2026-10-24: skills de seguridad, SEO local y QA visual; instalación del conjunto recomendado
 
 ### Contexto

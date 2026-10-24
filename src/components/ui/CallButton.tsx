@@ -8,6 +8,8 @@ type CallButtonProps = {
   label?: string;
   /** "icon": botón redondo solo con ícono (botón flotante); el texto queda para lectores de pantalla. */
   size?: "sm" | "md" | "icon";
+  /** Lo que distingue este botón de otros con el mismo texto (p. ej. la presentación). Solo va al nombre accesible. */
+  context?: string;
   className?: string;
 };
 
@@ -22,16 +24,23 @@ const sizes = {
 export function CallButton({
   label = copy.callButton.label,
   size = "md",
+  context,
   className = "",
 }: CallButtonProps) {
+  const telefono = formatPhone(site.phone);
   return (
     <a
       href={telHref(site.phone)}
       // El nombre accesible empieza con el texto visible (WCAG 2.5.3).
-      aria-label={fill(copy.callButton.accessibleName, {
-        texto: label,
-        telefono: formatPhone(site.phone),
-      })}
+      aria-label={
+        context
+          ? fill(copy.callButton.accessibleNameWithContext, {
+              texto: label,
+              contexto: context,
+              telefono,
+            })
+          : fill(copy.callButton.accessibleName, { texto: label, telefono })
+      }
       className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold whitespace-nowrap text-carbon shadow-suave transition-colors hover:bg-cta-hover ${sizes[size]} ${className}`}
     >
       <Phone

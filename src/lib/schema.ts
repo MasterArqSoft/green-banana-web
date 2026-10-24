@@ -151,7 +151,6 @@ export const copySchema = z.strictObject({
       message: "Debe incluir el marcador {marca}",
     }),
     description: text,
-    keywords: z.array(text).min(1),
     ogImageAlt: text,
   }),
   // Franja visible fuera de producción (decisión D-11).
@@ -160,6 +159,11 @@ export const copySchema = z.strictObject({
     label: text,
     // Nombre para lectores de pantalla; debe empezar con {texto} (WCAG 2.5.3).
     accessibleName: textWith("texto").and(textWith("telefono")),
+    // Con contexto (p. ej. la presentación), para que los botones se distingan en la
+    // lista de enlaces del lector de pantalla (UX-02, T-59). También empieza con {texto}.
+    accessibleNameWithContext: textWith("texto")
+      .and(textWith("contexto"))
+      .and(textWith("telefono")),
   }),
   topBar: z.strictObject({
     acopio: textWith("ciudad"),
@@ -255,7 +259,11 @@ export const copySchema = z.strictObject({
     sic: text,
   }),
   // FR-19: retorno al inicio desde las páginas legales.
-  navigation: z.strictObject({ backHome: text }),
+  // Página 404 propia (hallazgo del arquitecto, 2026-10-24): con el diseño del sitio y un
+  // <main> como destino de "Saltar al contenido". El título de la pestaña usa seo.legalTitle.
+  notFound: z.strictObject({ title: text, text }),
+  // skipToContent: enlace "Saltar al contenido" (UX-08, T-58, WCAG 2.4.1).
+  navigation: z.strictObject({ backHome: text, skipToContent: text }),
   // FR-24. El aviso (consent) va antes del botón y es la base del consentimiento (AC-19).
   // zoomIn, zoomOut y closePopup reemplazan los textos en inglés de Leaflet.
   map: z.strictObject({

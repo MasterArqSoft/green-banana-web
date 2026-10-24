@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { DemoBanner } from "@/components/ui/DemoBanner";
 import { FloatingCall } from "@/components/ui/FloatingCall";
+import { SkipLink } from "@/components/ui/SkipLink";
 import { Footer } from "@/components/secciones/Footer";
 import { TopBar } from "@/components/secciones/TopBar";
-import { copy, isProduction, site } from "@/lib/content";
+import { isProduction, site } from "@/lib/content";
 import { absoluteUrl, ogImage, seoDescription, seoTitle } from "@/lib/seo";
 import { fraunces, inter } from "./fonts";
 import "./globals.css";
@@ -15,11 +16,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: seoTitle(),
   description: seoDescription(),
-  keywords: copy.seo.keywords,
-  alternates: {
-    canonical: absoluteUrl("/"),
-    languages: { "es-CO": absoluteUrl("/") },
-  },
+  alternates: { canonical: absoluteUrl("/") },
+  // Explícita (SEC-03, T-62) mientras el hosting no permita cabeceras (D-11, T-32).
+  // Con origen cruzado envía solo el origen, que OpenStreetMap pide en las teselas.
+  referrer: "strict-origin-when-cross-origin",
   openGraph: {
     type: "website",
     locale: "es_CO",
@@ -47,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
+        <SkipLink />
         <DemoBanner />
         <TopBar />
         {children}

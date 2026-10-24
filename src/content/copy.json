@@ -3,18 +3,13 @@
     "title": "Guineo verde en {ciudad} | {marca}",
     "legalTitle": "{pagina} | {marca}",
     "description": "Guineo verde seleccionado a mano, acopiado en {ciudad}. Llámanos para precio y distribución a hogares y negocios.",
-    "keywords": [
-      "guineo verde",
-      "guineo verde Santa Marta",
-      "banano verde para sancocho",
-      "distribuidor guineo verde Magdalena"
-    ],
     "ogImageAlt": "{marca}: guineo verde acopiado en {ciudad}"
   },
   "demoNotice": "Demostración: los datos de empresa y contacto son ficticios.",
   "callButton": {
     "label": "Llamar",
-    "accessibleName": "{texto} al {telefono}"
+    "accessibleName": "{texto} al {telefono}",
+    "accessibleNameWithContext": "{texto}: {contexto}, al {telefono}"
   },
   "topBar": {
     "acopio": "Acopio en {ciudad}",
@@ -137,8 +132,13 @@
     "pqr": "PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].",
     "sic": "Superintendencia de Industria y Comercio"
   },
+  "notFound": {
+    "title": "No encontramos esta página",
+    "text": "Puede que el enlace esté mal escrito o que la página ya no exista. Desde el inicio puedes ver las presentaciones y llamarnos."
+  },
   "navigation": {
-    "backHome": "Volver al inicio"
+    "backHome": "Volver al inicio",
+    "skipToContent": "Saltar al contenido"
   },
   "map": {
     "title": "Fincas de origen en la zona bananera",

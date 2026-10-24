@@ -92,3 +92,29 @@ test.describe("móvil a 360 px", () => {
     expect(titleTop).toBeGreaterThanOrEqual(headerBottom);
   });
 });
+
+test.describe("carga de la página (PERF-05, T-61)", () => {
+  test("no descarga otras páginas sin que el visitante haga clic", async ({
+    page,
+  }) => {
+    const fetches: string[] = [];
+    page.on("request", (request) => {
+      if (request.resourceType() === "fetch") fetches.push(request.url());
+    });
+    await page.goto("/");
+    await page.mouse.wheel(0, 10000);
+    await page.locator("#pie").scrollIntoViewIfNeeded();
+    await page.waitForLoadState("networkidle");
+    expect(fetches).toEqual([]);
+  });
+});
+
+test.describe("«Saltar al contenido» (T-58)", () => {
+  for (const path of [...pages, "/no-existe"]) {
+    test(`${path} tiene el enlace y su destino`, async ({ page }) => {
+      await page.goto(path);
+      await expect(page.locator('a[href="#contenido"]')).toHaveCount(1);
+      await expect(page.locator("main#contenido")).toHaveCount(1);
+    });
+  }
+});

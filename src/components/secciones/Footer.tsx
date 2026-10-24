@@ -48,20 +48,22 @@ export function Footer() {
             </dd>
           </div>
         </dl>
+        {/* Sin prefetch (PERF-05, T-61): Next descargaba las tres páginas legales
+            completas al cargar la landing, sin que nadie hiciera clic. */}
         <nav aria-label={footer.navLabel}>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             <li>
-              <Link href="/terminos" className={linkClass}>
+              <Link href="/terminos" prefetch={false} className={linkClass}>
                 {footer.links.terminos}
               </Link>
             </li>
             <li>
-              <Link href="/privacidad" className={linkClass}>
+              <Link href="/privacidad" prefetch={false} className={linkClass}>
                 {footer.links.privacidad}
               </Link>
             </li>
             <li>
-              <Link href="/garantia" className={linkClass}>
+              <Link href="/garantia" prefetch={false} className={linkClass}>
                 {footer.links.garantia}
               </Link>
             </li>

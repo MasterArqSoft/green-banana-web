@@ -71,6 +71,7 @@ export function ProductCards() {
               <p className="text-sm">{detail(product)}</p>
               <CallButton
                 label={product.callLabel}
+                context={product.label}
                 size="sm"
                 className="mt-auto self-start"
               />

@@ -2,7 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ProductCards } from "@/components/secciones/ProductCards";
 import { copy, products, site } from "@/lib/content";
-import { telHref } from "@/lib/tel";
+import { formatPhone, telHref } from "@/lib/tel";
+import { fill } from "@/lib/template";
 
 describe("ProductCards (FR-04)", () => {
   const html = renderToStaticMarkup(<ProductCards />);
@@ -24,6 +25,17 @@ describe("ProductCards (FR-04)", () => {
     const links = html.split(`href="${telHref(site.phone)}"`).length - 1;
     expect(links).toBe(products.length);
     expect(html).toContain(products[0].callLabel);
+  });
+
+  it("cada botón nombra su presentación para el lector de pantalla (UX-02, T-59)", () => {
+    for (const product of products) {
+      const name = fill(copy.callButton.accessibleNameWithContext, {
+        texto: product.callLabel,
+        contexto: product.label,
+        telefono: formatPhone(site.phone),
+      });
+      expect(html).toContain(`aria-label="${name}"`);
+    }
   });
 
   it("incluye la nota de precio y envío por teléfono", () => {

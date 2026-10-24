@@ -3,7 +3,8 @@ import { expect, test } from "@playwright/test";
 
 // T-38: auditoría automática de accesibilidad con axe (WCAG 2.2 AA, NFR-02).
 // La prueba con lector de pantalla es manual (ver doc/bitacora.md).
-const pages = ["/", "/terminos", "/privacidad", "/garantia"];
+// /no-existe: la página 404 propia (src/app/not-found.tsx).
+const pages = ["/", "/terminos", "/privacidad", "/garantia", "/no-existe"];
 const tags = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 for (const path of pages) {

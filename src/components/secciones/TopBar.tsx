@@ -12,13 +12,15 @@ export function TopBar() {
     <header className="sticky top-0 z-20 border-b border-hoja/15 bg-crema/95 backdrop-blur md:static">
       <div className="contenedor flex items-center justify-between gap-3 py-2">
         <div className="min-w-0">
+          {/* Sin prefetch (PERF-05, T-61): en la landing descargaba otra vez la página completa. */}
           <Link
             href="/"
+            prefetch={false}
             className="block truncate rounded-control font-display text-lg font-semibold text-hoja"
           >
             {site.brand}
           </Link>
-          <p className="text-xs md:text-sm">
+          <p className="text-sm">
             {fill(copy.topBar.acopio, { ciudad: site.acopio.city })}
             <span aria-hidden="true"> · </span>
             <span className="whitespace-nowrap">

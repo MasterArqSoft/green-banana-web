@@ -14,9 +14,10 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Resumen y estado de avance
-9. Roadmap (fuera de la Fase 1)
-10. Roadmap de producción (RP)
+8. Fase 7: Cambio v1.5 y Fase 8: Auditoría externa
+9. Resumen y estado de avance
+10. Roadmap (fuera de la Fase 1)
+11. Roadmap de producción (RP)
 
 ---
 
@@ -115,6 +116,31 @@ Origen: solicitud del usuario (2026-10-19). Requisitos: FR-19, FR-24, AC-14 a AC
 | T-56 | Atribución "© OpenStreetMap contributors" visible y aviso de conexión con enlace a la política de privacidad de OSM. Revisión jurídica de D-13 junto con T-05. Si se rechaza, plan B (`03` D6) | AC-18, AC-19, D-13 | 1 | T-50 |
 | T-57 | Cierre: entrada en `doc/bitacora.md`, estado en esta tabla, archivos tocados | CLAUDE.md | 0.5 | T-55, T-56 |
 
+## Fase 8: Auditoría externa (2026-10-24)
+
+Origen: auditoría pasiva de caja negra sobre la demo publicada el 2026-10-23 (45 hallazgos; informe entregado por el usuario, no versionado). Aprobada por el usuario el 2026-10-24.
+
+Clasificación de los hallazgos:
+- **Ya resueltos:** UX-01 (el build de producción falla con marcadores), SEO-01 (`robots` por `SITE_ENV`), SEC-08 (verificado con `owasp-security`), PERF-01 y PERF-02 en parte, SEO-08 y SEC-10.
+- **Bloqueados por el usuario o el negocio:** RP-01, R-08 (T-32), T-36, RP-03, T-03, FR-12 y la protección de `main`.
+- **Fuera de la Fase 1:** R-01, R-02, R-06 y R-07. Las páginas de recetas y la navegación interna requieren un cambio de alcance en `05`.
+- **No adoptados:** JavaScript < 70 KB (el runtime de React y Next no baja; el presupuesto es P5), payload RSC, quitar el preload de Inter.
+
+| ID | Tarea | Hallazgo / Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-58 | Enlace "Saltar al contenido" (texto en `copy.json`, esquema Zod) hacia `<main id>` en todas las páginas [P] | UX-08, NFR-02 | 1 | – |
+| T-59 | El nombre accesible de cada "Llamar para precio" agrega la presentación después del texto visible ("Llamar para precio: Bolsa familiar, al …"), así la lista de enlaces del lector de pantalla los distingue sin romper WCAG 2.5.3 [P] | UX-02, NFR-02 | 1 | – |
+| T-60 | Texto de la barra superior en 14 px también en móvil, sin desborde a 360 px [P] | UX-03, P4 | 0.5 | – |
+| T-61 | Medir con Playwright la descarga repetida de la página; si viene del *prefetch*, `prefetch={false}` en la marca y en "Volver al inicio" [P] | PERF-05, P5 | 1 | – |
+| T-62 | `Referrer-Policy: strict-origin-when-cross-origin` por `<meta>` (`metadata.referrer`); comprobar que OSM sigue recibiendo el origen (T-54) [P] | SEC-03 parcial, NFR-04 | 0.5 | – |
+| T-63 | `favicon.ico` y `apple-icon.png` generados desde `icon.svg` [P] | SEO-05 | 1 | – |
+| T-64 | Quitar `meta keywords` (`copy.seo.keywords` y su esquema) y el `hreflang` autorreferente [P] | SEO-06 | 0.5 | – |
+| T-65 | JSON-LD `LocalBusiness` con `image` (og.jpg) y `geo` (acopio de `fincas.json`). Sin `priceRange` ni catálogo de ofertas (R-01) [P] | SEO-07 parcial, NFR-03 | 1 | – |
+| T-66 | CSP por `<meta>` con hashes de los scripts en línea, calculados después del build; verificar sin violaciones en las 4 páginas y con el mapa. `frame-ancestors` no aplica por `<meta>` (queda para T-32) | SEC-01 parcial, D-11, P6 | 4 | T-62 |
+| T-67 | `/.well-known/security.txt` (RFC 9116) generado desde `site.json`; verificar que GitHub Pages lo publique | SEC-07 | 1 | – |
+
+Cierre de la fase: `npm run validate`, `budget` y `lighthouse`; entrada en `doc/bitacora.md` y estado en esta tabla.
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -127,7 +153,8 @@ Origen: solicitud del usuario (2026-10-19). Requisitos: FR-19, FR-24, AC-14 a AC
 | 5. Calidad y seguridad | 19 |
 | 6. Lanzamiento | 7 |
 | 7. Cambio v1.5 (navegación y mapa) | 13,5 |
-| **Total** | **~110 h** |
+| 8. Auditoría externa | 11,5 |
+| **Total** | **~122 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -135,7 +162,7 @@ Origen: solicitud del usuario (2026-10-19). Requisitos: FR-19, FR-24, AC-14 a AC
 
 ## Estado de avance
 
-Actualizado: 2026-10-23. Detalle de cada tarea en `doc/bitacora.md`.
+Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 
 | Estado | Tareas |
 |---|---|
@@ -144,13 +171,14 @@ Actualizado: 2026-10-23. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+| **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |
 | **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |
 
 Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages, datos ficticios, sin indexar).
 
 ---
 
-## 9. Roadmap (fuera de la Fase 1)
+## 10. Roadmap (fuera de la Fase 1)
 
 | ID | Tarea original | Motivo | Hito |
 |---|---|---|---|
@@ -165,7 +193,7 @@ Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages,
 | R-09 | Facturación electrónica: proveedor, datos de factura, FAQ 10 | Q8 sin decidir | Roadmap R-09 |
 | R-10 | CI/CD y despliegue en varios entornos con GitHub Actions (mismo proveedor que el repositorio); la pipeline reutiliza el script de validación de T-11; configurar preview y producción | Decisión de proveedor antes de desplegar en distintos entornos | Roadmap R-10 |
 
-## 10. Roadmap de producción (RP)
+## 11. Roadmap de producción (RP)
 
 Pendientes que deben quedar resueltos antes de publicar en producción. No bloquean la construcción de la Fase 1.
 

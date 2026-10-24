@@ -55,10 +55,27 @@ test.describe("botones de llamada (AC-03)", () => {
 test.describe("teclado (AC-09)", () => {
   test.skip(({ isMobile }) => isMobile, "Teclado físico: solo escritorio");
 
-  test("el primer Tab llega a la marca (FR-19) y el segundo al botón Llamar con el foco visible", async ({
+  test("el primer Tab muestra «Saltar al contenido» y Enter lleva al <main> (T-58)", async ({
     page,
   }) => {
     await page.goto("/");
+    await page.keyboard.press("Tab");
+    const skip = page.locator(":focus");
+    await expect(skip).toHaveAttribute("href", "#contenido");
+    await expect(skip).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#contenido$/);
+    // El siguiente Tab sigue desde el contenido: el primer botón del hero.
+    await page.keyboard.press("Tab");
+    await expect(page.locator(":focus")).toHaveAttribute("href", telHref);
+    await expect(page.locator("#hero :focus")).toHaveCount(1);
+  });
+
+  test("después del salto, el Tab llega a la marca (FR-19) y luego al botón Llamar con el foco visible", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
     await expect(page.locator(":focus")).toHaveAttribute("href", "/");
     await page.keyboard.press("Tab");

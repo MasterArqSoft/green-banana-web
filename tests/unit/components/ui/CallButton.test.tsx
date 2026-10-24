@@ -19,4 +19,14 @@ describe("CallButton", () => {
       `aria-label="Llamar para precio al ${formatPhone(site.phone)}"`,
     );
   });
+
+  it("con context, lo agrega al nombre accesible después del texto visible (T-59)", () => {
+    const html = renderToStaticMarkup(
+      <CallButton label="Llamar para precio" context="Kilo" />,
+    );
+    expect(html).toContain(
+      `aria-label="Llamar para precio: Kilo, al ${formatPhone(site.phone)}"`,
+    );
+    expect(html).toContain(">Llamar para precio</a>");
+  });
 });

@@ -14,11 +14,12 @@ import { ProductCards } from "@/components/secciones/ProductCards";
 import { Recipes } from "@/components/secciones/Recipes";
 import { Testimonials } from "@/components/secciones/Testimonials";
 import { TrustBar } from "@/components/secciones/TrustBar";
+import { MAIN_ID } from "@/components/ui/SkipLink";
 
 // Composición de la landing. El orden final de las secciones es T-33.
 export default function Home() {
   return (
-    <main className="flex-1">
+    <main id={MAIN_ID} className="flex-1">
       <Hero />
       <TrustBar />
       <ProductCards />

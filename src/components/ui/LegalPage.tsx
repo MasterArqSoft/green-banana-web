@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { MAIN_ID } from "@/components/ui/SkipLink";
 import { copy, legal } from "@/lib/content";
 import { legalValues } from "@/lib/legal";
 import type { LegalPageKey } from "@/lib/schema";
@@ -10,11 +11,12 @@ export function LegalPage({ page }: { page: LegalPageKey }) {
   const { title, sections } = legal[page];
   const values = legalValues();
   return (
-    <main className="contenedor flex-1 py-12">
+    <main id={MAIN_ID} className="contenedor flex-1 py-12">
       <article className="max-w-prose">
         {/* Retorno al inicio antes del título (FR-19, AC-14); área táctil de 44 px. */}
         <Link
           href="/"
+          prefetch={false}
           className="mb-4 inline-flex min-h-11 items-center gap-2 font-semibold text-hoja underline underline-offset-4"
         >
           <ArrowLeft aria-hidden="true" className="size-5" />

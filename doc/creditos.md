@@ -28,6 +28,7 @@ Los originales están en `fotos-originales/` (fuera de Git). Las versiones publi
 | Archivo | Uso | Origen |
 |---|---|---|
 | `src/app/icon.svg` | Favicon | Dibujo propio del proyecto (T-39) |
+| `src/app/favicon.ico` y `src/app/apple-icon.png` | Favicon para navegadores sin SVG e ícono de pantalla de inicio en iOS | Generados desde `icon.svg` con `npm run icons` (T-63, 2026-10-24) |
 
 ## Íconos
 

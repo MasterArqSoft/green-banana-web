@@ -54,6 +54,15 @@ const USE_SERVER = {
     'Sin Server Actions: con output: "export" no hay servidor (Fase 1, sin backend).',
 };
 
+// Con output: "export", next/link descargaba completas las páginas enlazadas al cargar,
+// sin clic (PERF-05, T-61). Cada <Link> declara prefetch de forma explícita.
+const LINK_PREFETCH = {
+  selector:
+    "JSXOpeningElement[name.name='Link']:not(:has(JSXAttribute[name.name='prefetch']))",
+  message:
+    "Agrega prefetch={false} al <Link>: sin él, Next descarga la página enlazada al cargar (T-61).",
+};
+
 const eslintConfig = defineConfig([
   ...tseslint.configs.recommended,
   react.configs.flat.recommended,
@@ -127,15 +136,17 @@ const eslintConfig = defineConfig([
       "no-restricted-imports": ["error", { patterns: [NO_APP, NO_COMPONENTS] }],
     },
   },
-  // "use client" solo en src/components/cliente/ (CLAUDE.md, JavaScript mínimo) y
-  // "use server" en ninguna parte.
+  // "use client" solo en src/components/cliente/ (CLAUDE.md, JavaScript mínimo),
+  // "use server" en ninguna parte y todo <Link> con prefetch explícito.
   {
     files: ["src/**/*.{ts,tsx}"],
-    rules: { "no-restricted-syntax": ["error", USE_CLIENT, USE_SERVER] },
+    rules: {
+      "no-restricted-syntax": ["error", USE_CLIENT, USE_SERVER, LINK_PREFETCH],
+    },
   },
   {
     files: ["src/components/cliente/**/*.{ts,tsx}"],
-    rules: { "no-restricted-syntax": ["error", USE_SERVER] },
+    rules: { "no-restricted-syntax": ["error", USE_SERVER, LINK_PREFETCH] },
   },
   // Desactiva las reglas de estilo que chocan con Prettier.
   prettier,

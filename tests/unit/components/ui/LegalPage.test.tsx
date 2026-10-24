@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LegalPage } from "@/components/ui/LegalPage";
+import { MAIN_ID } from "@/components/ui/SkipLink";
 import legalJson from "@/content/legal.json";
 import { copy, legal, site } from "@/lib/content";
 import { legalSchema } from "@/lib/schema";
@@ -14,6 +15,8 @@ describe("Páginas legales (FR-18)", () => {
       expect(html).toContain(legal.draftNotice!);
       expect(html).not.toMatch(/\{\w+\}/);
       expect(html).not.toMatch(/<form|<input/);
+      // Destino de "Saltar al contenido" (T-58).
+      expect(html).toContain(`<main id="${MAIN_ID}"`);
     },
   );
 
