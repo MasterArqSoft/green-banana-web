@@ -99,7 +99,7 @@
 
 | ID | Requisito | Meta |
 |---|---|---|
-| NFR-01 | Rendimiento | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms (móvil 4G, p75) |
+| NFR-01 | Rendimiento | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms (móvil 4G, p75 de usuarios reales: se mide en campo al lanzar). En laboratorio, `npm run lighthouse` (mediana de 3 corridas, móvil simulado) bloquea con LCP > 3,5 s (provisional hasta T-76), CLS > 0,1 o TBT > 200 ms (T-75, 2026-10-24) |
 | NFR-02 | Accesibilidad | WCAG 2.2 AA |
 | NFR-03 | SEO | Título, descripción, Open Graph, datos estructurados (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
 | NFR-04 | Seguridad | HTTPS, HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; sin secretos en el cliente. `Referrer-Policy` no puede ser `no-referrer` (OSM lo prohíbe para el mapa, FR-24); el valor recomendado es `strict-origin-when-cross-origin` |

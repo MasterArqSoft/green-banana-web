@@ -14,7 +14,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Fase 7: Cambio v1.5, Fase 8: Auditoría externa y Fase 9: Auditoría independiente
+8. Fases 7 a 10: cambio v1.5 y auditorías
 9. Resumen y estado de avance
 10. Roadmap (fuera de la Fase 1)
 11. Roadmap de producción (RP)
@@ -162,6 +162,22 @@ Sin tareas: H-05 (RP-01), H-06 (R-07) y H-09 (T-32, R-08), ya registrados.
 | T-73 | `npm run budget` informa también el total con la imagen LCP de cada viewport; P5 de `00` alineado con `03` §8 | H-02, P5 | 1 | – |
 | T-74 | Cierre: `validate`, `lighthouse`, revisión de `arquitecto-software`, bitácora y estado | CLAUDE.md | 1 | T-68 a T-73 |
 
+## Fase 10: Reauditoría de cierre (2026-10-24)
+
+Origen: reauditoría independiente sobre `e7b686d` (informe y evidencias entregados por el usuario, no versionados). Dictamen: H-01, H-02, H-04, H-08, H-10 y H-11 cerrados; H-03 mitigado (un fallo parcial de teselas no avisa); H-05, H-06, H-07 y H-09 diferidos o aceptados. Hallazgo nuevo **R-01**: `npm run lighthouse` solo evalúa las cuatro categorías y pasa con un LCP de laboratorio de 3,2 s, por encima de los 2,5 s de NFR-01. Aprobada por el usuario el 2026-10-24.
+
+Diagnóstico previo: el elemento LCP es la foto del hero móvil (antes era el H1). Su descubrimiento está bien resuelto (`fetchpriority="high"`, sin `lazy`); lo observado es un retraso de pintado de ~500 ms, y los 3,2 s salen de la simulación de 4G lenta (CPU ×4).
+
+Decisiones del usuario:
+- **R-01:** investigar y fijar. El control bloquea desde ya con LCP > 3,5 s en laboratorio; después de T-76 el presupuesto se ajusta a lo logrado con un margen pequeño. Los 2,5 s quedan como meta p75 de campo.
+- **H-03:** el fallo parcial de teselas (huecos sin aviso) se acepta; la lista de fincas siempre está visible.
+
+| ID | Tarea | Hallazgo / Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-75 | `lighthouse.mjs` evalúa también métricas individuales contra un presupuesto de laboratorio (LCP ≤ 3,5 s, CLS ≤ 0,1, TBT) y falla si alguna lo supera; prueba negativa. NFR-01 distingue presupuesto de laboratorio (bloquea) y p75 de campo | R-01, NFR-01, AC-08 | 3 | – |
+| T-76 | Experimentos medidos para bajar el LCP (uno por vez, varias corridas): precarga de Inter, decodificación y peso del hero, tareas largas de JS. Se conserva solo lo que mejora sin empeorar lo demás; presupuesto de T-75 ajustado al resultado | R-01, NFR-01 | 6 | T-75 |
+| T-77 | Cierre: decisión sobre H-03 registrada, `validate`, revisión de `arquitecto-software`, bitácora, estado y push | CLAUDE.md | 1 | T-75, T-76 |
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -176,7 +192,8 @@ Sin tareas: H-05 (RP-01), H-06 (R-07) y H-09 (T-32, R-08), ya registrados.
 | 7. Cambio v1.5 (navegación y mapa) | 13,5 |
 | 8. Auditoría externa | 11,5 |
 | 9. Auditoría independiente | 14 |
-| **Total** | **~136 h** |
+| 10. Reauditoría de cierre | 10 |
+| **Total** | **~146 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -193,6 +210,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
+| **Fase 10 (reauditoría de cierre)** | Hecha: T-75 (2026-10-24). Pendientes: T-76 y T-77 |
 | **Fase 9 (auditoría independiente)** | Completa (2026-10-24): T-68 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |
 | **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |

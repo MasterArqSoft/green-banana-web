@@ -5,6 +5,32 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: Fase 10, reauditoría de cierre (T-75 a T-77)
+
+### Contexto
+- **Reauditoría independiente sobre `e7b686d`**, con informe y evidencias en una carpeta local del usuario:
+  - H-01, H-02, H-04, H-08, H-10 y H-11 cerrados;
+  - H-03 mitigado: un fallo parcial de teselas no avisa;
+  - H-05, H-06, H-07 y H-09 diferidos o aceptados.
+- **Hallazgo nuevo R-01:** `lighthouse.mjs` solo comparaba las categorías contra 90 e imprimía el LCP sin evaluarlo. Pasaba con un LCP de laboratorio de 3,2 s, por encima de los 2,5 s de NFR-01.
+- **Diagnóstico con Lighthouse antes de planear:** el elemento LCP es la **foto del hero móvil** (antes era el H1).
+  - El descubrimiento está bien: `fetchpriority="high"`, sin `lazy`, visible en el HTML inicial.
+  - Desglose observado sin simular red: primer byte 13 ms, retraso de carga 19 ms, descarga 17 ms y **retraso de pintado 501 ms**.
+  - Los 3,2 s salen de la simulación de 4G lenta (1,5 Mbps, 150 ms de latencia, CPU ×4).
+- **Decisiones del usuario:**
+  - R-01: investigar y fijar. Bloquear desde ya con LCP > 3,5 s y ajustar el presupuesto tras T-76. Los 2,5 s quedan como meta p75 de campo;
+  - H-03: aceptar el fallo parcial, porque la lista de fincas siempre está visible.
+
+### T-75: presupuesto de laboratorio en el control de Lighthouse (R-01)
+- **`scripts/lighthouse-presupuesto.mjs`** (lógica pura) define el presupuesto: categorías ≥ 90, LCP ≤ 3500 ms (provisional), CLS ≤ 0,1 y TBT ≤ 200 ms. Calcula la mediana y evalúa cada control.
+- **`scripts/lighthouse.mjs`** corre `LH_RUNS` veces (3 por defecto), muestra cada corrida y evalúa la mediana; falla si cualquier control no cumple. La mediana evita los falsos fallos por una corrida atípica (la bitácora registra una con TBT de 330 ms).
+- **Prueba unitaria** `tests/unit/scripts/lighthouse-presupuesto.test.ts`, con casos negativos: LCP fuera del presupuesto con las categorías en ≥ 90, TBT alto, categoría bajo el mínimo y mediana con un valor atípico. Es un patrón nuevo: la lógica pura de los scripts se prueba en `tests/unit/scripts/`.
+- **Prueba negativa de punta a punta:** con el LCP permitido bajado temporalmente a 2,5 s, `npm run lighthouse` marcó `✗ largest-contentful-paint: 3334ms (≤ 2500ms)` y terminó con salida 1. Después se restauró.
+- **Medido con el presupuesto vigente:** corridas con Rendimiento 92, 92 y 92 y LCP de 3,18, 3,22 y 3,15 s; mediana: LCP 3181 ms, TBT 119 ms, CLS 0. Salida 0.
+- **NFR-01** (`01-spec.md`) distingue la meta de campo (p75) del presupuesto de laboratorio que bloquea. Actualizados `03-plan.md` (umbrales) y `CLAUDE.md`.
+
+---
+
 ## 2026-10-24: Fase 9, auditoría independiente (T-68 a T-74)
 
 ### Contexto
