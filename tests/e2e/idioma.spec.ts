@@ -163,13 +163,14 @@ test.describe("selector de idioma (FR-26, AC-23)", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "es-CO");
   });
 
-  test("con teclado: segundo Tab, foco visible y 44 px de alto", async ({
+  test("con teclado: tras la marca, foco visible y 44 px de alto", async ({
     page,
     isMobile,
   }) => {
     test.skip(isMobile, "Teclado físico: solo escritorio");
     await page.goto("/en");
     await page.keyboard.press("Tab"); // «Skip to content»
+    await page.keyboard.press("Tab"); // Marca
     await page.keyboard.press("Tab");
     const foco = page.locator(":focus");
     await expect(foco).toHaveText("Español");

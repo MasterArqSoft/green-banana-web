@@ -1,5 +1,20 @@
 # Bitácora del proyecto
 
+## 2026-10-24 — Validación de Fase 12 y mejora UX del selector (T-93/T-98)
+
+Solicitud: revisar la funcionalidad bilingüe en navegador y mejorar la ubicación y apariencia del cambio de idioma, consultando referencias de controles con globo.
+
+- Revisión de código de rutas, documento, cabecera y selector, specs e `idioma.spec.ts`; prueba manual de la demo española hacia inglés y de la versión local español → inglés → español.
+- Referencias: [GOV.UK Language navigation](https://design-system.service.gov.uk/components/language-navigation/) recomienda nombres en su propio idioma y mantener el contexto; [Texas Design System](https://dir.texas.gov/txds/components/language-selector/) presenta variantes con globo. Decisión para dos idiomas: opciones siempre visibles, globo decorativo, sin desplegable ni interacción adicional. Un desplegable queda como alternativa si aumenta el número de idiomas.
+- `SelectorIdioma.tsx`: control agrupado con borde discreto, globo de Lucide ya instalado y estado activo con fondo, negrita y subrayado. Conserva enlaces nativos, `lang`, `hreflang`, 44 px, query/hash y sin prefetch; añade `rel="alternate"`.
+- `documento.tsx` entrega el selector a `TopBar.tsx` como slot: cabecera sigue siendo de servidor. En escritorio desde 1024 px comparte fila con marca y llamada; en móvil y tableta ocupa segunda fila derecha. La 404 sigue sin selector.
+- Primera ejecución de `npm run validate`: 488 unitarias correctas; 195 e2e correctas, 11 omitidas y dos fallos: el nuevo alto fijo tapaba el título de Origen y la prueba de teclado esperaba el orden anterior. Corregidos márgenes de anclas en `Origin.tsx` y `MapaFincas.tsx` (160 px en móvil; 80 desde md) y expectativas de teclado en `calls.spec.ts` e `idioma.spec.ts` (marca → idioma → llamada).
+- Segunda ejecución: Prettier, ESLint, TypeScript, 488 unitarias, builds con y sin prefijo, presupuesto sin prefijo y 197 e2e correctas (11 omitidas por perfil). Las 32 pruebas con prefijo mostraron resultados correctos pero el proceso quedó esperando al cerrar en el sandbox; no se acredita salida 0 del comando conjunto. Repetición independiente de `npm run test:prefijo` fuera del sandbox: salida 0, 32 aprobadas en 11,3 s (log `output/playwright/prefijo-idioma.log`). `npm run budget:prefijo`: salida 0, ocho páginas y 404 dentro del presupuesto (206,8 KB español; 207,0 KB inglés; límite 300 KB). `npm run audit:deps` requirió acceso al registro npm fuera del sandbox: salida 0, 0 vulnerabilidades. Lighthouse no reejecutado.
+- Capturas del build estático revisadas a 360×640 (español) y 1280×800 (inglés), en `output/playwright/idioma-movil.png` y `idioma-escritorio.png`. Sin desborde; H1 y CTA visibles. En móvil se acepta segunda fila para conservar nombres completos y áreas táctiles. Log: `output/playwright/validate-idioma.log` (artefactos locales).
+- No se reejecutó Lighthouse ni se hizo revisión editorial/jurídica o prueba manual con lector de pantalla. Siguen pendientes idioma de atención telefónica, revisión editorial inglesa y T-05/T-38. Se detectó texto histórico contradictorio en `spec/02-content-spec.md` §7 sobre sitio monolingüe/sin hreflang; no refleja la implementación bilingüe ni D7.
+- Documentación: actualizados D7 en `spec/03-plan.md`, seguimiento T-93/T-98 en `spec/04-tasks.md` y esta bitácora. Sin dependencias nuevas, commit, push ni publicación.
+
+
 Registro de lo que se hace en cada sesión: decisiones, cambios y archivos tocados. La entrada más reciente va arriba.
 No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-alcance-y-roadmap.md` primero). Los pendientes vigentes viven en `spec/05-alcance-y-roadmap.md` §5 y §7, y el estado de cada tarea en `spec/04-tasks.md` ("Estado de avance").
 

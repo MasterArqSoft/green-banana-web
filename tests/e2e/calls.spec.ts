@@ -84,16 +84,16 @@ test.describe("teclado (AC-09)", () => {
     await expect(page.locator("#hero :focus")).toHaveCount(1);
   });
 
-  test("después del salto, el Tab pasa por el selector de idioma, la marca (FR-19) y el botón Llamar con el foco visible", async ({
+  test("después del salto, el Tab pasa por la marca (FR-19), el selector de idioma y el botón Llamar con el foco visible", async ({
     page,
   }) => {
     await page.goto("/");
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
-    // Selector de idioma (FR-26), arriba de la barra.
-    await expect(page.locator(":focus")).toHaveAttribute("href", "/en");
-    await page.keyboard.press("Tab");
     await expect(page.locator(":focus")).toHaveAttribute("href", "/");
+    await page.keyboard.press("Tab");
+    // Selector integrado en la cabecera (FR-26).
+    await expect(page.locator(":focus")).toHaveAttribute("href", "/en");
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
     await expect(focused).toHaveAttribute("href", telHref);

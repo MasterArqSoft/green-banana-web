@@ -20,7 +20,7 @@ export function Origin({ locale }: { locale: Locale }) {
     <section
       id="origen"
       aria-labelledby="origen-titulo"
-      className="scroll-mt-20 bg-hoja-claro"
+      className="scroll-mt-40 bg-hoja-claro md:scroll-mt-20"
     >
       <div className="contenedor grid gap-8 py-12 md:grid-cols-2 md:items-center">
         <div className="flex flex-col gap-5">

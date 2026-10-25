@@ -33,14 +33,18 @@ export function Documento({
       <body className="flex min-h-full flex-col font-sans">
         <SkipLink locale={locale} />
         <DemoBanner locale={locale} />
-        {selector && (
-          <SelectorIdioma
-            locale={locale}
-            etiqueta={copy.language.navLabel}
-            nombres={copy.language.names}
-          />
-        )}
-        <TopBar locale={locale} />
+        <TopBar
+          locale={locale}
+          selector={
+            selector && (
+              <SelectorIdioma
+                locale={locale}
+                etiqueta={copy.language.navLabel}
+                nombres={copy.language.names}
+              />
+            )
+          }
+        />
         {children}
         <Footer locale={locale} />
         <FloatingCall locale={locale} />

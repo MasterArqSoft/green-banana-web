@@ -18,7 +18,7 @@ export function MapaFincas({ locale }: { locale: Locale }) {
     <section
       id="mapa-fincas"
       aria-labelledby="mapa-fincas-titulo"
-      className="scroll-mt-20"
+      className="scroll-mt-40 md:scroll-mt-20"
     >
       <div className="contenedor flex flex-col gap-8 py-12">
         <div className="flex max-w-prose flex-col gap-3">

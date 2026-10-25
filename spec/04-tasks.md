@@ -201,6 +201,8 @@ Decisiones del usuario:
 
 ## Fase 12: Español predeterminado e inglés opcional
 
+**Revisión UX del selector (2026-10-24, T-93/T-98):** control con globo y nombres completos integrado en la cabecera; una fila en escritorio y segunda fila en móvil. Conserva enlaces sin JS y query/hash con JS. Ajustados los márgenes de Origen y Mapa y las expectativas de teclado. Evidencia y validación en la entrada más reciente de `doc/bitacora.md`.
+
 Origen: solicitud del usuario de analizar el proyecto local, consultar buenas prácticas y preparar tareas para implementación por Claude Code (2026-10-24). Alcance A-08 (`05` v1.6); requisitos FR-25 a FR-28 y AC-21 a AC-29 (`01` v1.6); contenido `02` §1 y decisión D7 (`03` v1.9).
 
 **Estado:** implementada el 2026-10-24 por orden del usuario (T-87 a T-99), sin dependencias nuevas, sin commit, push ni publicación. Evidencia por tarea en `doc/bitacora.md` (entrada «Fase 12, implementación»).

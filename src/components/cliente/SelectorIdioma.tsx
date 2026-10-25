@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Globe } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { LOCALES, rutaEquivalente, type Locale } from "@/lib/i18n";
@@ -31,8 +32,12 @@ export function SelectorIdioma({
   const ruta = usePathname();
   const sufijo = useSyncExternalStore(suscribir, sufijoActual, sinSufijo);
   return (
-    <nav aria-label={etiqueta} className="border-b border-hoja/10">
-      <ul className="contenedor flex justify-end gap-1 text-sm">
+    <nav
+      aria-label={etiqueta}
+      className="inline-flex shrink-0 items-center gap-1 rounded-control border border-hoja/20 bg-crema p-1 text-sm"
+    >
+      <Globe aria-hidden="true" size={18} className="mx-2 shrink-0 text-hoja" />
+      <ul className="flex items-center gap-1">
         {LOCALES.map((destino) => (
           <li key={destino}>
             {destino === locale ? (
@@ -40,7 +45,7 @@ export function SelectorIdioma({
               <span
                 aria-current="true"
                 lang={destino}
-                className="inline-flex min-h-11 items-center px-2 font-semibold text-hoja underline decoration-2 underline-offset-4"
+                className="inline-flex min-h-11 items-center rounded-control bg-hoja-claro px-3 font-semibold text-hoja underline decoration-2 underline-offset-4"
               >
                 {nombres[destino]}
               </span>
@@ -51,7 +56,8 @@ export function SelectorIdioma({
                 prefetch={false}
                 hrefLang={destino}
                 lang={destino}
-                className="inline-flex min-h-11 items-center rounded-control px-2 underline-offset-4 hover:underline"
+                rel="alternate"
+                className="inline-flex min-h-11 items-center rounded-control px-3 underline-offset-4 hover:bg-hoja-claro hover:underline"
               >
                 {nombres[destino]}
               </Link>
