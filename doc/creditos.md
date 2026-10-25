@@ -52,11 +52,12 @@ Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals
 | Fuente | Uso | Licencia |
 |---|---|---|
 | Fraunces (Google Fonts, autoalojada con `next/font`) | Títulos | SIL Open Font License 1.1 |
-| Inter (Google Fonts, autoalojada con `next/font`) | Texto | SIL Open Font License 1.1 |
+| Inter 4.001 (The Inter Project Authors), versión modificada: subconjunto propio en `src/app/fonts/inter-es.woff2` (pesos 400 a 700, caracteres del español), derivado del archivo latino que distribuye Google Fonts; se sirve con `next/font/local` | Texto | SIL Open Font License 1.1. La OFL permite modificar y redistribuir; Inter no tiene nombre reservado (Reserved Font Name), así que la versión recortada conserva el nombre. El copyright y la URL de la licencia van dentro del archivo (tabla `name`, IDs 0 y 14) |
 
 ## Historial
 
 - 2026-10-18 (T-04): se publican las 12 fotos generadas con ChatGPT. La imagen para redes pasa de una tarjeta de texto generada a un recorte del hero.
 - 2026-10-19: mapa ilustrado de la zona como fondo antes de "Ver mapa" (geometría derivada de OSM, ODbL).
+- 2026-10-24 (T-82): Inter pasa a un subconjunto propio (23,9 KB frente a 48,4 KB) generado con fontTools; procedimiento en `doc/bitacora.md`.
 - 2026-10-19 (T-54): Leaflet y teselas de OpenStreetMap para el mapa de fincas. Sin fotos nuevas.
 - 2026-10-18 (T-39): se retiró el `favicon.ico` de la plantilla de Next.js, que no era propio, y se reemplazó por `src/app/icon.svg`.

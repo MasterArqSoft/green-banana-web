@@ -20,6 +20,27 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-82: Inter recortada al español (PERF-02)
+- **Punto de partida:** `next/font/google` servía Inter 4.001 variable (eje `wght` 100 a 900) con el subconjunto latino de Google: 48,4 KB, precargado en todas las páginas. El sitio usa solo 400 (texto), 600 (`font-semibold`) y 700 (`<strong>`, `font-weight: bolder`), y los caracteres no ASCII del contenido son `© « · » ¿ á é í ñ ó ú – …`.
+- **Herramienta de un solo uso:** fontTools 4.60.1 y brotli 1.1.0 en un entorno virtual del scratchpad (no es dependencia del proyecto; mismo criterio que la geometría del mapa con Overpass y shapely). Procedimiento reproducible:
+  1. Fuente: el archivo latino que descarga `next/font/google` (Inter 4.001, sha256 `c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4`).
+  2. `python -m fontTools.varLib.instancer inter-google-latin.woff2 wght=400:700 -o inter-400-700.ttf`
+  3. `python -m fontTools.subset inter-400-700.ttf --unicodes="U+0020-007E,U+00A0-00FF,U+2013-2014,U+2018-2019,U+201C-201D,U+2022,U+2026" --layout-features="calt,ccmp,locl,kern,mark,mkmk" --name-IDs="*" --flavor=woff2 --output-file=inter-es.woff2`
+- **Experimentos de tamaño:** solo recortar caracteres 29,0 KB; además limitar el peso a 400-700, 20,0 KB. **Error detectado en la comparación visual:** con `--layout-features` sin `kern` se perdía el kerning (está en GPOS) y el texto cambiaba de ancho (4,2 % de píxeles distintos en escritorio). Con `kern`: **23,9 KB** (−51 %).
+- **Licencia:** OFL 1.1, sin nombre reservado; se conservan el copyright y la URL de la licencia en la tabla `name` (IDs 0 y 14). Registrado en `doc/creditos.md`.
+- **Código:**
+  - `src/app/fonts.ts`: Inter con `next/font/local` (`weight: "400 700"`, `display: "swap"`, misma variable `--font-inter`); Fraunces sigue con `next/font/google`. `next/font/local` calcula las métricas de la fuente de respaldo (`adjustFontFallback`), igual que antes;
+  - `src/lib/fuentes.ts`: `INTER_UNICODES` (los rangos del recorte) y `fueraDeInter(texto)`;
+  - `tests/unit/lib/fuentes.test.ts`: español completo cubierto, detección de caracteres fuera, rangos ordenados y **cada JSON de `src/content/` solo usa caracteres del recorte** (si aparece uno nuevo, falla y hay que regenerar).
+- **Verificación:**
+  - en la red solo se descargan `inter_es` (23 916 bytes) y Fraunces (18 120); los otros subconjuntos de Inter ya no se generan;
+  - capturas de página completa antes y después: misma altura (sin cambio de diseño), mismos saltos de línea, CLS 0; quedan diferencias de suavizado de subpíxel (0,11 % de píxeles en móvil);
+  - `budget`: fuentes 65,0 → 41,1 KB en todas las páginas; landing 266,7 → 242,5 KB; con el hero, 273,9 KB en móvil y 299,4 KB en escritorio; igual en `out-pages/`;
+  - Lighthouse simulado (con presupuesto): Rendimiento 95, LCP 3019 → **2872 ms**, TBT 94 ms, CLS 0;
+  - Lighthouse DevTools (diagnóstico): LCP 2560 → **2467 ms**, TBT 344 ms; descarga de la foto 1634 ms, pintado 155 ms;
+  - e2e 92 pasan (8 omitidas por perfil), prefijo 18 pasan, unitarias pasan.
+- Archivos: `src/app/fonts.ts`, `src/app/fonts/inter-es.woff2`, `src/lib/fuentes.ts`, `tests/unit/lib/fuentes.test.ts`, `doc/creditos.md`, `CLAUDE.md`, `spec/03-plan.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-81: peso de la foto del hero (PERF-02)
 - **Candidatas** generadas con el mismo pipeline (`sharp`, 800×1000 y 1600×1000, recorte `attention`, `effort` 6) en el scratchpad: AVIF calidad 60 (la actual: reproduce el archivo publicado byte a byte, 46 451 bytes), 50, 40 y 30.
 - **Comparación visual** lado a lado al ancho real del teléfono (380 px, densidad 2) y en detalle al 100 %: sin diferencia visible hasta la 40; en la 30 la madera y el fondo se alisan un poco.
