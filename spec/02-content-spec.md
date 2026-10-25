@@ -199,5 +199,5 @@ Todas con texto alternativo descriptivo.
 | Title | Guineo verde en Santa Marta \| [Marca ficticia, Q1] |
 | Meta description | Guineo verde seleccionado a mano, acopiado en Santa Marta. Llámanos para precio y distribución a hogares y negocios. |
 | Palabras clave | guineo verde, guineo verde Santa Marta, banano verde para sancocho, distribuidor guineo verde Magdalena. Guían el copy; no se publican como `meta keywords`, que los buscadores ignoran (T-64, 2026-10-24) |
-| Datos estructurados | LocalBusiness, FAQPage. Product con Offer solo cuando entren precios (roadmap R-01). |
+| Datos estructurados | LocalBusiness, FAQPage. Product con Offer solo cuando entren precios (roadmap R-01). FAQPage se conserva por su valor semántico: Google dejó de mostrar el resultado enriquecido de FAQ en 2026 (T-84), así que no se promete esa apariencia en la búsqueda. |
 | Otros | URL canónica, `sitemap.xml`, `robots.txt`, ficha de Google Business Profile enlazada. Sin `hreflang`: el sitio tiene un solo idioma y el idioma ya va en `lang="es-CO"` (T-64, 2026-10-24) |

@@ -20,6 +20,14 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-84: documentación ajustada a la evidencia (PERF-01, SEO-OBS, CI-01)
+- **Lighthouse:** `01` (NFR-01) ya no dice que "el modo simulado infla el LCP". Los métodos simulado y DevTools dan valores distintos (en una corrida de la auditoría, DevTools superó al simulado), ninguno es el dato de campo, y se compara siempre con el mismo método y el mismo elemento LCP. `05` (A-05) aclara que cumplir el presupuesto de 3,4 s no acredita los 2,5 s de campo. El comentario de `lighthouse-presupuesto.mjs` y `CLAUDE.md` ya se habían corregido en T-80.
+- **CI-01** registrado en `05` (A-05): Lighthouse irá en `verificar` como paso informativo (T-85); el bloqueo sigue siendo local y R-10 decidirá si bloquea con un entorno estable.
+- **robots.txt (SEO-OBS):** `03`, `CLAUDE.md` y el comentario de `src/app/robots.ts` explican que en la demo la señal efectiva es el meta `noindex`: los buscadores solo leen `robots.txt` en la raíz del host (`masterarqsoft.github.io/robots.txt` da 404, verificado por la auditoría) y el sitio está en un subdirectorio. Con dominio propio sí se lee. Se advierte no combinar `Disallow` con `noindex` en un mismo sitio. El comportamiento del código no cambia.
+- **FAQPage:** `01` (FR-13), `02` y `CLAUDE.md` registran que Google dejó de mostrar el resultado enriquecido de FAQ en 2026; el marcado se conserva por su valor semántico, sin prometer esa apariencia.
+- **H-03:** reabierto y corregido en `05` desde T-79.
+- Archivos: `spec/01-spec.md`, `spec/02-content-spec.md`, `spec/03-plan.md`, `spec/05-alcance-y-roadmap.md`, `src/app/robots.ts`, `CLAUDE.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-83: análisis del JavaScript inicial (PERF-02)
 - **Herramienta:** el analizador oficial de Next 16.4 (`node_modules/next/dist/docs/01-app/02-guides/package-bundling.md`): `npx next analyze --output --snapshot t83` y `npx next analyze export --snapshot t83 --route /` (JSON Lines; desde PowerShell, porque Git Bash convierte `/` en una ruta de Windows). **Ojo:** `next analyze` borra `out/`; hay que volver a correr `npm run build`.
 - **Composición de la carga inicial de `/`** (comprimido, según el analizador; 219 KB incluido el chunk de polyfills):

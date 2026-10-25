@@ -67,7 +67,7 @@
 | FR-10 | Cobertura | Acopio y distribución en Santa Marta. Reparto propio de la empresa. El costo de envío se informa por teléfono y por separado del precio del producto. | Must |
 | FR-11 | Para negocios | Texto dirigido a tiendas, hoteles y otros puntos de venta, con botón Llamar. Sin formulario. | Must |
 | FR-12 | Testimonios | De 3 a 5 testimonios reales con nombre, negocio o barrio y foto. Si no existen aún, la sección **no se publica**. | Should |
-| FR-13 | FAQ | Acordeón accesible con las preguntas definidas en `02-content-spec.md`. Con datos estructurados FAQPage. | Must |
+| FR-13 | FAQ | Acordeón accesible con las preguntas definidas en `02-content-spec.md`. Con datos estructurados FAQPage (se conservan por su valor semántico; Google dejó de mostrar el resultado enriquecido de FAQ en 2026, así que no se promete esa apariencia en la búsqueda). | Must |
 | FR-14 | Garantía | Reclamo en 24 h con foto por llamada o correo, y reposición o devolución. Política definitiva en RP-04; hasta entonces, texto provisional marcado. | Must |
 | FR-15 | CTA final | Cierre con el botón de llamada y resumen de la promesa. | Must |
 | FR-16 | Pie legal | Razón social, NIT, dirección, teléfono, correo, términos, privacidad, PQR con constancia (procedimiento en RP-05), enlace visible a la SIC. Todos los datos legales son configurables desde `site.json`; en Fase 1 van con valores ficticios marcados como tales. | Must |
@@ -99,7 +99,7 @@
 
 | ID | Requisito | Meta |
 |---|---|---|
-| NFR-01 | Rendimiento | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms (móvil 4G, p75 de usuarios reales: se mide en campo al lanzar). En laboratorio, `npm run lighthouse` (mediana de 3 corridas, móvil simulado) bloquea con LCP > 3,4 s, CLS > 0,1 o TBT > 200 ms (T-75 y T-76, 2026-10-24). El modo simulado infla el LCP; con throttling real se midió 2,7 s |
+| NFR-01 | Rendimiento | LCP ≤ 2,5 s, CLS ≤ 0,1, INP ≤ 200 ms (móvil 4G, p75 de usuarios reales: se mide en campo al lanzar). En laboratorio, `npm run lighthouse` (mediana de 3 corridas, móvil simulado) bloquea con LCP > 3,4 s, CLS > 0,1 o TBT > 200 ms (T-75 y T-76, 2026-10-24). Los métodos de throttling simulado y DevTools dan valores distintos y ninguno es el dato de campo: el presupuesto se mide con el simulado y `LH_THROTTLING=devtools` sirve de diagnóstico, siempre comparando con el mismo método y el mismo elemento LCP (T-80) |
 | NFR-02 | Accesibilidad | WCAG 2.2 AA |
 | NFR-03 | SEO | Título, descripción, Open Graph, datos estructurados (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
 | NFR-04 | Seguridad | HTTPS, HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; sin secretos en el cliente. `Referrer-Policy` no puede ser `no-referrer` (OSM lo prohíbe para el mapa, FR-24); el valor recomendado es `strict-origin-when-cross-origin` |
