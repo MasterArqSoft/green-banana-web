@@ -1,5 +1,15 @@
 # Bitácora del proyecto
 
+## 2026-10-25 — Redacción en inglés: propuestas aplicadas
+
+- Por orden del usuario se aplicaron las propuestas de la revisión editorial ES/EN:
+  1. `en/copy.json` `benefits.text`: «traditional cooking food» → «traditional cooking staple» (la afirmación de salud permitida no cambia).
+  2. `en/copy.json` `map.text`: «These are reference farms of our origin in…» → «These farms show where our bananas come from in…».
+  3. «As a perishable product, the right of withdrawal…» → «Because this is a perishable product, the right of withdrawal…», en `en/copy.json` (`guarantee.legalNote`) y en las dos apariciones de `en/legal.json` (términos y garantía), para que sea coherente. Los textos legales siguen siendo borrador pendiente de T-05.
+  4. El aviso de demo con «(marked “FICTICIO”)»: la propuesta era mantenerlo; sin cambios.
+- Español sin cambios; marcas `[TO BE CONFIRMED …]`, `(FICTICIO)` y nombres propios intactos.
+- Verificación: 563 unitarias (incluidas paridad, frases prohibidas y caracteres de las fuentes), build correcto, e2e de axe, idioma, reflow y mapa en `movil-320` y `escritorio`: 126 aprobadas.
+
 ## 2026-10-25 — Revisión editorial ES/EN (comparación técnica) y cuelgue con prefijo
 
 - **Fuentes (textos):** comparados lado a lado `copy.json`, `faq.json` y `products.json` de los dos idiomas: hero, CTA, tarjetas, origen, mapa, FAQ, pie, legales y 404. Se conservan `(FICTICIO)`, nombres propios (Ciénaga Grande y Sierra Nevada de Santa Marta, cayeye, patacón, hartón, pintón), identificadores y marcas `[POR CONFIRMAR …]` / `[TO BE CONFIRMED …]` con su RP. La paridad estructural ya la exige el build (`src/lib/paridad.ts`). Inglés estadounidense coherente (center, neighborhood, fiber).
