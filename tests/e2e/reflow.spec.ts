@@ -236,3 +236,53 @@ test.describe("a tamaño normal ninguna palabra se parte (N-1)", () => {
     });
   }
 });
+
+// Revisión visual de F-02 (2026-10-25): con el texto al 200 % (ajuste real del navegador
+// o fuente raíz), «Call for price» se partía en tres líneas (relleno e ícono en rem dejaban
+// ~80 px para el texto) y el botón flotante, de 3,5rem, medía 112 px y tapaba el
+// contenido. Los botones de las tarjetas no pasan de dos líneas; el flotante, que solo
+// lleva ícono, no crece con el texto. A tamaño normal, una sola línea.
+test.describe("botones de las tarjetas y botón flotante con texto aumentado (F-02)", () => {
+  for (const ruta of ["/", "/en"]) {
+    for (const { nombre, fuente, maxLineas } of [
+      { nombre: "a tamaño normal", fuente: "100%", maxLineas: 1 },
+      { nombre: "con la fuente al 200 %", fuente: "200%", maxLineas: 2 },
+    ]) {
+      test(`${ruta} ${nombre}: botones de tarjeta en ${maxLineas} línea(s) como máximo y flotante de 56 px`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width: 320, height: 640 });
+        await page.goto(ruta);
+        await page.addStyleTag({
+          content: `html { font-size: ${fuente} !important; }`,
+        });
+        const lineas = await page
+          .locator('#presentaciones a[href^="tel:"]')
+          .evaluateAll((botones) =>
+            botones.map((boton) => {
+              const texto = [...boton.childNodes].find(
+                (n) => n.nodeType === Node.TEXT_NODE,
+              );
+              const rango = document.createRange();
+              rango.selectNodeContents(texto as Node);
+              const filas = new Set(
+                [...rango.getClientRects()].map((r) => Math.round(r.top)),
+              );
+              return `${boton.textContent?.trim()}: ${filas.size}`;
+            }),
+          );
+        expect(lineas).toHaveLength(4);
+        for (const linea of lineas) {
+          expect(Number(linea.split(": ").at(-1)), linea).toBeLessThanOrEqual(
+            maxLineas,
+          );
+        }
+        const flotante = await page
+          .locator('div.fixed a[href^="tel:"]')
+          .boundingBox();
+        expect(flotante?.width).toBeLessThanOrEqual(56.5);
+        expect(flotante?.height).toBeLessThanOrEqual(56.5);
+      });
+    }
+  }
+});

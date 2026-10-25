@@ -23,11 +23,15 @@ La ampliación de texto del sistema o del navegador (Windows: Configuración →
 
 ### Qué versión probar
 
-La Fase 13 ya está integrada en `main` mediante `b128a67`; el checkout revisado el 2026-10-25 es `9a27d11`. Antes de aceptar la demo publicada (`https://masterarqsoft.github.io/green-banana-web/`), comprobar qué commit está desplegado. También se puede evaluar un build local: `npm run build` y `node tests/e2e/server.mjs`, que sirve `out/` en `http://localhost:4173` (desde Android en la misma red: `http://<IP del equipo>:4173`, si el firewall lo permite). Anotar siempre URL, commit y si existen cambios sin commit; una prueba local no acredita la versión publicada.
+La Fase 13 ya está integrada en `main` mediante `b128a67`, y T-123 mediante `f3026a5` (merge `64dba55`, PR #9). **Al 2026-10-25 la demo publica `64dba55`** (despliegue `github-pages` de ese commit, run 40229133764). Antes de aceptar la demo publicada (`https://masterarqsoft.github.io/green-banana-web/`), comprobar qué commit está desplegado. También se puede evaluar un build local: `npm run build` y `node tests/e2e/server.mjs`, que sirve `out/` en `http://localhost:4173` (desde Android en la misma red: `http://<IP del equipo>:4173`, si el firewall lo permite). Anotar siempre URL, commit y si existen cambios sin commit; una prueba local no acredita la versión publicada.
 
 **Revisión asistida 2026-10-25 (T-123):** navegador Chromium visible sobre una exportación local con prefijo de `9a27d11` y, después, sobre los cambios de traducción aún sin commit. Se comprobaron teclado, salto al contenido, FAQ, axe en las cuatro páginas inglesas y la 404, y layout a 320 px con fuente aumentada por CSS. Esto no ejecuta ni cierra E1-E5: no se operó NVDA/TalkBack. Los atajos enviados al navegador no cambiaron el zoom real (DPR y viewport permanecieron iguales), por lo que el zoom real tampoco queda acreditado. El acceso a la demo desde este entorno fue denegado por red; los resultados corresponden únicamente al build local. F-09 permanece abierto.
 
+**Teclado y estados del mapa, evidencia automática (2026-10-25, working tree sobre `64dba55`):** Playwright en los cinco proyectos (`calls.spec.ts` y `mapa-fincas.spec.ts`: 120 aprobadas y 30 omitidas por proyecto; las de teclado físico no corren en los perfiles móviles). Cubre en ES y EN: primer Tab al enlace de salto y Enter al `<main>`; marca, selector y Llamar con foco visible; FAQ con Enter y con Espacio; Shift+Tab desanda el recorrido completo; términos, privacidad y garantía ida y vuelta con el teclado sin cambiar de idioma; el mapa cargado se deja con Tab y se recupera con Shift+Tab. Estados del mapa con red y carga interceptadas: carga por clic, marcadores y popup, error total, fallo parcial, «Reintentar», llegada tardía a los 15 s y foco diferido. Ningún enlace `tel:` ni `mailto:` se activa. **La observación visible y humana de estos escenarios se registra aparte** (§6); esto no la sustituye.
+
 ## 2. Entornos
+
+**Revalidación automática local sobre `64dba55` (2026-10-25):** build aprobado; 174 pruebas aprobadas y 13 omitidas en las selecciones detalladas en `doc/bitacora.md`. Incluye axe a 320 px y pruebas de reflow, composición, teclado, idiomas y mapa. No es una sesión humana E1-E5 y no cierra F-02 ni F-09. Antes de repetir sobre un nuevo build, detener el servidor y volverlo a iniciar: las cabeceras se leen al arrancar y deben corresponder al HTML evaluado.
 
 Hacer cada entorno en **español (`/`) y en inglés (`/en`)**, sobre el sitio que se vaya a aceptar (demo o producción) y anotando la URL y el commit.
 
@@ -136,5 +140,34 @@ Copiar esta tabla por sesión y añadir el resumen al registro de hallazgos (`do
 | | | | | | | | | | | |
 
 **Estado al 2026-10-25:** ninguna sesión ejecutada. La automatización de §1 pasa sobre el working tree (bitácora de ese día); eso no sustituye a este protocolo.
+
+### Hoja de registro de lectores de pantalla (E1–E3, F-09 / T-38)
+
+Estados permitidos: **Aprobada**, **Fallida** (con captura o grabación y lo que dijo el lector), **No ejecutada** (con motivo) y **No aplicable** (con motivo). F-09 solo cierra con E1, E2 y E3 hechos en ES y EN; los resultados parciales válidos se conservan.
+
+Entorno al 2026-10-25, consultado en este equipo: Chrome 155.0.8059.85 y Firefox 158.0.1 instalados; **NVDA no instalado**. Ningún entorno ejecutado: **motivo de «No ejecutada» en todas las celdas: la sesión humana no se ha hecho (Claude Code no opera lectores de pantalla ni simula sus resultados)**. Versión a evaluar: la que esté publicada o el build local, anotando el commit (§1).
+
+| ID | Comprobación | Pasos de §3 | E1 NVDA + Chrome · ES | E1 · EN | E2 NVDA + Firefox · ES | E2 · EN | E3 TalkBack + Chrome Android · ES | E3 · EN | Evidencia y notas |
+|---|---|---|---|---|---|---|---|---|---|
+| L1 | Título de la página e idioma anunciado (`lang`) | 1 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L2 | «Saltar al contenido» y enlaces: nombre claro y destino | 2, 10 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L3 | Selector de idioma: «Español / English», idioma actual anunciado, cambio de voz | 3, 4 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L4 | Botones Llamar: el nombre incluye el texto visible, el número y, en tarjetas, la presentación | 3, 5 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L5 | FAQ: pregunta, estado abierto/cerrado y respuesta | 6 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L6 | Mapa inicial: aviso de privacidad antes de «Ver mapa» y lista de fincas sin abrir el mapa | 7 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L7 | Mapa: «Cargando mapa…», mapa listo, zoom, marcadores y popup | 8 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L8 | Mapa: error, fallo parcial y «Reintentar» anunciados sin mover el foco (si no se puede provocar: No aplicable con motivo) | 9 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L9 | Pie: teléfono, correo, legales y SIC | 10 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L10 | Páginas legales y «Volver al inicio» en el mismo idioma | 11 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L11 | 404 (`/no-existe` y `/en/no-existe`): mensaje entendible y ayuda inglesa anunciada en inglés | 12 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+
+Datos de cada entorno (completar al ejecutar): fecha, evaluador, sistema y versión, navegador y versión, lector y versión, voz e idioma, URL y commit, limitaciones.
+
+| Entorno | Fecha | Evaluador | Sistema | Navegador | Lector | URL y commit | Limitaciones |
+|---|---|---|---|---|---|---|---|
+| E1 | | | | | | | |
+| E2 | | | | | | | |
+| E3 | | | | | | | |
+
 
 Cada falla se convierte en un hallazgo nuevo (`AUD-<fecha>-A11Y/<id>`) con prueba automática cuando sea posible. F-09 cierra cuando E1 a E5 estén hechos en los dos idiomas sin fallas abiertas de nivel A o AA, o con las restantes aceptadas por el usuario con su motivo.

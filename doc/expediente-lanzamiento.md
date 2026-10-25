@@ -48,7 +48,7 @@ Instantánea del 2026-10-25 (solo orientativa; el número vigente es el del coma
 | Medición (F-13) | Usuario | Plan aprobado el 2026-10-25 (`doc/plan-medicion.md`); registro manual de §2 en uso con llamadas reales | Plan aprobado; medición real no acreditada; analítica en R-07 |
 | Gobierno del repositorio (B11) | Usuario (autorizó) y Claude Code | Ruleset de `main` con el check `verificar` obligatorio; evidencia con `gh api repos/MasterArqSoft/green-banana-web/rules/branches/main` | **Cerrado el 2026-10-25:** ruleset 25829447 activo y efectivo en `main` (§4) |
 | Lighthouse del sitio de producción | Claude Code | `npm run lighthouse` sobre el build de producción (laboratorio). Los Core Web Vitals de campo se miden después del lanzamiento | Abierto |
-| Revisión editorial del inglés | Usuario | Textos `en/` revisados | Abierto |
+| Revisión editorial del inglés | Usuario | Textos `en/` revisados y aprobados | Comparación técnica ES/EN hecha el 2026-10-25 (bitácora): sin divergencias de estructura ni maquetación; 4 propuestas de redacción pendientes de tu decisión. Abierto hasta la aprobación |
 
 ## 3. Orden sugerido
 

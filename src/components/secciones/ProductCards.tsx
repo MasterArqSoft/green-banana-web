@@ -69,7 +69,7 @@ export function ProductCards({ locale }: { locale: Locale }) {
           // layout.spec.ts lo compara con la maqueta en cada corte, en ES y EN.
           <li
             key={product.id}
-            className="@container rounded-card bg-white p-4 shadow-suave"
+            className="@container/tarjeta rounded-card bg-white p-4 shadow-suave"
           >
             <div className="flex h-full flex-col gap-4 @2xs:flex-row">
               <div className="w-full shrink-0 @2xs:w-24">
@@ -85,12 +85,17 @@ export function ProductCards({ locale }: { locale: Locale }) {
                   {product.label}
                 </h3>
                 <p className="text-sm">{detail(product, copy, locale)}</p>
+                {/* Tarjeta de menos de 10rem por dentro: solo con el texto aumentado (al
+                    200 % mide 6rem; a tamaño normal nunca baja de 12,75rem, cuatro columnas
+                    a 1024 px). Ahí el botón ocupa el ancho, con menos relleno y sin el
+                    ícono decorativo: con ambos, «Call for price» iba en tres líneas
+                    (revisión visual de F-02). */}
                 <CallButton
                   locale={locale}
                   label={product.callLabel}
                   context={product.label}
                   size="sm"
-                  className="mt-auto self-start"
+                  className="mt-auto self-start @max-[10rem]/tarjeta:self-stretch @max-[10rem]/tarjeta:px-2 @max-[10rem]/tarjeta:[&>svg]:hidden"
                 />
               </div>
             </div>

@@ -47,7 +47,8 @@ export function FloatingCallVisibility({ children }: { children: ReactNode }) {
     <div
       // Oculto: fuera de la pantalla, sin foco ni lectura (inert).
       inert={!visible}
-      className={`fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 transition-transform duration-300 md:hidden ${
+      // Márgenes en px, como el botón: con el texto aumentado no se mete más en el contenido.
+      className={`fixed right-[16px] bottom-[max(16px,env(safe-area-inset-bottom))] z-30 transition-transform duration-300 md:hidden ${
         visible ? "translate-y-0" : "translate-y-[150%]"
       }`}
     >

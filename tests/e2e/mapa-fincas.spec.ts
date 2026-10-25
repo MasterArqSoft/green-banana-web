@@ -675,6 +675,36 @@ test.describe("teclado del mapa por estado (T-108, F-10)", () => {
     );
   });
 
+  for (const { inicio, copia } of [
+    { inicio: "/", copia: copy },
+    { inicio: "/en", copia: enCopy },
+  ]) {
+    test(`${inicio} listo: con Tab se sale del mapa y con Shift+Tab se vuelve (sin trampa)`, async ({
+      page,
+    }) => {
+      await vigilarRed(page);
+      await page.goto(inicio);
+      const ver = page.getByRole("button", { name: copia.map.showButton });
+      await tabHasta(page, ver);
+      await page.keyboard.press("Enter");
+      await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+      await expect(page.locator(".leaflet-container")).toBeFocused();
+      const enMapa = () =>
+        page.evaluate(
+          () => !!document.activeElement?.closest(".leaflet-container"),
+        );
+      let pasos = 0;
+      while ((await enMapa()) && pasos < 40) {
+        await page.keyboard.press("Tab");
+        pasos++;
+      }
+      expect(pasos).toBeGreaterThan(1);
+      expect(await enMapa()).toBe(false);
+      await page.keyboard.press("Shift+Tab");
+      expect(await enMapa()).toBe(true);
+    });
+  }
+
   test("cargando: sin el botón, el foco no queda atrapado y Tab sigue por la página", async ({
     page,
   }) => {

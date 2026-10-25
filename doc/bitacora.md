@@ -1,5 +1,72 @@
 # Bitácora del proyecto
 
+## 2026-10-25 — Revisión editorial ES/EN (comparación técnica) y cuelgue con prefijo
+
+- **Fuentes (textos):** comparados lado a lado `copy.json`, `faq.json` y `products.json` de los dos idiomas: hero, CTA, tarjetas, origen, mapa, FAQ, pie, legales y 404. Se conservan `(FICTICIO)`, nombres propios (Ciénaga Grande y Sierra Nevada de Santa Marta, cayeye, patacón, hartón, pintón), identificadores y marcas `[POR CONFIRMAR …]` / `[TO BE CONFIRMED …]` con su RP. La paridad estructural ya la exige el build (`src/lib/paridad.ts`). Inglés estadounidense coherente (center, neighborhood, fiber).
+- **Propuestas de redacción (no aplicadas; decide el usuario):**
+  1. `benefits.text`: «It is a traditional cooking food» → «It is a traditional cooking staple» (sin tocar la afirmación permitida).
+  2. `map.text`: «These are reference farms of our origin in the banana-growing area of Magdalena» → «These farms show where our bananas come from in the banana-growing area of Magdalena».
+  3. `guarantee.legalNote`: «As a perishable product, the right of withdrawal does not apply» tiene el sujeto desplazado → «Because this is a perishable product, the right of withdrawal does not apply» (texto legal: también para T-05).
+  4. `demoNotice`: el inglés añade «(marked “FICTICIO”)», que el español no lleva; es intencional (explica la marca española) y se deja salvo que se decida lo contrario.
+- **Visual:** build local (working tree sobre `64dba55` con la corrección de F-02), Chromium, 320 y 1280 px, las 4 parejas de páginas y la 404. Mismo ancho (sin desplazamiento horizontal), títulos de página traducidos, ningún bloque con diferencia de altura de 10 % o más entre ES y EN, todos los botones con texto en una línea en los dos idiomas (la primera medición contaba el ícono como otra línea: error de la sonda, corregido midiendo solo el texto). La 404 es única (español con ayuda inglesa), según su diseño. Capturas en el scratchpad de la sesión (no se versionan, F-08).
+- **Pendiente de sus responsables, sin cambios:** decisiones jurídicas (T-05), comerciales (RP-01 a RP-05) e idioma de la atención telefónica [POR CONFIRMAR]. La revisión editorial del inglés queda abierta hasta que el usuario apruebe los textos.
+- **Cuelgue con prefijo:** por decisión del usuario no se modifican Playwright ni el servidor. Registrada la distinción entre las reproducciones dentro del sandbox (cierre restringido) y las ejecuciones completas fuera de él, que terminaron con salida 0; la causa histórica sigue sin acreditar (registro, fila «ND cierre de `test:prefijo`»).
+- **Edge:** la interrupción del navegador integrado observada en otra sesión no se trata como defecto de la aplicación; no se cambian sus controles de seguridad.
+
+## 2026-10-25 — F-09: hoja de registro de lectores de pantalla
+
+- Solicitud: completar lectores de pantalla (NVDA con Chrome y Firefox, TalkBack con Chrome en Android; ES y EN; título e idioma, enlaces, selector, FAQ, mapa y mensajes, pie, legales y 404).
+- No ejecutado por Claude Code: requiere operar el lector y oír sus anuncios; el protocolo prohíbe simular resultados. Consultado en el equipo: Chrome 155.0.8059.85 y Firefox 158.0.1 instalados; NVDA no instalado.
+- Preparado: hoja de registro en `doc/protocolo-accesibilidad.md` §6 (11 comprobaciones × E1, E2 y E3 × ES y EN), con estados Aprobada, Fallida, No ejecutada y No aplicable con motivo; hoy todas «No ejecutada» con su motivo. Tabla de datos por entorno (fecha, evaluador, versiones, URL y commit, limitaciones). F-09 y T-38 siguen abiertos; fila F-09 del registro actualizada.
+
+## 2026-10-25 — F-02: botón en tres líneas y flotante encima con texto aumentado; teclado ES/EN completo
+
+Solicitud: corregir el botón de las tarjetas que salía en tres líneas y el botón flotante que lo tapaba (hallazgos de la revisión visual asistida de F-02) y completar teclado y estados del mapa.
+
+### Revisión visual asistida (antes de corregir)
+- Build local de `64dba55` servido en `http://localhost:4175` (servidor nuevo; el anterior del 4175, de otra sesión y con cabeceras previas al build, se cerró con autorización del usuario). Chromium 156, 320 × 640, densidad 2, ES y EN. Ampliación real del texto con `Page.setFontSizes` del protocolo de DevTools (el tamaño de fuente del navegador, no CSS); la preferencia en el perfil no se aplicó y se descartó.
+- A 16 px: cuatro tarjetas completas, foto arriba de 256 px con la versión de 600 px (1,17 px de imagen por px de pantalla), botón de una línea dentro de la tarjeta, sin desplazamiento horizontal. Foco: de 30 controles, ninguno tapado del todo; el flotante cubre hasta un 13 % de algunas preguntas (WCAG 2.4.11 AA lo permite).
+- A 32 px: «Llamar para precio» y «Call for price» en tres líneas (136 px de alto) y el flotante, de 3,5rem = 112 px, tapando parte del botón de la tarjeta; foco cubierto hasta un 21 %.
+- Defectos de la sonda corregidos antes de concluir: «nitidez 0,5» era un error de cálculo (`naturalWidth` viene corregido por densidad con `srcset`); el recorrido con Tab se cortaba en 7 controles (los botones Llamar repetían texto y enlace); en ES la ampliación volvía a 16 px tras la primera tarjeta en una pasada, y en la siguiente se mantuvo.
+
+### Corrección
+- Causa: relleno (`px-4`) e ícono del botón en rem dejaban ~80 px de texto en una tarjeta de 192 px por dentro; el flotante (`size-14`) crecía con el texto aunque solo lleva ícono.
+- `ProductCards.tsx`: contenedor `tarjeta`; con menos de 10rem por dentro (solo con texto aumentado: 6rem al 200 %; a tamaño normal nunca baja de 12,75rem, cuatro columnas a 1024 px) el botón va a todo el ancho (`self-stretch`), con `px-2` y sin el ícono decorativo.
+- `CallButton.tsx`: `icon` en px (`size-[56px]`, ícono `size-[24px]`). `FloatingCallVisibility.tsx`: márgenes en px (16 px). A tamaño normal no cambia nada (56 px y 16 px ya eran 3,5rem y 1rem a 16 px).
+- Prueba roja primero: «botones de las tarjetas y botón flotante con texto aumentado (F-02)» en `reflow.spec.ts` (ES y EN, 100 % y 200 %): falló con 3 líneas en los dos idiomas; verde tras la corrección. Con la ampliación real: 2 líneas (96 px) y foco cubierto por el flotante como máximo un 4 %. Capturas en el scratchpad de la sesión (no se versionan, F-08).
+- `npm run validate` tras la corrección: salida 0 en 210 s; 563 unitarias; 401 e2e aprobadas y 23 omitidas; 32 con prefijo; `/` 206,2 KB y `/en` 206,4 KB; `npm audit` 0.
+
+### Teclado y estados del mapa (evidencia automática)
+- Huecos encontrados: salto al contenido, cabecera y FAQ solo se probaban en `/`; ninguna prueba de Shift+Tab; no se probaba salir del mapa cargado; las legales no se recorrían con el teclado.
+- `calls.spec.ts`: las pruebas de teclado corren en `/` y `/en`; FAQ con Enter y con Espacio; Shift+Tab desanda el recorrido completo (la primera versión de la prueba fallaba porque 40 Tab daban la vuelta a la página: defecto de la prueba, corregido); términos, privacidad y garantía ida y vuelta con el teclado, comprobando URL y `lang`. `mapa-fincas.spec.ts`: con el mapa cargado, Tab sale de él y Shift+Tab vuelve (ES y EN).
+- Estados del mapa (carga, marcadores, error total, parcial, reintento, llegada tardía y foco diferido): pruebas existentes con red y carga interceptadas.
+- Resultado: `calls.spec.ts` y `mapa-fincas.spec.ts` en los cinco proyectos, 120 aprobadas y 30 omitidas por proyecto. Formato, lint y tipos con salida 0. Ningún `tel:` ni `mailto:` activado.
+- Esto es evidencia automática. La observación visible y humana de los mismos escenarios se registra aparte (protocolo §6); F-09 sigue abierto.
+
+### Archivos
+`src/components/secciones/ProductCards.tsx`, `src/components/ui/CallButton.tsx`, `src/components/cliente/FloatingCallVisibility.tsx`, `tests/e2e/reflow.spec.ts`, `tests/e2e/calls.spec.ts`, `tests/e2e/mapa-fincas.spec.ts`, `doc/registro-hallazgos.md`, `doc/protocolo-accesibilidad.md`, `spec/04-tasks.md`, `CLAUDE.md` y esta bitácora. Sin commit.
+
+### Pendiente
+Aceptación visual del usuario de F-02 tras la corrección; sesión humana de F-09; commit e integración por pull request.
+
+## 2026-10-25 — Estados de entrega sincronizados y límite de la instalación de navegadores en CI
+
+Solicitud: corregir los estados vigentes que aún decían «sin commit», sincronizar la documentación y validar el límite de 3 min del paso de instalación de navegadores, sin desplegar.
+
+- Punto de partida: `main`, HEAD `64dba55` (= `origin/main`). Cambios sin commit de la sesión anterior conservados sin tocar su contenido: el límite en `pages.yml`, la entrada «Revalidación automática local tras integrar PR #9» de esta bitácora y su párrafo en el protocolo. `debug.log` (848 bytes, avisos de red de Chromium) no se versiona ni se borra.
+- Comprobado con `gh` y Git: `b128a67` (Fase 13, PR #7; original `af27959`), `9a27d11` (Dependabot) y `64dba55` (merge del PR #9 con `f3026a5`, T-123) están en `origin/main`, y los tres tienen `verificar`, `lighthouse` y `deploy` correctos (runs 40221231762, 40225394271 y 40229133764) y despliegue `github-pages`. La demo responde 200 en `/en/`. El ruleset de `main` sigue con sus 3 reglas efectivas.
+- Límite del paso «Navegadores para las pruebas e2e»: las duraciones citadas son reales (39 s en el run 40228682526 y 50 s en el 40229133764, según `gh run view`). Se añadió al comentario el incidente que lo motiva (run 40218894048, intento 1: el paso no terminó y `verificar` se canceló a los 20 min; registrado como INC-CI-01). YAML validado con el parser `yaml`: `timeout-minutes: 3` numérico en el paso. Se mantienen Chromium, WebKit y Firefox en `verificar` (`npx playwright test` sin filtro; 5 proyectos: 142, 142, 86, 25 y 25 casos listados), ningún `continue-on-error` en `verificar`, `lighthouse` con `continue-on-error: true` y `deploy` con `needs: verificar`. No se ejecutó ningún despliegue.
+- Documentos: `spec/04-tasks.md` (estado de la Fase 13; tabla «Estados de entrega» con Fase 13, Dependabot, T-123 y el límite pendiente de commit; actualización bajo «Seguimiento T-123» sin borrar su texto original), `spec/06` (estado), `doc/protocolo-accesibilidad.md` (la demo publica `64dba55`), `doc/registro-hallazgos.md` (F-15 e INC-CI-01) y `CLAUDE.md` (límites de CI y estado). Las entradas históricas que dicen «sin commit» se conservan: describen su momento.
+- Pendiente: commit y push de estos cambios (por pull request, por el ruleset). F-02, F-09 y los demás abiertos no cambian.
+
+## 2026-10-25 - Revalidación automática local tras integrar PR #9
+
+- Base observada: `main`, HEAD `64dba55`, árbol rastreado limpio al comenzar. Build `npm run build` aprobado; sitio servido en `http://localhost:4173`, con rutas inglesas sin barra final (`/en`). No se modifica código de la aplicación.
+- Comandos completados con salida 0: `npx playwright test a11y.spec.ts --project=movil-320 --workers=2 --global-timeout=60000 --max-failures=1` (11 aprobadas, 8,5 s) y `npx playwright test reflow.spec.ts layout.spec.ts calls.spec.ts idioma.spec.ts mapa-fincas.spec.ts --project=movil-320 --project=escritorio --workers=4 --global-timeout=180000 --max-failures=3` (163 aprobadas, 13 omitidas por condiciones de proyecto, 57,4 s). Total: 174 aprobadas y 13 omitidas. Evidencia: suites y configuración versionadas, salida observada de ambos comandos; confianza alta sobre esos resultados, sin extrapolar conformidad WCAG ni aceptación visual.
+- Alcance: axe a 320 px en las ocho páginas y la 404, además de FAQ abierta; reflow con fuente CSS al 200 % y viewport 320 × 256; controles con foco no tapados; composición y selección de imágenes; teclado, selector de idioma y navegación; estados del mapa, errores, reintento y foco. Son pruebas automáticas, no control de la pestaña integrada que ve el usuario. No se ejecutó la matriz completa de cinco proyectos ni `validate` completo.
+- Incidencia de preparación: una primera ejecución se interrumpió después de detectar errores JavaScript React #608 en páginas reales. Se había reconstruido `out/` con el servidor anterior abierto; `server.mjs` carga las cabeceras al arrancar. Tras reiniciarlo y sin cambiar fuentes, las suites anteriores pasan. Una mezcla de HTML nuevo y cabeceras anteriores es compatible con lo observado (confianza media como explicación causal; no se guardó la comparación previa de cabeceras). Reiniciar siempre el servidor tras reconstruir antes de evaluar.
+- Residual: F-02 sigue condicionado a aceptación visual; F-09 / T-38 siguen abiertos. No se operaron NVDA/TalkBack, zoom real, ampliación del sistema ni Firefox/WebKit en esta revisión. No se acredita revisión editorial completa, producción ni resolución del cuelgue con prefijo. Sin commit, push ni despliegue en esta sesión.
+
 ## 2026-10-25 - T-123: revisión asistida y textos de ejemplo en inglés
 
 - Punto de partida: `main`, HEAD `9a27d11`, con Fase 13 integrada en `b128a67`. Esta revisión introduce cambios locales sin commit ni publicación.
