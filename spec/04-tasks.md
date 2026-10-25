@@ -345,7 +345,7 @@ Cuatro estados distintos: **implementado** (en el working tree), **commit** (en 
 |---|---|---|---|---|---|
 | Fase 12 (T-87 a T-99) | 2026-10-24 | `2bf312d` | Sí | Sí | `gh run` 40153585845 (push, `verificar` y `deploy` correctos, 2026-10-25 02:12 UTC) |
 | Ajuste del selector (T-93/T-98) | 2026-10-24 | `10cd67b` | Sí (`origin/main` = `10cd67b` según `gh api`, 2026-10-25) | Sí | `gh run` 40154926939 (push, `verificar`, `lighthouse` y `deploy` correctos, 2026-10-25 02:33 UTC); `/en/` responde 200 |
-| Fase 13 (T-100 a T-122) | 2026-10-25 | No | No | No | Working tree sobre `10cd67b`; el usuario no ordenó commit ni push |
+| Fase 13 (T-100 a T-122) | 2026-10-25 | `b128a67` | Sí (antecesor de HEAD local `9a27d11`) | No verificado en esta revisión | Integración comprobada en Git local; demo inaccesible desde este entorno |
 
 ---
 
@@ -363,6 +363,12 @@ Cuatro estados distintos: **implementado** (en el working tree), **commit** (en 
 | R-08 | Decidir hosting (Azure Static Web Apps o Cloudflare Pages): medir latencia desde Colombia y límites del plan gratuito en preproducción | Decisión antes del primer despliegue | Roadmap R-08 |
 | R-09 | Facturación electrónica: proveedor, datos de factura, FAQ 10 | Q8 sin decidir | Roadmap R-09 |
 | R-10 | CI/CD y despliegue en varios entornos con GitHub Actions (mismo proveedor que el repositorio); la pipeline reutiliza el script de validación de T-11; configurar preview y producción | Decisión de proveedor antes de desplegar en distintos entornos | Roadmap R-10 |
+
+### Seguimiento T-123 — textos de ejemplo y revisión asistida (2026-10-25)
+
+Implementación local: descripciones ficticias localizadas en origen, pie y páginas legales, sin traducir nombres personalizados ni alterar los datos comunes. 563 unitarias, lint y ambos builds aprobados. 66 casos E2E de idioma/reflow aprobados, con error posterior de teardown (comando completo no aprobado). Ver `doc/bitacora.md` y `spec/02-content-spec.md`.
+
+F-09 permanece abierto: teclado y axe en navegador visible no sustituyen NVDA/TalkBack ni zoom real; límites en `doc/protocolo-accesibilidad.md`. Cambios T-123 sin commit ni despliegue.
 
 ## 11. Roadmap de producción (RP)
 

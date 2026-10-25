@@ -84,13 +84,13 @@ describe("Páginas legales (FR-18)", () => {
       },
     );
 
-    it("conserva la identidad del vendedor sin traducir (AC-26)", () => {
+    it("localiza las descripciones ficticias y conserva los identificadores (AC-26)", () => {
       const html = renderToStaticMarkup(
         <LegalPage locale="en" page="terminos" />,
       );
-      expect(html).toContain(site.legal.razonSocial);
+      expect(html).toContain("Example legal entity S.A.S. (FICTICIO)");
       expect(html).toContain(site.legal.nit);
-      expect(html).toContain(site.legal.direccion);
+      expect(html).toContain("Example address, Santa Marta (FICTICIO)");
       expect(html).toContain("the right of withdrawal does not apply");
     });
 

@@ -23,7 +23,9 @@ La ampliación de texto del sistema o del navegador (Windows: Configuración →
 
 ### Qué versión probar
 
-La demo publicada (`https://masterarqsoft.github.io/green-banana-web/`) muestra el último commit de `main`; **la Fase 13 sigue sin commit** hasta que el usuario la integre. Mientras tanto, la sesión se hace sobre el build local: `npm run build` y `node tests/e2e/server.mjs`, que sirve `out/` en `http://localhost:4173` (desde el teléfono Android, en la misma red: `http://<IP del equipo>:4173`, si el firewall de Windows lo permite). Anota siempre la URL y el commit, o «working tree sin commit» y la fecha.
+La Fase 13 ya está integrada en `main` mediante `b128a67`; el checkout revisado el 2026-10-25 es `9a27d11`. Antes de aceptar la demo publicada (`https://masterarqsoft.github.io/green-banana-web/`), comprobar qué commit está desplegado. También se puede evaluar un build local: `npm run build` y `node tests/e2e/server.mjs`, que sirve `out/` en `http://localhost:4173` (desde Android en la misma red: `http://<IP del equipo>:4173`, si el firewall lo permite). Anotar siempre URL, commit y si existen cambios sin commit; una prueba local no acredita la versión publicada.
+
+**Revisión asistida 2026-10-25 (T-123):** navegador Chromium visible sobre una exportación local con prefijo de `9a27d11` y, después, sobre los cambios de traducción aún sin commit. Se comprobaron teclado, salto al contenido, FAQ, axe en las cuatro páginas inglesas y la 404, y layout a 320 px con fuente aumentada por CSS. Esto no ejecuta ni cierra E1-E5: no se operó NVDA/TalkBack. Los atajos enviados al navegador no cambiaron el zoom real (DPR y viewport permanecieron iguales), por lo que el zoom real tampoco queda acreditado. El acceso a la demo desde este entorno fue denegado por red; los resultados corresponden únicamente al build local. F-09 permanece abierto.
 
 ## 2. Entornos
 

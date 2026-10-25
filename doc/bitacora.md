@@ -1,5 +1,14 @@
 # Bitácora del proyecto
 
+## 2026-10-25 - T-123: revisión asistida y textos de ejemplo en inglés
+
+- Punto de partida: `main`, HEAD `9a27d11`, con Fase 13 integrada en `b128a67`. Esta revisión introduce cambios locales sin commit ni publicación.
+- Causa de la mezcla de idiomas: las descripciones ficticias de `origin.json` y `site.json` se interpolaban sin localización. Ahora `copy.origin.exampleValues` y `copy.footer.exampleValues` localizan únicamente los valores exactos del ejemplo. Se conservan los datos comunes, nombres personalizados, identificadores, marca y marcador técnico `(FICTICIO)`; `legalValues(locale)` se comparte entre pie y páginas legales. El contenido sigue bloqueando producción con sus datos pendientes.
+- Las pruebas comprueban traducciones y conservación de nombres personalizados. La traducción más larga reveló desbordamiento en la sección de origen con texto al 200 %: se acotó la cuadrícula con `grid-cols-1` y `min-w-0`.
+- Verificación: 563 pruebas unitarias aprobadas; lint y builds normal y con prefijo terminan con salida 0. Los 66 casos E2E seleccionados de idioma y reflow pasan, pero el comando termina con error al agotar 120 s durante el teardown del servidor: no se declara validación integral aprobada ni causa acreditada del cuelgue.
+- Navegador Chromium visible sobre el export local con prefijo: cuatro páginas EN y 404, sin infracciones detectadas por axe en el alcance ejecutado; salto al contenido, teclado y apertura de FAQ en ES/EN; a 320 px con fuente CSS al 200 %, el control observado permanece visible y la barra se desplaza. Esto no acredita conformidad WCAG ni una revisión humana completa.
+- Límites: la demo remota devuelve `ERR_NETWORK_ACCESS_DENIED` desde este entorno; no se operaron NVDA ni TalkBack; el intento de zoom mediante teclas no cambió las métricas del navegador y no cuenta como zoom real. F-09 sigue abierto; no se cambia la aceptación de F-08 ni se crean paquetes de custodia.
+
 ## 2026-10-25 — Fase 13, segundo cierre: smoke bloqueantes, medición, 404, N-5, N-6, accesibilidad y protección de `main`
 
 Solicitud: completar los pendientes del cierre anterior con las decisiones nuevas del usuario (DR-05 confirmada, plan de medición aprobado sin tracking, configurar la protección de `main`), sin commit, push, merge ni despliegue.

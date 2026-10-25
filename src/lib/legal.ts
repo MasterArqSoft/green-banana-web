@@ -6,13 +6,21 @@ import { pageMetadata } from "@/lib/seo";
 import { formatPhone } from "@/lib/tel";
 import { fill } from "@/lib/template";
 
-// Datos de site.json que pueden usar los párrafos de legal.json. Son los mismos en
-// los dos idiomas: la identidad del vendedor no se traduce (02 §1).
-export function legalValues() {
+// La identidad real sigue saliendo de site.json y no se traduce. Solo se localizan
+// las descripciones exactas del ejemplo ficticio, sin cambiar el dato común.
+export function legalValues(locale: Locale = "es-CO") {
+  const base = getContent("es-CO").copy.footer.exampleValues;
+  const textos = getContent(locale).copy.footer.exampleValues;
+  const nombre = (campo: keyof typeof base) => {
+    const values = { ciudad: site.acopio.city };
+    return site.legal[campo] === `${fill(base[campo], values)} (FICTICIO)`
+      ? `${fill(textos[campo], values)} (FICTICIO)`
+      : site.legal[campo];
+  };
   return {
-    razonSocial: site.legal.razonSocial,
+    razonSocial: nombre("razonSocial"),
     nit: site.legal.nit,
-    direccion: site.legal.direccion,
+    direccion: nombre("direccion"),
     correo: site.legal.correo,
     telefono: formatPhone(site.phone),
     ciudad: site.acopio.city,
@@ -27,6 +35,6 @@ export function legalMetadata(page: LegalPageKey, locale: Locale): Metadata {
       pagina: legal[page].title,
       marca: site.brand,
     }),
-    description: fill(legal[page].description, legalValues()),
+    description: fill(legal[page].description, legalValues(locale)),
   });
 }

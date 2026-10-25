@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getContent } from "@/lib/content";
 import { rutaDe, type Locale } from "@/lib/i18n";
 import { formatPhone, telHref } from "@/lib/tel";
+import { legalValues } from "@/lib/legal";
 
 // Pie legal (FR-16, AC-05; Ley 1480 art. 50): identidad del vendedor desde site.json,
 // enlaces legales, PQR y enlace visible a la SIC. Datos ficticios hasta RP-01.
@@ -9,10 +10,11 @@ export function Footer({ locale }: { locale: Locale }) {
   const { copy, site } = getContent(locale);
   const { footer } = copy;
   const { legal } = site;
+  const visibles = legalValues(locale);
   const identity = [
-    { label: footer.labels.razonSocial, value: legal.razonSocial },
+    { label: footer.labels.razonSocial, value: visibles.razonSocial },
     { label: footer.labels.nit, value: legal.nit },
-    { label: footer.labels.direccion, value: legal.direccion },
+    { label: footer.labels.direccion, value: visibles.direccion },
   ];
   // Área táctil de 44 px de alto (revisión UX: antes medían 17 px). Al pasar el
   // cursor se engrosa el subrayado: el amarillo se reserva para el CTA.

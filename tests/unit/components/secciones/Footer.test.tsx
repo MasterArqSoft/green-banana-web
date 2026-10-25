@@ -44,8 +44,11 @@ describe("Footer en inglés (FR-26, AC-26)", () => {
     expect(html).not.toContain('href="/terminos"');
   });
 
-  it("conserva sin traducir la identidad, el teléfono y el correo", () => {
-    expect(html).toContain(site.legal.razonSocial);
+  it("traduce las descripciones de ejemplo y conserva identificadores y contacto", () => {
+    expect(html).toContain("Example legal entity S.A.S. (FICTICIO)");
+    expect(html).toContain("Example address, Santa Marta (FICTICIO)");
+    expect(html).not.toContain("Razón social de ejemplo");
+    expect(html).not.toContain("Dirección de ejemplo");
     expect(html).toContain(site.legal.nit);
     expect(html).toContain(`href="${telHref(site.phone)}"`);
     expect(html).toContain(`href="mailto:${site.legal.correo}"`);

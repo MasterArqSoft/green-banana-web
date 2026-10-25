@@ -10,11 +10,20 @@ import { fill } from "@/lib/template";
 // Productor, municipio y lote son ficticios hasta RP-02.
 export function Origin({ locale }: { locale: Locale }) {
   const { copy, origin, site } = getContent(locale);
+  // Las descripciones del ejemplo no son nombres propios: se traducen al mostrarlas.
+  // Solo se sustituye el valor exacto de la demo; un nombre real o personalizado y el
+  // identificador del lote se conservan. La marca técnica (FICTICIO) sigue siendo la
+  // misma en ambos idiomas, igual que en los demás datos de demostración (D7).
+  const ejemplos = getContent("es-CO").copy.origin.exampleValues;
+  const nombre = (campo: keyof typeof ejemplos) =>
+    origin[campo] === `${ejemplos[campo]} (FICTICIO)`
+      ? `${copy.origin.exampleValues[campo]} (FICTICIO)`
+      : origin[campo];
   const values = {
     ciudad: site.acopio.city,
-    productor: origin.producer,
-    municipio: origin.municipality,
-    departamento: origin.department,
+    productor: nombre("producer"),
+    municipio: nombre("municipality"),
+    departamento: nombre("department"),
   };
   return (
     <section
@@ -22,8 +31,8 @@ export function Origin({ locale }: { locale: Locale }) {
       aria-labelledby="origen-titulo"
       className="scroll-mt-40 bg-hoja-claro md:scroll-mt-20"
     >
-      <div className="contenedor grid gap-8 py-12 md:grid-cols-2 md:items-center">
-        <div className="flex flex-col gap-5">
+      <div className="contenedor grid grid-cols-1 gap-8 py-12 md:grid-cols-2 md:items-center">
+        <div className="flex min-w-0 flex-col gap-5">
           <h2
             id="origen-titulo"
             className="text-2xl font-semibold text-hoja md:text-3xl"

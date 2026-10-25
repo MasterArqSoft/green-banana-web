@@ -58,6 +58,11 @@
     "tip": "Don't refrigerate them if you don't want the peel to darken."
   },
   "origin": {
+    "exampleValues": {
+      "producer": "Example farm",
+      "municipality": "Example municipality",
+      "department": "Example department"
+    },
     "title": "From {municipio} to {ciudad}",
     "text": "We work with {productor} in {municipio}, {departamento}. We receive the bananas at our collection center in {ciudad} and distribute them from there. Every batch carries its cutting date.",
     "steps": ["Farm", "Collection center in {ciudad}", "Your home or business"],
@@ -116,6 +121,10 @@
     "title": "Call us and let's talk about your order"
   },
   "footer": {
+    "exampleValues": {
+      "razonSocial": "Example legal entity S.A.S.",
+      "direccion": "Example address, {ciudad}"
+    },
     "labels": {
       "razonSocial": "Company name",
       "nit": "NIT (tax ID)",
