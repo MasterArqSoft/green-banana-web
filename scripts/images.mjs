@@ -49,6 +49,19 @@ for (const spec of specs) {
       let size = Infinity;
       let usedQuality = 0;
       // Con `avifQuality` (hero, T-81) se empieza por esa calidad AVIF: el encoder resta 20.
+      // Fuera de 1 a 80, sharp recibiría una calidad imposible (> 100 o ≤ 0).
+      if (
+        spec.avifQuality !== undefined &&
+        !(
+          Number.isInteger(spec.avifQuality) &&
+          spec.avifQuality >= 1 &&
+          spec.avifQuality <= 80
+        )
+      ) {
+        throw new Error(
+          `avifQuality de ${spec.output} debe ser un entero de 1 a 80 (recibido: ${spec.avifQuality})`,
+        );
+      }
       const qualities =
         format === "avif" && spec.avifQuality
           ? [

@@ -24,8 +24,9 @@ export type ImageSpec = {
    */
   variants?: number[];
   /**
-   * Calidad AVIF fija (0-100) en vez de la máxima que cabe en `maxKB`. Solo el hero:
-   * calidad 50 aprobada por el usuario tras comparar capturas y medir el LCP (T-81).
+   * Calidad AVIF inicial (1 a 80): scripts/images.mjs empieza por ella en vez de por la
+   * máxima, y solo baja si el archivo no cabe en `maxKB`. Solo el hero: calidad 50,
+   * aprobada por el usuario tras comparar capturas y medir el LCP (T-81).
    */
   avifQuality?: number;
 };

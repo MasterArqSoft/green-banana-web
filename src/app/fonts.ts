@@ -16,7 +16,7 @@ export const fraunces = Fraunces({
 
 // Inter recortada (T-82, PERF-02): variable de 400 a 700 (texto normal, font-semibold y
 // <strong>), solo los caracteres de INTER_UNICODES (src/lib/fuentes.ts) y las funciones
-// tipográficas básicas. 20 KB frente a los 48 KB del subconjunto latino de Google.
+// tipográficas básicas, con el kerning. 23,9 KB frente a los 48,4 KB del subconjunto latino de Google.
 // El archivo se generó una vez con fontTools; el procedimiento está en doc/bitacora.md.
 // Si el contenido usa un carácter nuevo, tests/unit/lib/fuentes.test.ts falla.
 export const inter = localFont({

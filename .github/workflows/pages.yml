@@ -96,13 +96,45 @@ jobs:
           # .well-known/security.txt (T-67).
           include-hidden-files: true
 
-      # Informativo (CI-01, T-85, decisión del usuario del 2026-10-24): no bloquea la
-      # publicación, porque los servidores de GitHub varían entre corridas; el presupuesto
-      # se verifica en local con `npm run lighthouse`. Va al final, con la demo ya subida.
-      # La tabla queda en el resumen del job y el JSON, como artefacto. Mide out/.
+      # Trazas y capturas de las pruebas que fallen, para revisarlas en GitHub.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-test-results
+          path: test-results/
+          retention-days: 7
+
+  # Lighthouse móvil, informativo (CI-01, T-85, decisión del usuario del 2026-10-24): no
+  # bloquea, porque los servidores de GitHub varían entre corridas; el presupuesto se
+  # verifica en local con `npm run lighthouse`. Job aparte (revisión de la Fase 11): corre
+  # en paralelo a `deploy`, que no depende de él, así que no retrasa la publicación, y
+  # Lighthouse (descargado con npx en versión exacta, fuera del lockfile) no corre en el
+  # job que genera y sube el artefacto de Pages. Solo lectura, como todo el workflow.
+  # La tabla queda en el resumen del job y el JSON, como artefacto.
+  lighthouse:
+    needs: verificar
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build sin prefijo (out/)
+        run: npm run build
+
+      - name: Navegador (Chromium de Playwright)
+        run: npx playwright install --with-deps chromium
+
       - name: Lighthouse móvil (informativo, no bloquea)
-        continue-on-error: true
-        timeout-minutes: 10
         run: npm run lighthouse
         env:
           LH_SALIDA: lighthouse-resumen.json
@@ -114,14 +146,6 @@ jobs:
           path: lighthouse-resumen.json
           retention-days: 14
           if-no-files-found: ignore
-
-      # Trazas y capturas de las pruebas que fallen, para revisarlas en GitHub.
-      - if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: playwright-test-results
-          path: test-results/
-          retention-days: 7
 
   deploy:
     needs: verificar

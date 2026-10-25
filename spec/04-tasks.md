@@ -185,7 +185,7 @@ Origen: auditoría integral sobre `d9ca4fb` (informe y evidencias entregados por
 Decisiones del usuario:
 - **H-03 se reabre:** un fallo parcial de teselas muestra un aviso discreto con "Reintentar"; el mapa sigue usable.
 - **Fuentes:** Inter recortada a los caracteres del español y a los pesos usados, servida desde el sitio; mismo diseño.
-- **CI-01:** Lighthouse corre en `verificar` como paso informativo; no bloquea la publicación.
+- **CI-01:** Lighthouse corre en GitHub Actions como paso informativo; no bloquea la publicación (desde la revisión de la Fase 11, en un job aparte que tampoco la retrasa).
 
 | ID | Tarea | Hallazgo / Req. | Est. | Dep. |
 |---|---|---|---|---|
@@ -232,7 +232,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
-| **Fase 11 (auditoría de causa raíz)** | En curso (2026-10-24): T-78 a T-85 hechas; T-86 pendiente |
+| **Fase 11 (auditoría de causa raíz)** | Completa (2026-10-24): T-78 a T-86 |
 | **Fase 10 (reauditoría de cierre)** | Completa (2026-10-24): T-75 a T-77 |
 | **Fase 9 (auditoría independiente)** | Completa (2026-10-24): T-68 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |

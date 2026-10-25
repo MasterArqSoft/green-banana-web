@@ -20,6 +20,28 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-86: cierre de la Fase 11 con las correcciones de la revisión de arquitectura
+- **`validate` completo antes de la revisión:** salida 0.
+- **Revisión de `arquitecto-software`:** aprobado con observaciones; sin bloqueantes. Invariantes verificadas: capas, textos en el contenido, CSP sin orígenes nuevos, acciones fijadas por SHA, permisos del workflow, pruebas de los módulos nuevos y commits sin atribución. El usuario pidió corregir todo, con Lighthouse en un job aparte y `npx`:
+  - **H1 (importante, verificado en el código de Leaflet):** `loading` solo se emite si el lote anterior terminó (`GridLayer.js`), y `redraw()` no lo reinicia. Tras un lote colgado (aviso parcial) y "Reintentar", si todo seguía sin responder, no había espera y el mapa quedaba gris sin aviso. **Corrección:** la espera arranca con `tileloadstart` cuando no hay una en curso (`espera.current ??=`), y `evaluar()` la libera al entrar, también si el mapa se mueve. Nueva e2e con reloj simulado (lote colgado → "Reintentar" → todo colgado → 16 s → aviso parcial o de error); **se comprobó que falla con la lógica anterior** (estado vacío) y pasa con la nueva.
+  - **H2 (importante):** Lighthouse pasa del final de `verificar` a un **job aparte, `lighthouse`** (`needs: verificar`, `continue-on-error`, `timeout-minutes: 15`, solo lectura). Ya no retrasa `deploy`, que no depende de él, y Lighthouse (descargado con `npx` en versión exacta) no corre en el job que genera y sube el artefacto de Pages. El job hace su propio `npm ci`, build de `out/` y Chromium.
+  - **S1:** la evaluación pasa a `src/lib/salud-mapa.ts` (`claveTesela`, `saludVista` → `vacia`, `ok`, `parcial` o `sin-mapa`), lógica pura con prueba en `tests/unit/lib/salud-mapa.test.ts`: filtro por zoom, bordes exactos de la vista, teselas fuera de la vista y vista sin límites. `eslint.config.mjs` permite `@/lib/salud-mapa` en `cliente/`.
+  - **S2:** `tileabort` también borra la tesela del registro (Leaflet descarta sin `tileunload` las de otro zoom que aún cargaban).
+  - **S3:** las pruebas de zoom y teclado ya no usan `networkidle` ni pausas fijas: `mapaListo()` espera la primera tesela, que se vaya el mapa ilustrado y el estado vacío. **Carrera encontrada:** Leaflet ignora la flecha mientras dura la animación del desplazamiento anterior (`_panAnim._inProgress`), y esperar un cambio tras cada pulsación podía colgarse (falló una vez en `validate`). Ahora, antes de cada Mayúsculas + flecha (240 px), se espera a que el panel quede quieto (dos lecturas iguales con 150 ms de diferencia). Repetida 8 veces en los dos perfiles, y el bloque de salud y errores 4 veces en paralelo: 72 de 72.
+  - **S4:** `fonts.ts` dice 23,9 KB (decía 20); `avifQuality` es la calidad AVIF *inicial*; `scripts/images.mjs` exige un entero de 1 a 80, y `images.test.tsx` verifica que solo el hero la fija, en 50.
+  - **Puntos abiertos del revisor:** PA-1 resuelto por el usuario (job aparte con `npx`). PA-2: con un error que llega con el mapa ya listo, el foco salta a "Reintentar", porque el contenedor se destruye; se mantiene (es el mismo comportamiento que el error inicial, H-04).
+- **`validate` final:** salida 0. 363 unitarias, 94 e2e (8 omitidas por perfil), 18 con prefijo, `budget` (landing 203,9 KB) y `npm audit` con 0 vulnerabilidades.
+- **Lighthouse final** (3 corridas): simulado con presupuesto, Rendimiento 95, LCP 2853 ms, TBT 112 ms, CLS 0; DevTools (diagnóstico), LCP 2476 ms, TBT 379 ms.
+- **Resultado de la fase frente a la auditoría:**
+  - LCP simulado 3241 → 2853 ms; LCP DevTools 2714 → 2476 ms; landing 266,7 → 203,9 KB (incluye la corrección de medida de los polyfills);
+  - MAP-01 y MAP-02 corregidos con regresiones;
+  - CI-01 informativo;
+  - documentación ajustada.
+  
+  Los 2,5 s siguen siendo una meta de campo (p75) que solo se acredita con usuarios reales. El presupuesto de laboratorio de 3,4 s se mantiene como guarda: bajarlo es decisión del usuario.
+- `spec/04` marca la Fase 11 completa. `CLAUDE.md`, `03` y `05` describen el job `lighthouse`, la espera por tesela y `salud-mapa`.
+- Archivos: `src/components/cliente/MapaFincasInteractivo.tsx`, `src/lib/salud-mapa.ts`, `tests/unit/lib/salud-mapa.test.ts`, `eslint.config.mjs`, `tests/e2e/mapa-fincas.spec.ts`, `.github/workflows/pages.yml`, `src/app/fonts.ts`, `src/lib/images.ts`, `scripts/images.mjs`, `tests/unit/lib/images.test.tsx`, `CLAUDE.md`, `spec/03-plan.md`, `spec/04-tasks.md`, `spec/05-alcance-y-roadmap.md`, `doc/bitacora.md`.
+
 ### T-85: Lighthouse informativo en `verificar` (CI-01)
 - **`.github/workflows/pages.yml`:** último paso de `verificar`, "Lighthouse móvil (informativo, no bloquea)", con `continue-on-error: true` y `timeout-minutes: 10`, después de subir el artefacto de Pages; mide `out/`. Sube `lighthouse-resumen.json` como artefacto `lighthouse` (14 días, `if: !cancelled()`, con la misma acción fijada por SHA que ya se usaba). Agrega ~2-3 minutos antes del deploy.
 - **`scripts/lighthouse-presupuesto.mjs`:** función pura `resumenMarkdown()` (tabla de controles con mediana, límite y si cumple; subpartes del LCP; elemento LCP; aviso de que no bloquea). Pruebas en `tests/unit/scripts/lighthouse-presupuesto.test.ts`.

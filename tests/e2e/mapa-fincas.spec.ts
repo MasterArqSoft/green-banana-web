@@ -228,6 +228,15 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
 
   const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
 
+  // Mapa listo y sano: ya cargó alguna tesela, el mapa ilustrado se fue (solo está
+  // mientras carga o tras un error) y el estado no anuncia nada. Reemplaza a esperar
+  // "networkidle", que Playwright desaconseja.
+  async function mapaListo(page: Page) {
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(page.locator("#mapa-fincas picture")).toHaveCount(0);
+    await expect(estado(page)).toHaveText("");
+  }
+
   test("fallo parcial: avisa sin quitar el mapa y «Reintentar» recupera las teselas", async ({
     page,
   }) => {
@@ -256,8 +265,7 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
     const control = await teselas(page);
     await page.goto("/");
     await page.getByRole("button", { name: copy.map.showButton }).click();
-    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
-    await page.waitForLoadState("networkidle");
+    await mapaListo(page);
 
     control.fallar = true;
     // Al acercar, todas las teselas del nuevo zoom fallan: basta un clic.
@@ -281,18 +289,35 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
     const control = await teselas(page);
     await page.goto("/");
     await page.getByRole("button", { name: copy.map.showButton }).click();
-    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
-    await page.waitForLoadState("networkidle");
+    await mapaListo(page);
 
     control.fallar = true;
     const mapa = page.locator(".leaflet-container");
     await mapa.focus();
-    // Hasta 20 × 80 px (keyboardPanDelta), más que el ancho del mapa: al final todas las
-    // teselas de la vista son nuevas. Por el camino hay un fallo parcial (columnas viejas
-    // todavía visibles); al quedar sin ninguna válida, el mapa pasa a error.
+    // Mayúsculas + flecha desplaza 240 px (3 × keyboardPanDelta). Se sigue hasta que el
+    // mapa pasa a error: por el camino hay un fallo parcial (columnas viejas todavía
+    // visibles) y, al quedar la vista sin ninguna tesela válida, se destruye. Leaflet
+    // ignora la flecha mientras dura la animación del desplazamiento anterior: antes de
+    // cada pulsación se espera a que el panel quede quieto (dos lecturas iguales con
+    // 150 ms de diferencia), sin pausas fijas.
+    const panel = page.locator(".leaflet-map-pane");
+    const estilo = () =>
+      panel.getAttribute("style", { timeout: 1000 }).catch(() => null);
     for (let i = 0; i < 20 && (await mapa.count()) > 0; i++) {
-      await page.keyboard.press("ArrowRight");
-      await page.waitForTimeout(300);
+      let previo: string | null = null;
+      await expect
+        .poll(
+          async () => {
+            const actual = await estilo();
+            const quieto = actual === previo;
+            previo = actual;
+            return quieto || (await mapa.count()) === 0;
+          },
+          { intervals: [150] },
+        )
+        .toBe(true);
+      if ((await mapa.count()) === 0) break;
+      await page.keyboard.press("Shift+ArrowRight");
     }
     await expect(estado(page)).toHaveText(copy.map.error);
     await expect(
@@ -322,6 +347,45 @@ test.describe("salud del mapa por vista (MAP-01, MAP-02, T-78)", () => {
     await page.clock.runFor(16_000);
     await expect(estado(page)).toHaveText(copy.map.partial);
     await expect(page.locator(".leaflet-container")).toHaveCount(1);
+  });
+
+  test("tras un lote colgado, «Reintentar» con todo sin respuesta también avisa a los 15 s", async ({
+    page,
+  }) => {
+    // Revisión de la Fase 11 (H1): Leaflet no emite "loading" si el lote anterior no
+    // terminó, y la espera dependía de ese evento: el mapa quedaba gris sin aviso.
+    await page.clock.install();
+    let servidas = 0;
+    await page.route(TILE, (route) => {
+      servidas += 1;
+      if (servidas === 1) {
+        return route.fulfill({
+          status: 200,
+          contentType: "image/png",
+          body: PNG,
+        });
+      }
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: copy.map.showButton }).click();
+    await expect(page.locator(".leaflet-container")).toBeVisible();
+    await page.clock.runFor(16_000);
+    await expect(estado(page)).toHaveText(copy.map.partial);
+
+    // Todo sigue sin responder. La tesela que cargó puede volver de la caché del
+    // navegador: el resultado es un aviso parcial o de error, nunca silencio.
+    await page.getByRole("button", { name: copy.map.retry }).click();
+    await page.clock.runFor(16_000);
+    await expect
+      .poll(async () =>
+        [copy.map.partial, copy.map.error].includes(
+          (await estado(page).textContent()) ?? "",
+        ),
+      )
+      .toBe(true);
+    await expect(
+      page.getByRole("button", { name: copy.map.retry }),
+    ).toBeVisible();
   });
 
   test("salir de la página con el mapa cargando no deja errores ni temporizadores", async ({

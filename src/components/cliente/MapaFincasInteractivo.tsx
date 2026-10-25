@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Coords, Map as LeafletMap, TileLayer } from "leaflet";
+import type { Map as LeafletMap, TileLayer } from "leaflet";
 import type { Fincas, MapaTextos, Ubicacion } from "@/lib/schema";
+import { claveTesela, saludVista, type EstadoTesela } from "@/lib/salud-mapa";
 import { fill } from "@/lib/template";
 
 // Segundo componente cliente (spec/03-plan.md D6). Nunca importa @/lib/content: los
@@ -14,12 +15,10 @@ import { fill } from "@/lib/template";
 // servidor) y el botón (AC-19).
 
 type Estado = "idle" | "loading" | "ready" | "error";
-// Estado de cada tesela de la capa, por coordenadas (z/x/y).
-type Tesela = "pendiente" | "ok" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-// Tiempo máximo de cada carga de teselas (lote) antes de evaluar la vista con lo que haya
-// llegado: lo pendiente cuenta como fallido (revisión de la Fase 9, T-79).
+// Tiempo máximo desde que se pide una tesela sin que termine el lote, antes de evaluar la
+// vista con lo que haya llegado: lo pendiente cuenta como fallido (Fase 9, T-79).
 const ESPERA_TESELAS_MS = 15_000;
 
 export function MapaFincasInteractivo({
@@ -140,12 +139,12 @@ export function MapaFincasInteractivo({
       L.control.attribution({ prefix: false }).addTo(map);
       // Salud de la vista actual (MAP-01, MAP-02, T-79). Se registra el estado de cada
       // tesela con los eventos públicos de Leaflet y, al terminar cada lote ("load", que
-      // llega también si fallaron) o al vencer la espera, se miran solo las teselas de la
-      // vista y del zoom actuales. Un contador acumulado no sirve: una tesela correcta al
-      // principio ocultaba que después fallaran todas. Sin ninguna tesela válida en la
-      // vista, pasa a error; con algunas, el mapa queda usable con un aviso.
-      const teselas = new Map<string, Tesela>();
-      const clave = ({ x, y, z }: Coords) => `${z}/${x}/${y}`;
+      // llega también si fallaron) o al vencer la espera, saludVista() (src/lib/) mira
+      // solo las teselas de la vista y del zoom actuales. Un contador acumulado no sirve:
+      // una tesela correcta al principio ocultaba que después fallaran todas. Sin
+      // ninguna válida en la vista, pasa a error; con algunas, el mapa queda usable con
+      // un aviso.
+      const teselas = new Map<string, EstadoTesela>();
       const layer = L.tileLayer(TILES, {
         maxZoom: 19,
         attribution: textos.attribution,
@@ -169,46 +168,39 @@ export function MapaFincasInteractivo({
 
       function evaluar() {
         if (mapa.current !== map) return;
+        // La espera queda libre: la próxima tesela pedida arranca otra.
+        cancelarEspera();
         if (moviendo) {
           aplazada = true;
           return;
         }
-        cancelarEspera();
-        const zoomActual = Math.round(map.getZoom());
-        const tam = layer.getTileSize();
-        const vista = map.getPixelBounds();
-        const enVista = (x: number, y: number) =>
-          x >= Math.floor(vista.min!.x / tam.x) &&
-          x <= Math.floor((vista.max!.x - 1) / tam.x) &&
-          y >= Math.floor(vista.min!.y / tam.y) &&
-          y <= Math.floor((vista.max!.y - 1) / tam.y);
-        let validas = 0;
-        let fallidas = 0;
-        for (const [id, estadoTesela] of teselas) {
-          const [z, x, y] = id.split("/").map(Number);
-          if (z !== zoomActual || !enVista(x, y)) continue;
-          if (estadoTesela === "ok") validas += 1;
-          else fallidas += 1;
-        }
-        if (validas === 0 && fallidas > 0) {
+        const salud = saludVista(
+          teselas,
+          Math.round(map.getZoom()),
+          map.getPixelBounds(),
+          layer.getTileSize(),
+        );
+        if (salud === "sin-mapa") {
           fallar();
           return;
         }
-        setParcial(fallidas > 0);
+        setParcial(salud === "parcial");
         setEstado("ready");
       }
 
       layer
-        .on("tileloadstart", (e) => teselas.set(clave(e.coords), "pendiente"))
-        .on("tileload", (e) => teselas.set(clave(e.coords), "ok"))
-        .on("tileerror", (e) => teselas.set(clave(e.coords), "error"))
-        .on("tileunload", (e) => teselas.delete(clave(e.coords)))
-        // Cada lote nuevo (desplazar, acercar, reintentar) tiene su propia espera: si el
-        // proveedor acepta la conexión y no responde, "load" no llega.
-        .on("loading", () => {
-          cancelarEspera();
-          espera.current = setTimeout(evaluar, ESPERA_TESELAS_MS);
+        // Cada tesela pedida arranca la espera si no hay una en curso. No se usa el
+        // evento "loading": Leaflet solo lo emite si el lote anterior terminó, y tras un
+        // lote colgado y "Reintentar" (redraw) no llegaba, así que no había espera.
+        .on("tileloadstart", (e) => {
+          teselas.set(claveTesela(e.coords), "pendiente");
+          espera.current ??= setTimeout(evaluar, ESPERA_TESELAS_MS);
         })
+        .on("tileload", (e) => teselas.set(claveTesela(e.coords), "ok"))
+        .on("tileerror", (e) => teselas.set(claveTesela(e.coords), "error"))
+        .on("tileunload", (e) => teselas.delete(claveTesela(e.coords)))
+        // Leaflet descarta sin "tileunload" las teselas de otro zoom que aún cargaban.
+        .on("tileabort", (e) => teselas.delete(claveTesela(e.coords)))
         // La evaluación espera a que Leaflet termine su evento: si destruye el mapa al
         // volver de "load", Leaflet todavía lo usa y lanza un TypeError.
         .on("load", () => {

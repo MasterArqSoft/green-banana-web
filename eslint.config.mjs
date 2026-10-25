@@ -37,10 +37,11 @@ const LIB_CLIENTE = {
     "!@/lib/template",
     "!@/lib/format",
     "!@/lib/tel",
+    "!@/lib/salud-mapa",
     "!@/lib/content",
   ],
   message:
-    "Un componente cliente solo importa @/lib/schema (tipos), template, format o tel. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
+    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel o salud-mapa. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
 };
 // Directivas que agregan JavaScript o código de servidor.
 const USE_CLIENT = {

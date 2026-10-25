@@ -43,6 +43,26 @@ describe("fotos publicadas (T-04, NFR-08)", () => {
   });
 });
 
+describe("calidad AVIF del hero (T-81)", () => {
+  it("solo el hero fija avifQuality, en 50 (aprobada por el usuario)", () => {
+    const conCalidad = allImages().filter((s) => s.avifQuality !== undefined);
+    expect(conCalidad.map((s) => s.output)).toEqual([
+      "hero/hero-escritorio",
+      "hero/hero-movil",
+    ]);
+    expect(conCalidad.every((s) => s.avifQuality === 50)).toBe(true);
+  });
+
+  it("toda avifQuality es un entero de 1 a 80 (scripts/images.mjs suma 20)", () => {
+    for (const { avifQuality } of allImages()) {
+      if (avifQuality === undefined) continue;
+      expect(Number.isInteger(avifQuality)).toBe(true);
+      expect(avifQuality).toBeGreaterThanOrEqual(1);
+      expect(avifQuality).toBeLessThanOrEqual(80);
+    }
+  });
+});
+
 describe("versiones menores (srcset)", () => {
   it.each(
     allImages().flatMap((spec) =>
