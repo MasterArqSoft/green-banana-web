@@ -48,7 +48,15 @@ for (const spec of specs) {
       mkdirSync(dirname(out), { recursive: true });
       let size = Infinity;
       let usedQuality = 0;
-      for (const quality of QUALITIES) {
+      // Con `avifQuality` (hero, T-81) se empieza por esa calidad AVIF: el encoder resta 20.
+      const qualities =
+        format === "avif" && spec.avifQuality
+          ? [
+              spec.avifQuality + 20,
+              ...QUALITIES.filter((q) => q < spec.avifQuality + 20),
+            ]
+          : QUALITIES;
+      for (const quality of qualities) {
         let img = sharp(source);
         if (spec.crop) img = img.extract(spec.crop);
         img = img.resize(width, height, {
@@ -63,7 +71,7 @@ for (const spec of specs) {
       const ok = size <= spec.maxKB;
       failed ||= !ok;
       console.log(
-        `${ok ? "✓" : "✗"} ${out}: ${size.toFixed(1)} KB de ${spec.maxKB} (calidad ${usedQuality})`,
+        `${ok ? "✓" : "✗"} ${out}: ${size.toFixed(1)} KB de ${spec.maxKB} (calidad ${format === "avif" ? usedQuality - 20 : usedQuality})`,
       );
     }
 }

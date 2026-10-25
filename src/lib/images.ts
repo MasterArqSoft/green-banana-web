@@ -23,6 +23,11 @@ export type ImageSpec = {
    * elige según `sizes`: así el móvil no descarga 600 px para mostrar 96 px (T-30).
    */
   variants?: number[];
+  /**
+   * Calidad AVIF fija (0-100) en vez de la máxima que cabe en `maxKB`. Solo el hero:
+   * calidad 50 aprobada por el usuario tras comparar capturas y medir el LCP (T-81).
+   */
+  avifQuality?: number;
 };
 
 const card = (source: string, output: string): ImageSpec => ({
@@ -58,6 +63,7 @@ export const IMAGES = {
     height: 1000,
     formats: ["avif", "webp", "jpg"],
     maxKB: 120,
+    avifQuality: 50,
   },
   heroMobile: {
     source: "hero-movil",
@@ -66,6 +72,7 @@ export const IMAGES = {
     height: 1000,
     formats: ["avif", "webp", "jpg"],
     maxKB: 120,
+    avifQuality: 50,
   },
   // Imagen para compartir en redes: recorte del hero (Open Graph pide JPG o PNG).
   og: {

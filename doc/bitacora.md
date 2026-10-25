@@ -20,6 +20,28 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-81: peso de la foto del hero (PERF-02)
+- **Candidatas** generadas con el mismo pipeline (`sharp`, 800×1000 y 1600×1000, recorte `attention`, `effort` 6) en el scratchpad: AVIF calidad 60 (la actual: reproduce el archivo publicado byte a byte, 46 451 bytes), 50, 40 y 30.
+- **Comparación visual** lado a lado al ancho real del teléfono (380 px, densidad 2) y en detalle al 100 %: sin diferencia visible hasta la 40; en la 30 la madera y el fondo se alisan un poco.
+- **Medición con DevTools** (3 corridas cada una, reemplazando solo el AVIF móvil dentro de `out/` y restaurándolo después; elemento LCP: la foto del hero en todas):
+
+  | Calidad | Peso móvil | LCP | Descarga | Retraso de pintado |
+  |---|---:|---:|---:|---:|
+  | 60 (antes) | 45,4 KB | 2714 ms | 1943 ms | 50 ms |
+  | 50 | 31,4 KB | 2560 ms | 1765 ms | 80 ms |
+  | 40 | 21,1 KB | 2670 ms | 1582 ms | 385 ms |
+  | 30 | 14,8 KB | 2477 ms | 1462 ms | 331 ms |
+
+  La descarga baja de forma ordenada, pero con la 40 y la 30 la foto llega mientras el hilo principal sigue ocupado con JavaScript y el pintado se retrasa: el coste se desplaza, como advirtió la auditoría. El ruido es de ±100 ms.
+- **Decisión del usuario: calidad 50** para el AVIF del hero, en móvil y escritorio. WebP y JPG (respaldo de navegadores sin AVIF) no cambian.
+- **`src/lib/images.ts`:** campo opcional `avifQuality` en `ImageSpec`, usado solo por los dos hero. **`scripts/images.mjs`** empieza por esa calidad (y solo baja si no cupiera en `maxKB`); el registro muestra la calidad AVIF real.
+- **Resultado** (`npm run images` solo cambió los dos AVIF del hero):
+  - móvil 45,4 → 31,4 KB y escritorio 81,2 → 57,0 KB;
+  - `budget`: landing 266,7 KB; con el hero, 298,1 KB en móvil y 323,7 KB en escritorio;
+  - Lighthouse simulado (con presupuesto): Rendimiento 93, LCP 3019 ms (antes 3241), TBT 117 ms, CLS 0.
+- El presupuesto de 3,4 s se mantiene como guarda durante la fase (recomendación de la auditoría); se revisa en T-86.
+- Archivos: `src/lib/images.ts`, `scripts/images.mjs`, `public/images/hero/hero-movil.avif`, `public/images/hero/hero-escritorio.avif`, `CLAUDE.md`, `spec/03-plan.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-80: medición comparable de Lighthouse (PERF-01, PERF-02)
 - **`scripts/lighthouse-presupuesto.mjs`:** funciones puras `desgloseLcp(informe)` (selector del elemento LCP y las cuatro subpartes del insight `lcp-breakdown-insight` de Lighthouse 13) y `resumirDesgloses()` (mediana por subparte y lista de elementos LCP distintos). El comentario del presupuesto ya no dice que "el simulado infla": los dos métodos dan valores distintos, ninguno es el dato de campo y el presupuesto no se traslada de uno a otro.
 - **`scripts/lighthouse.mjs`:**
