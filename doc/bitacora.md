@@ -20,6 +20,15 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-85: Lighthouse informativo en `verificar` (CI-01)
+- **`.github/workflows/pages.yml`:** último paso de `verificar`, "Lighthouse móvil (informativo, no bloquea)", con `continue-on-error: true` y `timeout-minutes: 10`, después de subir el artefacto de Pages; mide `out/`. Sube `lighthouse-resumen.json` como artefacto `lighthouse` (14 días, `if: !cancelled()`, con la misma acción fijada por SHA que ya se usaba). Agrega ~2-3 minutos antes del deploy.
+- **`scripts/lighthouse-presupuesto.mjs`:** función pura `resumenMarkdown()` (tabla de controles con mediana, límite y si cumple; subpartes del LCP; elemento LCP; aviso de que no bloquea). Pruebas en `tests/unit/scripts/lighthouse-presupuesto.test.ts`.
+- **`scripts/lighthouse.mjs`:** escribe la tabla en `$GITHUB_STEP_SUMMARY` si existe; con `CI` agrega `--no-sandbox` a Chrome (los runners de Ubuntu no permiten su sandbox; Playwright hace lo mismo).
+- **Probado en local simulando CI** (`CI=1`, `GITHUB_STEP_SUMMARY` y `LH_SALIDA` a archivos, 1 corrida): salida 0, tabla correcta (Rendimiento 95, LCP 2895 ms, TBT 101 ms). La ejecución real en GitHub se verifica con el push de T-86.
+- **Riesgo aceptado:** Lighthouse se descarga con `npx` en versión exacta (13.5.0), fuera del lockfile y de `npm audit`, como ya se hacía en local. Agregarlo como dependencia de desarrollo sumaría su árbol completo a `npm ci` y a la auditoría bloqueante (D-14).
+- `.gitignore` ignora `lighthouse-resumen.json`. Actualizados `03` (CI) y `CLAUDE.md`.
+- Archivos: `.github/workflows/pages.yml`, `scripts/lighthouse.mjs`, `scripts/lighthouse-presupuesto.mjs`, `tests/unit/scripts/lighthouse-presupuesto.test.ts`, `.gitignore`, `spec/03-plan.md`, `CLAUDE.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-84: documentación ajustada a la evidencia (PERF-01, SEO-OBS, CI-01)
 - **Lighthouse:** `01` (NFR-01) ya no dice que "el modo simulado infla el LCP". Los métodos simulado y DevTools dan valores distintos (en una corrida de la auditoría, DevTools superó al simulado), ninguno es el dato de campo, y se compara siempre con el mismo método y el mismo elemento LCP. `05` (A-05) aclara que cumplir el presupuesto de 3,4 s no acredita los 2,5 s de campo. El comentario de `lighthouse-presupuesto.mjs` y `CLAUDE.md` ya se habían corregido en T-80.
 - **CI-01** registrado en `05` (A-05): Lighthouse irá en `verificar` como paso informativo (T-85); el bloqueo sigue siendo local y R-10 decidirá si bloquea con un entorno estable.

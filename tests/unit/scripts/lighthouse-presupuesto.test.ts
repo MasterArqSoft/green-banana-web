@@ -4,6 +4,7 @@ import {
   evaluar,
   mediana,
   PRESUPUESTO,
+  resumenMarkdown,
   resumirDesgloses,
   SUBPARTES_LCP,
 } from "../../../scripts/lighthouse-presupuesto.mjs";
@@ -127,5 +128,32 @@ describe("desglose del LCP (T-80)", () => {
       "section#hero > picture > img",
       "main h1",
     ]);
+  });
+});
+
+describe("resumen para GitHub Actions (T-85)", () => {
+  const resumen = (corridas: ReturnType<typeof corrida>[]) =>
+    resumenMarkdown({
+      metodo: "simulate",
+      runs: corridas.length,
+      filas: evaluar(corridas),
+      subpartes: resumirDesgloses([desgloseLcp(informe(1951))]).subpartes,
+      elementos: ["section#hero > picture > img"],
+    });
+
+  it("muestra cada control con su mediana, su límite y si cumple", () => {
+    const texto = resumen([corrida(3000), corrida(3100), corrida(2900)]);
+    expect(texto).toContain(
+      "| largest-contentful-paint | 3000 ms | ≤ 3400ms | sí |",
+    );
+    expect(texto).toContain("| performance | 92 | ≥ 90 | sí |");
+    expect(texto).toContain("resourceLoadDuration 1951 ms");
+    expect(texto).toContain("no bloquea la publicación");
+  });
+
+  it("marca con «no» lo que no cumple", () => {
+    expect(resumen([corrida(3600), corrida(3700), corrida(3500)])).toContain(
+      "| largest-contentful-paint | 3600 ms | ≤ 3400ms | no |",
+    );
   });
 });

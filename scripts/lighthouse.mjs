@@ -10,7 +10,7 @@
 // - LH_SALIDA=<archivo.json>: guarda el resumen (corridas, medianas, subpartes, elemento).
 // Uso: npm run build && npm run lighthouse
 import { execFileSync, spawn } from "node:child_process";
-import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
@@ -18,6 +18,7 @@ import {
   desgloseLcp,
   evaluar,
   PRESUPUESTO,
+  resumenMarkdown,
   resumirDesgloses,
   SUBPARTES_LCP,
 } from "./lighthouse-presupuesto.mjs";
@@ -48,7 +49,9 @@ function medir() {
       "lighthouse@13.5.0",
       `http://localhost:${port}/`,
       "--quiet",
-      "--chrome-flags=--headless=new",
+      // En CI (GitHub Actions, Ubuntu) Chrome no puede usar su sandbox: el sistema no
+      // permite los espacios de nombres que necesita. Playwright hace lo mismo.
+      `--chrome-flags=--headless=new${process.env.CI ? " --no-sandbox" : ""}`,
       `--throttling-method=${METODO}`,
       "--output=json",
       `--output-path=${report}`,
@@ -155,6 +158,19 @@ try {
       ? `Elemento LCP: ${elementos[0]}`
       : `⚠ El elemento LCP cambió entre corridas: ${elementos.join(" | ")}`,
   );
+  // En GitHub Actions, tabla en el resumen del job (T-85).
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(
+      process.env.GITHUB_STEP_SUMMARY,
+      resumenMarkdown({
+        metodo: METODO,
+        runs: RUNS,
+        filas,
+        subpartes,
+        elementos,
+      }),
+    );
+  }
   if (process.env.LH_SALIDA) {
     writeFileSync(
       process.env.LH_SALIDA,

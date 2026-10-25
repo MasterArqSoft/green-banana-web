@@ -58,3 +58,6 @@ next-env.d.ts
 
 # Originales de las fotos (pesados): solo se publican las versiones optimizadas de public/images/
 /fotos-originales/
+
+# Resumen de Lighthouse (LH_SALIDA en CI, T-85)
+/lighthouse-resumen.json

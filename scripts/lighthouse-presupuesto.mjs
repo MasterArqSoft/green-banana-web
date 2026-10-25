@@ -91,3 +91,29 @@ export function resumirDesgloses(desgloses) {
   const elementos = [...new Set(desgloses.map((d) => d.elemento))];
   return { subpartes, elementos };
 }
+
+// Resumen en Markdown para el job de GitHub Actions ($GITHUB_STEP_SUMMARY, T-85).
+// En CI el paso es informativo (CI-01): la tabla dice qué cumplió, pero no bloquea.
+export function resumenMarkdown({ metodo, runs, filas, subpartes, elementos }) {
+  const valor = ({ valor: v, unidad }) =>
+    unidad === "ms" ? `${Math.round(v)} ms` : String(Number(v.toFixed(3)));
+  const lineas = [
+    `### Lighthouse móvil (${metodo}, mediana de ${runs} corridas)`,
+    "",
+    "Paso informativo: no bloquea la publicación (CI-01). Los servidores de GitHub varían entre corridas; el presupuesto se verifica en local con `npm run lighthouse`.",
+    "",
+    "| Control | Mediana | Límite | Cumple |",
+    "|---|---:|---:|:---:|",
+    ...filas.map(
+      (fila) =>
+        `| ${fila.id} | ${valor(fila)} | ${fila.limite} | ${fila.ok ? "sí" : "no"} |`,
+    ),
+    "",
+    `Subpartes del LCP${metodo === "simulate" ? " (traza sin throttling: no suman el LCP simulado)" : ""}: ${SUBPARTES_LCP.map((id) => `${id} ${subpartes[id] === null ? "–" : `${Math.round(subpartes[id])} ms`}`).join(" · ")}`,
+    "",
+    elementos.length === 1
+      ? `Elemento LCP: \`${elementos[0]}\``
+      : `Elemento LCP distinto entre corridas: ${elementos.map((e) => `\`${e}\``).join(", ")}`,
+  ];
+  return `${lineas.join("\n")}\n`;
+}
