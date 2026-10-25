@@ -33,20 +33,25 @@ export function Documento({
       <body className="flex min-h-full flex-col font-sans">
         <SkipLink locale={locale} />
         <DemoBanner locale={locale} />
-        <TopBar
-          locale={locale}
-          selector={
-            selector && (
-              <SelectorIdioma
-                locale={locale}
-                etiqueta={copy.language.navLabel}
-                nombres={copy.language.names}
-              />
-            )
-          }
-        />
-        {children}
-        <Footer locale={locale} />
+        {/* Contenedor "pagina": la barra superior deja de ser fija si la página mide menos
+            de 20rem (texto aumentado; R-01). El botón flotante y "Saltar al contenido"
+            quedan fuera: su posición fija sigue referida a la ventana. */}
+        <div className="@container/pagina flex flex-1 flex-col">
+          <TopBar
+            locale={locale}
+            selector={
+              selector && (
+                <SelectorIdioma
+                  locale={locale}
+                  etiqueta={copy.language.navLabel}
+                  nombres={copy.language.names}
+                />
+              )
+            }
+          />
+          {children}
+          <Footer locale={locale} />
+        </div>
         <FloatingCall locale={locale} />
       </body>
     </html>

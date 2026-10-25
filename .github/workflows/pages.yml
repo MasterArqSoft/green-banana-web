@@ -26,8 +26,14 @@ jobs:
   # Lo mismo que `npm run validate`. Si algo falla, la demo no se publica.
   # Dos builds (T-71): con el prefijo de la demo en out-pages/, que pasa una prueba de
   # humo y es exactamente lo que se publica, y sin prefijo en out/ para las demás pruebas.
+  # Límites de tiempo (T-111, DR-11), medidos con `gh run list`/`gh run view` sobre las
+  # 10 ejecuciones de push hasta 10cd67b (2026-10-25): verificar 74–393 s, deploy 8–47 s,
+  # lighthouse 91–133 s, prueba de humo con prefijo 7–14 s. T-108 suma ~3 min (WebKit,
+  # Firefox y 320 px). Base: ~2 × el máximo observado, redondeado. Un atasco termina con
+  # un fallo identificable en vez de esperar las 6 h por defecto del runner.
   verificar:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -37,7 +43,8 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          # Misma versión que en local: .nvmrc es la única fuente (T-110, DR-10).
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -73,14 +80,20 @@ jobs:
       - name: Presupuesto de peso (≤ 300 KB)
         run: npm run budget
 
-      - name: Navegador para las pruebas e2e
-        run: npx playwright install --with-deps chromium
+      # Chromium para todo; WebKit y Firefox para el subconjunto @smoke (T-108, DR-05).
+      - name: Navegadores para las pruebas e2e
+        run: npx playwright install --with-deps chromium webkit firefox
 
       - name: Pruebas e2e (Playwright + axe)
         run: npx playwright test
+        timeout-minutes: 12
 
+      # Aquí se observó en otros entornos un cierre que no terminaba tras pasar los 32
+      # casos (auditoría forense y revisión independiente; no reproducido en local ni en
+      # CI). El límite hace que falle identificable; no acredita que la causa esté resuelta.
       - name: Prueba de humo del artefacto que se publica
         run: npm run test:prefijo
+        timeout-minutes: 5
         env:
           PAGES_BASE_PATH: /${{ github.event.repository.name }}
 
@@ -108,10 +121,12 @@ jobs:
   # bloquea, porque los servidores de GitHub varían entre corridas; el presupuesto se
   # verifica en local con `npm run lighthouse`. Job aparte (revisión de la Fase 11): corre
   # en paralelo a `deploy`, que no depende de él, así que no retrasa la publicación, y
-  # Lighthouse (descargado con npx en versión exacta, fuera del lockfile) no corre en el
+  # Lighthouse (con su propio lock en tools/lighthouse/, T-113) no corre en el
   # job que genera y sube el artefacto de Pages. Solo lectura, como todo el workflow.
   # Mide las dos landings, / y /en (T-96). Una tabla por página en el resumen del job y
-  # el JSON, como artefacto.
+  # el JSON, como artefacto. Desde T-113 (DR-08, F-16) Lighthouse se instala desde su
+  # propio lock (tools/lighthouse/), que se audita aquí; sigue sin entrar en `verificar`
+  # ni en el artefacto de Pages.
   lighthouse:
     needs: verificar
     runs-on: ubuntu-latest
@@ -124,7 +139,8 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          # Misma versión que en local: .nvmrc es la única fuente (T-110, DR-10).
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
@@ -134,6 +150,12 @@ jobs:
 
       - name: Navegador (Chromium de Playwright)
         run: npx playwright install --with-deps chromium
+
+      - name: Lighthouse desde su lock (tools/lighthouse)
+        run: npm ci --prefix tools/lighthouse
+
+      - name: Auditoría de dependencias de Lighthouse
+        run: npm run audit:tooling
 
       - name: Lighthouse móvil (informativo, no bloquea)
         run: npm run lighthouse
@@ -152,6 +174,8 @@ jobs:
     needs: verificar
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    # La cola de Pages puede demorar la publicación más que los 47 s observados.
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write

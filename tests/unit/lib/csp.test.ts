@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   applyCsp,
+  cspPolicyCabecera,
   cspPolicy,
   inlineScriptHashes,
   TILE_ORIGIN,
@@ -82,5 +83,14 @@ describe("CSP por <meta> (SEC-01, T-66)", () => {
   it("falla si la página ya tiene CSP o no tiene charset", () => {
     expect(() => applyCsp(applyCsp(html))).toThrow();
     expect(() => applyCsp("<html><head></head></html>")).toThrow();
+  });
+});
+
+describe("CSP en cabecera (T-115)", () => {
+  it("es la misma política de la <meta> más frame-ancestors 'none'", () => {
+    const hashes = ["'sha256-abc='"];
+    expect(cspPolicyCabecera(hashes)).toBe(
+      `${cspPolicy(hashes)}; frame-ancestors 'none'`,
+    );
   });
 });

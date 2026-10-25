@@ -102,7 +102,7 @@ Título: **¿Qué cocinar con guineo verde?** Ver sección 4.
 Solo con testimonios reales y autorizados. Formato: foto, nombre, negocio o barrio, texto de 1–2 frases. Mientras no existan, la sección se omite.
 
 ### FR-14 Garantía
-- **Título:** Si llega maltratado, lo reponemos
+- **Título:** ¿Tu pedido llegó con algún problema? (aprobado por el usuario el 2026-10-25; en inglés: «Is there a problem with your order?»)
 - **Texto:** Tienes 24 horas desde la entrega para llamarnos o escribirnos al correo de contacto con una foto del producto y del recibo. Lo reponemos en el siguiente despacho o te devolvemos el dinero [POR CONFIRMAR política, RP-04].
 - **Aclaración legal:** Por tratarse de un producto perecedero, no aplica el derecho de retracto. Esta garantía es adicional a tus derechos como consumidor.
 
@@ -156,10 +156,10 @@ PQR: canal y forma de entregar la constancia [POR CONFIRMAR, RP-05].
 | 2 | ¿Cuántas unidades trae un kilo? | Entre [4 y 5], según el tamaño. |
 | 3 | ¿Cuánto dura y cómo lo conservo? | Entre [4 y 7] días en un lugar fresco y seco. Sin refrigerar. |
 | 4 | ¿Cómo lo pelo sin mancharme? | Haz un corte a lo largo de la cáscara y pélalo con las manos húmedas, o hiérvelo con cáscara. |
-| 5 | ¿Puede llegar pintón? | Puede haber piezas con un tono amarillo suave. Si más de [X] por ciento llega pintón, lo reponemos. |
+| 5 | ¿Puede llegar pintón? | Puede haber piezas con un tono amarillo suave. Si más de [X] por ciento llega pintón, lo reponemos o te devolvemos el dinero [POR CONFIRMAR política, RP-04]. |
 | 6 | ¿A qué zonas llegan? | Acopiamos en Santa Marta y distribuimos a hogares y puntos de venta de la ciudad. Consulta por teléfono si llegamos a tu zona. |
 | 7 | ¿Cuánto cuesta? | El precio se informa por teléfono. [POR CONFIRMAR validación jurídica en RP-03] |
-| 8 | ¿Qué pasa si llega maltratado? | Garantía de 24 horas con reposición. |
+| 8 | ¿Qué pasa si llega maltratado? | Tienes 24 horas desde la entrega para reclamar con una foto del producto y del recibo. Lo reponemos o te devolvemos el dinero [POR CONFIRMAR política, RP-04]. |
 | 9 | ¿Venden para tiendas, hoteles o restaurantes? ¿Y a personas naturales? | Sí, a todos. Llámanos y te contamos las condiciones según tu caso. |
 
 **Fuera de la Fase 1:** la FAQ 10 ("¿Facturan?") se agrega con el roadmap R-09 (facturación electrónica). No se publica ni se renderiza en la Fase 1.
@@ -211,4 +211,4 @@ Todas con texto alternativo descriptivo.
 | Meta description | Guineo verde seleccionado a mano, acopiado en Santa Marta. Llámanos para precio y distribución a hogares y negocios. |
 | Palabras clave | guineo verde, guineo verde Santa Marta, banano verde para sancocho, distribuidor guineo verde Magdalena. Guían el copy; no se publican como `meta keywords`, que los buscadores ignoran (T-64, 2026-10-24) |
 | Datos estructurados | LocalBusiness, FAQPage. Product con Offer solo cuando entren precios (roadmap R-01). FAQPage se conserva por su valor semántico: Google dejó de mostrar el resultado enriquecido de FAQ en 2026 (T-84), así que no se promete esa apariencia en la búsqueda. |
-| Otros | URL canónica, `sitemap.xml`, `robots.txt`, ficha de Google Business Profile enlazada. Sin `hreflang`: el sitio tiene un solo idioma y el idioma ya va en `lang="es-CO"` (T-64, 2026-10-24) |
+| Otros | URL canónica, `sitemap.xml`, `robots.txt`, ficha de Google Business Profile enlazada. Sitio bilingüe desde la Fase 12 (FR-28, `03` D7): cada página lleva su canonical y `alternates` recíprocos `es-CO`, `en` y `x-default` (la española), y `lang` en `<html>`; lo generan `pageMetadata()`/`homeMetadata()` de `src/lib/seo.ts` y el sitemap. (Antes de la Fase 12 no había `hreflang`: T-64 retiró una anotación monolingüe innecesaria; corregido en T-107, F-06) |

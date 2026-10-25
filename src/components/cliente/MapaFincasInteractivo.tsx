@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Map as LeafletMap, TileLayer } from "leaflet";
+import {
+  conPlazo,
+  crearIntentos,
+  ESPERA_MAPA_MS,
+} from "@/lib/carga-por-intento";
 import type { Fincas, MapaTextos, Ubicacion } from "@/lib/schema";
 import { claveTesela, saludVista, type EstadoTesela } from "@/lib/salud-mapa";
 import { fill } from "@/lib/template";
@@ -17,9 +22,10 @@ import { fill } from "@/lib/template";
 type Estado = "idle" | "loading" | "ready" | "error";
 
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-// Tiempo máximo desde que se pide una tesela sin que termine el lote, antes de evaluar la
-// vista con lo que haya llegado: lo pendiente cuenta como fallido (Fase 9, T-79).
-const ESPERA_TESELAS_MS = 15_000;
+// ESPERA_MAPA_MS (15 s, src/lib/carga-por-intento.ts) limita cada etapa: la descarga de
+// Leaflet (T-105) y, después, el tiempo desde que se pide una tesela sin que termine el
+// lote, antes de evaluar la vista con lo que haya llegado: lo pendiente cuenta como
+// fallido (Fase 9, T-79).
 
 export function MapaFincasInteractivo({
   avisoId,
@@ -49,6 +55,9 @@ export function MapaFincasInteractivo({
   const region = useRef<HTMLDivElement>(null);
   const boton = useRef<HTMLButtonElement>(null);
   const espera = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Cada carga o reintento es un intento nuevo; una continuación de un intento viejo
+  // (un import que llega tarde, un plazo que vence) no toca el estado (T-105, DR-02).
+  const [intentos] = useState(crearIntentos);
   // El mapa ilustrado se pide solo cuando la sección se acerca a la pantalla: con
   // loading="lazy", Chrome lo descargaba en la carga inicial y competía con el LCP.
   const [cercano, setCercano] = useState(false);
@@ -73,20 +82,27 @@ export function MapaFincasInteractivo({
     montado.current = true;
     return () => {
       montado.current = false;
+      intentos.invalidar();
       if (espera.current) clearTimeout(espera.current);
       mapa.current?.remove();
       mapa.current = null;
     };
-  }, []);
+  }, [intentos]);
 
   function cancelarEspera() {
     if (espera.current) clearTimeout(espera.current);
     espera.current = null;
   }
 
-  // Tras un error, el foco pasa a "Reintentar": el botón anterior ya no existe.
+  // Tras un error, el foco pasa a "Reintentar" solo si estaba en el mapa o se perdió
+  // (el botón o el mapa que lo tenían ya no existen; el foco queda en <body>). Si el
+  // usuario sigue en otra parte de la página, no se le mueve: el error de teselas puede
+  // llegar 15 s después del clic, y el role="status" ya lo anuncia (T-104, F-04).
   useEffect(() => {
-    if (estado === "error") boton.current?.focus();
+    if (estado !== "error") return;
+    const activo = document.activeElement;
+    if (!activo || activo === document.body || region.current?.contains(activo))
+      boton.current?.focus();
   }, [estado]);
 
   // Error: se destruye la instancia (un reintento la crea de nuevo en el mismo
@@ -94,6 +110,7 @@ export function MapaFincasInteractivo({
   // remove() no quita las clases que Leaflet agregó al contenedor (fondo gris): un
   // `key` nuevo hace que React lo reemplace por un nodo limpio.
   function fallar() {
+    intentos.invalidar();
     cancelarEspera();
     mapa.current?.remove();
     mapa.current = null;
@@ -113,6 +130,7 @@ export function MapaFincasInteractivo({
   }
 
   async function cargarMapa() {
+    const id = intentos.nuevo();
     setEstado("loading");
     setParcial(false);
     cancelarEspera();
@@ -120,11 +138,20 @@ export function MapaFincasInteractivo({
     mapa.current = null;
     capa.current = null;
     try {
-      const [{ default: L }] = await Promise.all([
-        import("leaflet"),
-        import("leaflet/dist/leaflet.css"),
-      ]);
-      if (!montado.current || !contenedor.current || mapa.current) return;
+      // El plazo corre desde el clic, antes de esperar la descarga: una descarga que no
+      // termina ni falla dejaba "Cargando mapa…" sin salida (T-105, F-03). Un import()
+      // pendiente no se puede cancelar; si llega tarde, el intento ya no está vigente.
+      const [{ default: L }] = await conPlazo(
+        Promise.all([import("leaflet"), import("leaflet/dist/leaflet.css")]),
+        ESPERA_MAPA_MS,
+      );
+      if (
+        !intentos.vigente(id) ||
+        !montado.current ||
+        !contenedor.current ||
+        mapa.current
+      )
+        return;
 
       const map = L.map(contenedor.current, {
         scrollWheelZoom: false,
@@ -194,7 +221,7 @@ export function MapaFincasInteractivo({
         // lote colgado y "Reintentar" (redraw) no llegaba, así que no había espera.
         .on("tileloadstart", (e) => {
           teselas.set(claveTesela(e.coords), "pendiente");
-          espera.current ??= setTimeout(evaluar, ESPERA_TESELAS_MS);
+          espera.current ??= setTimeout(evaluar, ESPERA_MAPA_MS);
         })
         .on("tileload", (e) => teselas.set(claveTesela(e.coords), "ok"))
         .on("tileerror", (e) => teselas.set(claveTesela(e.coords), "error"))
@@ -254,10 +281,11 @@ export function MapaFincasInteractivo({
       // "ready" llega con la primera evaluación de teselas, no al crear el mapa: hasta
       // entonces siguen el mapa ilustrado y "Cargando mapa…". Si ningún lote llegó a
       // empezar, la espera evalúa igual. El botón desaparece: el foco pasa al mapa.
-      espera.current ??= setTimeout(evaluar, ESPERA_TESELAS_MS);
+      espera.current ??= setTimeout(evaluar, ESPERA_MAPA_MS);
       contenedor.current.focus();
     } catch {
-      fallar();
+      // Descarga rechazada o plazo vencido, solo si es el intento en curso.
+      if (intentos.vigente(id)) fallar();
     }
   }
 

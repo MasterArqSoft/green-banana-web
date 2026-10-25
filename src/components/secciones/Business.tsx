@@ -16,9 +16,9 @@ export function Business({ locale }: { locale: Locale }) {
       className="bg-hoja text-white [&_:focus-visible]:outline-white"
     >
       <div className="contenedor flex flex-col items-start gap-4 py-12 md:flex-row md:items-center md:justify-between">
-        <div className="flex gap-4">
+        <div className="flex w-full gap-4 md:w-auto">
           <Store aria-hidden="true" className="size-10 shrink-0" />
-          <div className="flex flex-col gap-2">
+          <div className="flex min-w-0 flex-col gap-2">
             <h2
               id="negocios-titulo"
               className="text-2xl font-semibold md:text-3xl"

@@ -243,6 +243,7 @@ green-banana-web/
 │  └─ lib/               # Lógica pura sin React: content.ts (único acceso al contenido), schema.ts (Zod),
 │                        # claims.ts, paridad.ts (paridad entre idiomas), i18n.ts (idiomas y rutas), tel.ts, seo.ts,
 │                        # legal.ts, images.ts, asset.ts, template.ts, format.ts, fuentes.ts, salud-mapa.ts,
+│                        # carga-por-intento.ts,
 │                        # mapa-ilustrado.ts + mapa-base.json, csp.ts, security-txt.ts (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
 ├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), build-prefijo.mjs, budget.mjs,
@@ -263,7 +264,7 @@ Dependencias entre capas (en un solo sentido): `app/` → `components/` → `lib
 ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), con `no-restricted-imports` y `no-restricted-syntax` en `eslint.config.mjs`:
 - los JSON de `src/content/` solo se importan en `src/lib/content.ts`. La regla vale dentro de `src/`, no en `scripts/` ni en `tests/` (decisión del usuario, 2026-10-23): `scripts/images.mjs` corre en Node sin el alias `@/`, y las pruebas alteran los JSON para comprobar que los esquemas los rechazan. Lo que llega al navegador queda protegido, y `testimonialImage` valida `photo` antes de que el script arme la ruta;
 - `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
-- `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format`, `tel`, `salud-mapa` e `i18n`;
+- `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format`, `tel`, `salud-mapa`, `carga-por-intento` e `i18n`;
 - `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`);
 - todo `<Link>` declara `prefetch` (en la práctica `prefetch={false}`): con exportación estática, Next descargaba completas las páginas enlazadas al cargar, sin clic (T-61).
 

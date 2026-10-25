@@ -130,13 +130,23 @@ describe("carga del contenido", () => {
     await expect(import("@/lib/content")).resolves.toBeDefined();
   });
 
-  it("cuenta 62 datos ficticios o por confirmar en los dos idiomas (checklist para publicar)", async () => {
+  it("pendingMarkerEntries() trae las mismas entradas que pendingMarkers(), con el texto completo (T-117)", async () => {
+    const { pendingMarkerEntries, pendingMarkers } =
+      await import("@/lib/content");
+    const entradas = pendingMarkerEntries();
+    expect(
+      entradas.map(({ ruta, texto }) => `${ruta}: ${texto.slice(0, 80)}`),
+    ).toEqual(pendingMarkers());
+  });
+
+  it("cuenta 64 datos ficticios o por confirmar en los dos idiomas (checklist para publicar)", async () => {
     const { pendingMarkers } = await import("@/lib/content");
     const pendientes = pendingMarkers();
-    expect(pendientes).toHaveLength(62);
-    // 43 en los datos comunes y en español (los de antes de la Fase 12) y 19 en inglés.
+    expect(pendientes).toHaveLength(64);
+    // 44 en los datos comunes y en español y 20 en inglés (T-106 sumó la marca de RP-04
+    // en la respuesta de garantía de la FAQ de cada idioma).
     expect(pendientes.filter((item) => item.startsWith("en."))).toHaveLength(
-      19,
+      20,
     );
   });
 });
@@ -240,7 +250,7 @@ describe("build de producción (T-39, T-91)", () => {
     vi.stubEnv("SITE_ENV", "production");
     cambiar("site", (site) => (site.phoneIsPlaceholder = false));
     await expect(import("@/lib/content")).rejects.toThrow(
-      /quedan 62 datos ficticios o por confirmar/,
+      /quedan 64 datos ficticios o por confirmar/,
     );
   });
 
@@ -316,4 +326,73 @@ describe("build de producción (T-39, T-91)", () => {
       "en/copy.demoNotice: 1 marcas de pendiente, se esperaban 0",
     );
   });
+});
+
+// T-106 (AUD-2026-10-24-FORENSE/F-05, DR-03): mientras RP-04 siga abierto, los textos de
+// la garantía de los dos idiomas (respuesta de la FAQ, sección de la landing y página
+// legal) dan el mismo plazo, los dos remedios y la marca de pendiente. Ninguno puede
+// prometer un remedio único. T-116 reemplazará esta prueba por la derivación desde un
+// dato común.
+describe("coherencia de la garantía (F-05, RP-04 abierto)", () => {
+  // "replace" a secas no sirve en inglés: el aviso de salud dice "does not replace advice".
+  const remedios = {
+    "es-CO": { reposicion: /repon/i, devolucion: /devolvemos el dinero/i },
+    en: { reposicion: /\bwe replace\b/i, devolucion: /refund/i },
+  } as const;
+  // Titulares aprobados por el usuario (2026-10-25): no prometen ningún remedio.
+  const titular = {
+    "es-CO": "¿Tu pedido llegó con algún problema?",
+    en: "Is there a problem with your order?",
+  } as const;
+
+  // Todos los textos de un valor de contenido, con su ruta (p. ej. "faq.3.answer").
+  function textos(valor: unknown, ruta = ""): [string, string][] {
+    if (typeof valor === "string") return [[ruta, valor]];
+    if (Array.isArray(valor))
+      return valor.flatMap((v, i) => textos(v, `${ruta}.${i}`));
+    if (valor && typeof valor === "object")
+      return Object.entries(valor).flatMap(([k, v]) =>
+        textos(v, ruta ? `${ruta}.${k}` : k),
+      );
+    return [];
+  }
+  const pendiente = {
+    "es-CO": "[POR CONFIRMAR política, RP-04]",
+    en: "[TO BE CONFIRMED policy, RP-04]",
+  } as const;
+
+  for (const locale of ["es-CO", "en"] as const) {
+    it(`${locale}: FAQ, landing y política coinciden en plazo, remedios y pendiente`, async () => {
+      const { getContent } = await import("@/lib/content");
+      const { copy, faq, legal } = getContent(locale);
+      const textos = {
+        faq: faq.find((item) => item.id === "garantia")?.answer ?? "",
+        landing: copy.guarantee.text,
+        politica: legal.garantia.sections[0].paragraphs.join(" "),
+      };
+      for (const [donde, texto] of Object.entries(textos)) {
+        expect(texto, donde).toContain("24");
+        expect(texto, donde).toMatch(remedios[locale].reposicion);
+        expect(texto, donde).toMatch(remedios[locale].devolucion);
+        expect(texto, donde).toContain(pendiente[locale]);
+      }
+    });
+
+    it(`${locale}: ningún texto promete un solo remedio y el titular no promete ninguno`, async () => {
+      const { getContent } = await import("@/lib/content");
+      const contenido = getContent(locale);
+      expect(contenido.copy.guarantee.title).toBe(titular[locale]);
+      const { reposicion, devolucion } = remedios[locale];
+      const incoherentes = textos(contenido)
+        .filter(([, t]) => reposicion.test(t) || devolucion.test(t))
+        .filter(
+          ([, t]) =>
+            !reposicion.test(t) ||
+            !devolucion.test(t) ||
+            !t.includes(pendiente[locale]),
+        )
+        .map(([ruta]) => ruta);
+      expect(incoherentes).toEqual([]);
+    });
+  }
 });

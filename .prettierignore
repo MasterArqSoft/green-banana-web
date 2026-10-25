@@ -1,6 +1,8 @@
 # Documentación escrita a mano: no se reformatea
 spec/
 doc/
+# Artefactos locales de revisión, fuera de Git (T-100)
+output/
 .claude/
 .agents/
 CLAUDE.md

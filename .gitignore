@@ -50,6 +50,12 @@ next-env.d.ts
 /doc/*
 !/doc/bitacora.md
 !/doc/creditos.md
+# Registro de hallazgos (T-101, DR-04); los paquetes de auditoría siguen fuera de Git.
+!/doc/registro-hallazgos.md
+# Expediente de lanzamiento (T-117), plan de medición (T-118) y protocolo de accesibilidad (T-109)
+!/doc/expediente-lanzamiento.md
+!/doc/plan-medicion.md
+!/doc/protocolo-accesibilidad.md
 !/doc/skills-candidatas/
 
 # Playwright
@@ -61,3 +67,9 @@ next-env.d.ts
 
 # Resumen de Lighthouse (LH_SALIDA en CI, T-85)
 /lighthouse-resumen.json
+
+# Artefactos locales de revisión (capturas, logs, sondas): no se versionan ni se borran (T-114, DR-12)
+/output/
+
+# Lighthouse con su propio lock (T-113): se versionan package.json y package-lock.json
+/tools/lighthouse/node_modules/

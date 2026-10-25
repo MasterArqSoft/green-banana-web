@@ -39,11 +39,12 @@ const LIB_CLIENTE = {
     "!@/lib/format",
     "!@/lib/tel",
     "!@/lib/salud-mapa",
+    "!@/lib/carga-por-intento",
     "!@/lib/i18n",
     "!@/lib/content",
   ],
   message:
-    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel, salud-mapa o i18n. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
+    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel, salud-mapa, carga-por-intento o i18n. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
 };
 // Directivas que agregan JavaScript o código de servidor.
 const USE_CLIENT = {
@@ -159,6 +160,11 @@ const eslintConfig = defineConfig([
     "out-pages/**",
     "build/**",
     "next-env.d.ts",
+    // Material local fuera de Git (auditorías y artefactos de revisión, T-100).
+    "doc/**",
+    "output/**",
+    // Informe generado por `npm run test:coverage` (T-108), fuera de Git.
+    "coverage/**",
   ]),
 ]);
 

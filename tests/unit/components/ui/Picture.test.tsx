@@ -19,4 +19,19 @@ describe("Picture", () => {
     expect(html).toContain('loading="lazy"');
     expect(html).toContain('alt="Prueba"');
   });
+
+  it("antepone auto al sizes de las fotos con versiones (N-5) y no lo pone sin ellas", () => {
+    const conSizes = renderToStaticMarkup(
+      <Picture spec={IMAGES.origin} alt="Prueba" sizes="50vw" />,
+    );
+    expect(conSizes.match(/sizes="auto, 50vw"/g)).toHaveLength(2);
+    const sinVersiones = renderToStaticMarkup(
+      <Picture
+        spec={{ ...IMAGES.origin, variants: undefined }}
+        alt="Prueba"
+        sizes="50vw"
+      />,
+    );
+    expect(sinVersiones).not.toContain("sizes=");
+  });
 });

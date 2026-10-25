@@ -79,7 +79,10 @@ describe("versiones menores (srcset)", () => {
   it("las tarjetas ofrecen 200 px para el móvil", () => {
     const html = renderToStaticMarkup(<ProductCards locale="es-CO" />);
     expect(html).toContain("/images/presentaciones/unit-200.avif 200w");
-    expect(html).toContain('sizes="(min-width: 1024px) 280px, 96px"');
+    // Con la foto arriba (tarjeta estrecha, T-103) se pide la versión grande.
+    expect(html).toContain(
+      'sizes="auto, (min-width: 64rem) 17.5rem, (min-width: 43rem) 6rem, (min-width: 40rem) 18rem, (min-width: 22rem) 6rem, 18rem"',
+    );
   });
 });
 

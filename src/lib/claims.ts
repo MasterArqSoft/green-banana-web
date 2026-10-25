@@ -43,21 +43,27 @@ export function countPendingMarkers(text: string): number {
   return text.match(new RegExp(PENDING_MARKER, "g"))?.length ?? 0;
 }
 
+/** Un valor del contenido con marca de pendiente: su ruta y su texto completo. */
+export type PendingEntry = { ruta: string; texto: string };
+
 /**
- * Recorre el contenido y devuelve la ruta y el texto de cada valor con una marca
+ * Recorre el contenido y devuelve la ruta y el texto completo de cada valor con una marca
  * "(FICTICIO)" o "[…]" (p. ej. "[POR CONFIRMAR]", "[4 y 7]"), la URL de la demo y los
- * `pendingConfirmation` no vacíos de products.json.
+ * `pendingConfirmation` no vacíos de products.json. El expediente de lanzamiento (T-117)
+ * agrupa por la etiqueta del texto, que puede ir al final: por eso no se recorta.
  */
-export function findPendingMarkers(content: Record<string, unknown>): string[] {
-  const found: string[] = [];
+export function findPendingMarkerEntries(
+  content: Record<string, unknown>,
+): PendingEntry[] {
+  const found: PendingEntry[] = [];
   const walk = (value: unknown, path: string) => {
     if (typeof value === "string") {
       if (PENDING_MARKER.test(value) || value.includes("github.io")) {
-        found.push(`${path}: ${value.slice(0, 80)}`);
+        found.push({ ruta: path, texto: value });
       }
     } else if (Array.isArray(value)) {
       if (path.endsWith(".pendingConfirmation") && value.length > 0) {
-        found.push(`${path}: ${value.join(", ")}`);
+        found.push({ ruta: path, texto: value.join(", ") });
       }
       value.forEach((item, index) => walk(item, `${path}[${index}]`));
     } else if (value && typeof value === "object") {
@@ -68,6 +74,13 @@ export function findPendingMarkers(content: Record<string, unknown>): string[] {
   };
   walk(content, "");
   return found;
+}
+
+/** Lo mismo como "ruta: texto", con el texto recortado a 80 caracteres (mensajes del build). */
+export function findPendingMarkers(content: Record<string, unknown>): string[] {
+  return findPendingMarkerEntries(content).map(
+    ({ ruta, texto }) => `${ruta}: ${texto.slice(0, 80)}`,
+  );
 }
 
 // Minúsculas y sin tildes, para que "Cancer" o "CÁNCER" también se detecten.

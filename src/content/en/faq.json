@@ -22,7 +22,7 @@
   {
     "id": "pinton",
     "question": "Can it arrive partly ripe (pintón)?",
-    "answer": "Some pieces may have a soft yellow tint. If more than [X] percent arrives partly ripe, we replace it."
+    "answer": "Some pieces may have a soft yellow tint. If more than [X] percent arrives partly ripe, we replace it or refund your money [TO BE CONFIRMED policy, RP-04]."
   },
   {
     "id": "zonas",
@@ -37,7 +37,7 @@
   {
     "id": "garantia",
     "question": "What if it arrives damaged?",
-    "answer": "24-hour guarantee with replacement."
+    "answer": "You have 24 hours from delivery to make a claim with a photo of the product and the receipt. We replace it or refund your money [TO BE CONFIRMED policy, RP-04]."
   },
   {
     "id": "negocios",

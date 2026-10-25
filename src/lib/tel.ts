@@ -25,3 +25,11 @@ export function formatPhone(phone: string): string {
   const [, prefix, middle, last] = parsePhone(phone);
   return `+57 ${prefix} ${middle} ${last}`;
 }
+
+/**
+ * El mismo número con espacios no separables: si la frase que lo contiene no cabe en una
+ * línea, se parte antes o después del número, no entre sus grupos (barra superior, T-103).
+ */
+export function formatPhoneUnido(phone: string): string {
+  return formatPhone(phone).replaceAll(" ", "\u00a0");
+}

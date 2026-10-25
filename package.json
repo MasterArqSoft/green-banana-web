@@ -2,22 +2,42 @@
   "name": "green-banana-web",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^24.15.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.15.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11",
+      "onFail": "warn"
+    }
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/csp.mjs",
+    "build": "next build && node scripts/csp.mjs && node scripts/cabeceras.mjs",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "npm run build && playwright test",
     "build:prefijo": "node scripts/build-prefijo.mjs",
     "test:prefijo": "playwright test -c playwright.prefijo.config.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit:deps": "npm audit --audit-level=high",
+    "audit:tooling": "npm audit --prefix tools/lighthouse --audit-level=high",
     "budget": "node scripts/budget.mjs",
     "budget:prefijo": "node scripts/budget.mjs out-pages",
+    "cabeceras:verificar": "node scripts/verificar-cabeceras.mjs",
+    "pendientes": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/cargar-src.mjs scripts/pendientes.mjs",
     "lighthouse": "node scripts/lighthouse.mjs",
+    "lighthouse:instalar": "npm ci --prefix tools/lighthouse",
     "images": "node scripts/images.mjs",
     "icons": "node scripts/icons.mjs",
     "validate": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build:prefijo && npm run build && npm run budget && playwright test && npm run test:prefijo && npm run budget:prefijo && npm run audit:deps",
@@ -39,6 +59,7 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "5.0.5",
     "eslint": "^9",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",

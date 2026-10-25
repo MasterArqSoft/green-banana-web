@@ -32,7 +32,7 @@ export function MapaFincas({ locale }: { locale: Locale }) {
         </div>
 
         {/* En escritorio el mapa toma la altura de la lista (celdas estiradas). */}
-        <div className="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <MapaFincasInteractivo
             avisoId="mapa-fincas-aviso"
             previa={{
@@ -46,12 +46,12 @@ export function MapaFincas({ locale }: { locale: Locale }) {
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-hoja-claro">
                   <MapPin aria-hidden="true" className="size-5 text-hoja" />
                 </span>
-                <p id="mapa-fincas-aviso" className="text-sm">
+                <p id="mapa-fincas-aviso" className="min-w-0 text-sm">
                   {map.consent}{" "}
                   <a
                     href={map.privacyUrl}
                     rel="noopener"
-                    className="inline-flex min-h-11 items-center font-semibold text-hoja underline underline-offset-4"
+                    className="inline-flex min-h-11 items-center font-semibold wrap-anywhere text-hoja underline underline-offset-4"
                   >
                     {map.privacyLink}
                   </a>

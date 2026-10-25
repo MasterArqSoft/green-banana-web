@@ -18,7 +18,7 @@ export function HowItWorks({ locale }: { locale: Locale }) {
         >
           {howItWorks.title}
         </h2>
-        <ol className="mt-6 grid gap-4 md:grid-cols-3">
+        <ol className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           {howItWorks.steps.map((step, index) => (
             <li
               key={step.highlight}
@@ -30,7 +30,7 @@ export function HowItWorks({ locale }: { locale: Locale }) {
               >
                 {index + 1}
               </span>
-              <p className="pt-1.5">
+              <p className="min-w-0 pt-1.5">
                 <strong className="text-hoja">{step.highlight}</strong>{" "}
                 {step.text}
               </p>

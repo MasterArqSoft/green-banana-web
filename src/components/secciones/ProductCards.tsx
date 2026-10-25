@@ -55,30 +55,44 @@ export function ProductCards({ locale }: { locale: Locale }) {
       </h2>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((product) => (
+          // Consulta de contenedor (DR-01, F-02): foto al lado solo si la tarjeta mide al
+          // menos 18rem por dentro; más estrecha (320 px, texto aumentado, cuatro
+          // columnas), foto arriba y texto debajo. Responde al ancho de la tarjeta, no al
+          // de la pantalla. Con 18rem (sin aumentar el texto), la foto va arriba por debajo
+          // de 22rem (352 px) de pantalla, entre 40rem y 43rem (640 a 687 px, dos columnas)
+          // y desde 64rem (1024 px, cuatro columnas).
+          // `sizes` (N-5): Picture antepone `auto`, que sigue el ancho real de la foto
+          // (con el texto al 200 % la consulta de contenedor la sube arriba en cualquier
+          // pantalla). El respaldo, para navegadores sin `auto`, repite esos cortes en rem,
+          // como los media de Tailwind, de mayor a menor y sin huecos; solo decide entre
+          // las versiones de 200 y 600 px. «fotos de las tarjetas a la medida» en
+          // layout.spec.ts lo compara con la maqueta en cada corte, en ES y EN.
           <li
             key={product.id}
-            className="flex gap-4 rounded-card bg-white p-4 shadow-suave lg:flex-col"
+            className="@container rounded-card bg-white p-4 shadow-suave"
           >
-            <div className="w-24 shrink-0 lg:w-full">
-              <Picture
-                spec={IMAGES.products[product.id]}
-                alt={product.imageAlt}
-                sizes="(min-width: 1024px) 280px, 96px"
-                className="aspect-square w-full rounded-control object-cover"
-              />
-            </div>
-            <div className="flex flex-1 flex-col gap-2">
-              <h3 className="text-lg font-semibold text-hoja">
-                {product.label}
-              </h3>
-              <p className="text-sm">{detail(product, copy, locale)}</p>
-              <CallButton
-                locale={locale}
-                label={product.callLabel}
-                context={product.label}
-                size="sm"
-                className="mt-auto self-start"
-              />
+            <div className="flex h-full flex-col gap-4 @2xs:flex-row">
+              <div className="w-full shrink-0 @2xs:w-24">
+                <Picture
+                  spec={IMAGES.products[product.id]}
+                  alt={product.imageAlt}
+                  sizes="(min-width: 64rem) 17.5rem, (min-width: 43rem) 6rem, (min-width: 40rem) 18rem, (min-width: 22rem) 6rem, 18rem"
+                  className="aspect-square w-full rounded-control object-cover"
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <h3 className="text-lg font-semibold text-hoja">
+                  {product.label}
+                </h3>
+                <p className="text-sm">{detail(product, copy, locale)}</p>
+                <CallButton
+                  locale={locale}
+                  label={product.callLabel}
+                  context={product.label}
+                  size="sm"
+                  className="mt-auto self-start"
+                />
+              </div>
             </div>
           </li>
         ))}

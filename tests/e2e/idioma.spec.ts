@@ -86,26 +86,51 @@ test.describe("rutas inglesas (AC-22)", () => {
 
 test.describe("selector de idioma (FR-26, AC-23)", () => {
   for (const { es, en } of PAREJAS) {
-    test(`${es} y ${en}: el selector marca el idioma activo y enlaza la pareja`, async ({
+    test(
+      `${es} y ${en}: el selector marca el idioma activo y enlaza la pareja`,
+      { tag: "@smoke" },
+      async ({ page }) => {
+        await page.goto(es);
+        let nav = selector(page);
+        await expect(nav).toHaveAccessibleName(esCopy.language.navLabel);
+        await expect(nav.locator('[aria-current="true"]')).toHaveText(
+          "Español",
+        );
+        const english = nav.getByRole("link", { name: "English" });
+        await expect(english).toHaveAttribute("href", en);
+        await expect(english).toHaveAttribute("hreflang", "en");
+        await expect(english).toHaveAttribute("lang", "en");
+
+        await page.goto(en);
+        nav = selector(page);
+        await expect(nav).toHaveAccessibleName(enCopy.language.navLabel);
+        await expect(nav.locator('[aria-current="true"]')).toHaveText(
+          "English",
+        );
+        await expect(
+          nav.getByRole("link", { name: "Español" }),
+        ).toHaveAttribute("href", es);
+      },
+    );
+  }
+
+  // T-122 (INC-01, DR-13): la traducción automática del navegador no traduce los nombres
+  // de los idiomas, pero el resto de la página sigue siendo traducible.
+  for (const ruta of PAREJAS.flatMap(({ es, en }) => [es, en])) {
+    test(`${ruta}: los nombres de idioma llevan translate="no" y la página no`, async ({
       page,
     }) => {
-      await page.goto(es);
-      let nav = selector(page);
-      await expect(nav).toHaveAccessibleName(esCopy.language.navLabel);
-      await expect(nav.locator('[aria-current="true"]')).toHaveText("Español");
-      const english = nav.getByRole("link", { name: "English" });
-      await expect(english).toHaveAttribute("href", en);
-      await expect(english).toHaveAttribute("hreflang", "en");
-      await expect(english).toHaveAttribute("lang", "en");
-
-      await page.goto(en);
-      nav = selector(page);
-      await expect(nav).toHaveAccessibleName(enCopy.language.navLabel);
-      await expect(nav.locator('[aria-current="true"]')).toHaveText("English");
-      await expect(nav.getByRole("link", { name: "Español" })).toHaveAttribute(
-        "href",
-        es,
-      );
+      await page.goto(ruta);
+      const nav = selector(page);
+      for (const nombre of ["Español", "English"]) {
+        await expect(nav.getByText(nombre, { exact: true })).toHaveAttribute(
+          "translate",
+          "no",
+        );
+      }
+      await expect(page.locator("[translate='no']")).toHaveCount(2);
+      await expect(page.locator("html")).not.toHaveAttribute("translate", "no");
+      await expect(page.locator('meta[name="google"]')).toHaveCount(0);
     });
   }
 

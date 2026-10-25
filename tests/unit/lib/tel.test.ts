@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPhone, telHref } from "@/lib/tel";
+import { formatPhone, formatPhoneUnido, telHref } from "@/lib/tel";
 
 describe("telHref", () => {
   it("arma el enlace tel: con el número E.164", () => {
@@ -25,5 +25,14 @@ describe("formatPhone", () => {
 
   it("rechaza un número inválido", () => {
     expect(() => formatPhone("3001234567")).toThrow();
+  });
+});
+
+describe("formatPhoneUnido (T-103)", () => {
+  it("une los grupos con espacios no separables", () => {
+    expect(formatPhoneUnido("+573001234567")).toBe(
+      "+57\u00a0300\u00a0123\u00a04567",
+    );
+    expect(formatPhoneUnido("+573001234567")).not.toContain(" ");
   });
 });

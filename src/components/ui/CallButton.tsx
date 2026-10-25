@@ -16,10 +16,12 @@ type CallButtonProps = {
   className?: string;
 };
 
+// Con texto, el botón puede partirse en dos líneas solo si no cabe (320 px, texto al 200 %
+// o espaciado de WCAG 1.4.12; T-103, F-02): con espacio, se ve en una sola línea.
 const sizes = {
-  sm: "min-h-11 px-4 text-sm rounded-control",
-  md: "min-h-12 px-6 text-base rounded-control",
-  icon: "size-14 rounded-full",
+  sm: "min-h-11 max-w-full px-4 py-1 text-sm text-center rounded-control",
+  md: "min-h-12 max-w-full px-6 py-1 text-base text-center rounded-control",
+  icon: "size-14 whitespace-nowrap rounded-full",
 };
 
 // Botón de llamada reutilizable (FR-01, FR-02, FR-04, FR-11, FR-15). Siempre usa el
@@ -47,7 +49,7 @@ export function CallButton({
             })
           : fill(copy.callButton.accessibleName, { texto: label, telefono })
       }
-      className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold whitespace-nowrap text-carbon shadow-suave transition-colors hover:bg-cta-hover ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 bg-cta font-semibold text-carbon shadow-suave transition-colors hover:bg-cta-hover ${sizes[size]} ${className}`}
     >
       <Phone
         aria-hidden="true"

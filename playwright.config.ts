@@ -14,19 +14,55 @@ export default defineConfig({
     baseURL: "http://localhost:4173",
     trace: "retain-on-failure",
   },
+  // Matriz soportada (T-108, DR-05; spec/01-spec.md, NFR de navegadores): Chromium en
+  // todas las pruebas a 360 y 1280 px; Chromium a 320 px para reflow, composición,
+  // accesibilidad y teclado; WebKit (perfil iPhone) y Firefox solo el subconjunto @smoke
+  // (las 8 páginas, los botones Llamar, el selector de idioma y el mapa por clic).
   projects: [
     {
       // Móvil pequeño: diseño mobile-first a 360 px (P4).
       name: "movil-360",
+      testIgnore: ["prefijo.spec.ts", "reflow.spec.ts"],
       use: {
         ...devices["Galaxy S9+"],
         viewport: { width: 360, height: 640 },
       },
     },
     {
+      // 320 CSS px (WCAG 1.4.10): reflow con espaciado de texto y fuente al 200 % y
+      // controles con foco no tapados (T-102, R-01), más composición, axe y teclado.
+      name: "movil-320",
+      testMatch: [
+        "reflow.spec.ts",
+        "layout.spec.ts",
+        "a11y.spec.ts",
+        "calls.spec.ts",
+      ],
+      use: {
+        ...devices["Galaxy S9+"],
+        viewport: { width: 320, height: 640 },
+      },
+    },
+    {
       name: "escritorio",
+      testIgnore: ["prefijo.spec.ts", "reflow.spec.ts"],
       use: {
         ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 800 },
+      },
+    },
+    {
+      name: "webkit-movil",
+      grep: /@smoke/,
+      testIgnore: ["prefijo.spec.ts", "reflow.spec.ts"],
+      use: { ...devices["iPhone 13"] },
+    },
+    {
+      name: "firefox-escritorio",
+      grep: /@smoke/,
+      testIgnore: ["prefijo.spec.ts", "reflow.spec.ts"],
+      use: {
+        ...devices["Desktop Firefox"],
         viewport: { width: 1280, height: 800 },
       },
     },

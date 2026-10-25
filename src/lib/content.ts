@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { findForbiddenClaims, findPendingMarkers } from "@/lib/claims";
+import {
+  findForbiddenClaims,
+  findPendingMarkerEntries,
+  findPendingMarkers,
+  type PendingEntry,
+} from "@/lib/claims";
 import type { Locale } from "@/lib/i18n";
 import { diferenciasDeCatalogo, idsSinPareja } from "@/lib/paridad";
 // Datos comunes a los dos idiomas (spec/03-plan.md D7).
@@ -169,6 +174,11 @@ if (isProduction && site.phoneIsPlaceholder) {
 /** Datos ficticios o por confirmar en los datos comunes y en los dos catálogos. */
 export function pendingMarkers(): string[] {
   return findPendingMarkers({ ...comunes, ...catalogos });
+}
+
+/** Las mismas entradas con el texto completo, para el expediente de lanzamiento (T-117). */
+export function pendingMarkerEntries(): PendingEntry[] {
+  return findPendingMarkerEntries({ ...comunes, ...catalogos });
 }
 
 // 00-constitution.md §4: nada ficticio ni pendiente al publicar (RP-01 a RP-05, T-03, T-05),

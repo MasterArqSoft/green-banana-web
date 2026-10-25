@@ -43,7 +43,7 @@ export function Faq({ locale }: { locale: Locale }) {
             className="group rounded-card bg-white shadow-suave"
           >
             <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-card p-4 font-semibold text-hoja [&::-webkit-details-marker]:hidden">
-              {item.question}
+              <span className="min-w-0">{item.question}</span>
               <ChevronDown
                 aria-hidden="true"
                 className="size-5 shrink-0 transition-transform group-open:rotate-180"

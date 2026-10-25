@@ -12,7 +12,7 @@ export function FreshInfo({ locale }: { locale: Locale }) {
       aria-labelledby="verde-de-verdad-titulo"
       className="contenedor py-12"
     >
-      <div className="grid gap-6 md:grid-cols-[3fr_2fr] md:items-start">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[3fr_2fr] md:items-start">
         <div className="flex flex-col gap-4">
           <h2
             id="verde-de-verdad-titulo"
@@ -24,7 +24,7 @@ export function FreshInfo({ locale }: { locale: Locale }) {
         </div>
         <aside className="flex gap-3 rounded-card bg-hoja-claro p-5">
           <Lightbulb aria-hidden="true" className="size-6 shrink-0 text-hoja" />
-          <p>
+          <p className="min-w-0">
             <strong className="text-hoja">{freshInfo.tipLabel}:</strong>{" "}
             {freshInfo.tip}
           </p>
