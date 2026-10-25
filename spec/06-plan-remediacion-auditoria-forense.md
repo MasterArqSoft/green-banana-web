@@ -303,10 +303,10 @@ Formato igual al de `spec/04-tasks.md`. Est. en horas efectivas, orientativas. "
 |---|---|---|
 | Datos reales, dominio, origen, fotos y aprobaciones RP-01…RP-05, T-03, T-05 | Usuario + proveedor + asesor jurídico | F-01, T-116, T-117 |
 | Decisión de hosting R-08 | Usuario (con DR-06 como insumo) | Cierre de F-11 |
-| Sesión manual con NVDA y TalkBack usando el protocolo de T-109 | Usuario o especialista en accesibilidad | Cierre de F-09 y T-38 |
+| Sesión manual con NVDA y TalkBack usando el protocolo de T-109 | Usuario o especialista en accesibilidad | Cierre de F-09 y T-38. **2026-10-25:** aprobado por el usuario; resultados detallados del protocolo pendientes |
 | Configurar ruleset de `main` en GitHub | Usuario | Enforcement remoto (B11) |
 | Recuperar informes originales de auditorías previas (Fases 8–11) y depositarlos en la ubicación privada de DR-04 | Usuario | Cierre completo de F-08 |
-| Revisión editorial del inglés e idioma de la atención telefónica | Usuario | Pendientes de la Fase 12 |
+| Revisión editorial del inglés e idioma de la atención telefónica | Usuario | Pendientes de la Fase 12. **2026-10-25:** revisión editorial aprobada por el usuario; el idioma de la atención telefónica sigue [POR CONFIRMAR] |
 | Autorizar R-07 (analítica) | Usuario | Implementación de F-13 |
 
 ---

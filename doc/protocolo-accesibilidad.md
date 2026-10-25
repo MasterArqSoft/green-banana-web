@@ -139,27 +139,27 @@ Copiar esta tabla por sesión y añadir el resumen al registro de hallazgos (`do
 |---|---|---|---|---|---|---|---|---|---|---|
 | | | | | | | | | | | |
 
-**Estado al 2026-10-25:** ninguna sesión ejecutada. La automatización de §1 pasa sobre el working tree (bitácora de ese día); eso no sustituye a este protocolo.
+**Estado al 2026-10-25:** ninguna sesión con resultados registrados en esta tabla. La automatización de §1 pasa (bitácora de ese día); eso no sustituye a este protocolo. **Actualización del mismo día:** el usuario declaró aprobadas la accesibilidad y el zoom real, sin aportar los datos de esta tabla (ver «Aprobaciones del usuario» abajo).
 
 ### Hoja de registro de lectores de pantalla (E1–E3, F-09 / T-38)
 
 Estados permitidos: **Aprobada**, **Fallida** (con captura o grabación y lo que dijo el lector), **No ejecutada** (con motivo) y **No aplicable** (con motivo). F-09 solo cierra con E1, E2 y E3 hechos en ES y EN; los resultados parciales válidos se conservan.
 
-Entorno al 2026-10-25, consultado en este equipo: Chrome 155.0.8059.85 y Firefox 158.0.1 instalados; **NVDA no instalado**. Ningún entorno ejecutado: **motivo de «No ejecutada» en todas las celdas: la sesión humana no se ha hecho (Claude Code no opera lectores de pantalla ni simula sus resultados)**. Versión a evaluar: la que esté publicada o el build local, anotando el commit (§1).
+Entorno de desarrollo consultado el 2026-10-25: Chrome 155.0.8059.85 y Firefox 158.0.1 instalados; NVDA no instalado. Claude Code no opera lectores de pantalla ni simula sus resultados. **Actualización del 2026-10-25:** el usuario declaró aprobada la accesibilidad (F-09 / T-38) y el zoom real (ver «Aprobaciones del usuario» abajo), sin aportar resultados por comprobación: las celdas pasan de «No ejecutada» a **«Sin datos»** (no se sabe si se ejecutaron ni con qué resultado). No equivale a «Aprobada». Versión a evaluar: la que esté publicada o el build local, anotando el commit (§1).
 
 | ID | Comprobación | Pasos de §3 | E1 NVDA + Chrome · ES | E1 · EN | E2 NVDA + Firefox · ES | E2 · EN | E3 TalkBack + Chrome Android · ES | E3 · EN | Evidencia y notas |
 |---|---|---|---|---|---|---|---|---|---|
-| L1 | Título de la página e idioma anunciado (`lang`) | 1 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L2 | «Saltar al contenido» y enlaces: nombre claro y destino | 2, 10 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L3 | Selector de idioma: «Español / English», idioma actual anunciado, cambio de voz | 3, 4 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L4 | Botones Llamar: el nombre incluye el texto visible, el número y, en tarjetas, la presentación | 3, 5 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L5 | FAQ: pregunta, estado abierto/cerrado y respuesta | 6 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L6 | Mapa inicial: aviso de privacidad antes de «Ver mapa» y lista de fincas sin abrir el mapa | 7 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L7 | Mapa: «Cargando mapa…», mapa listo, zoom, marcadores y popup | 8 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L8 | Mapa: error, fallo parcial y «Reintentar» anunciados sin mover el foco (si no se puede provocar: No aplicable con motivo) | 9 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L9 | Pie: teléfono, correo, legales y SIC | 10 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L10 | Páginas legales y «Volver al inicio» en el mismo idioma | 11 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
-| L11 | 404 (`/no-existe` y `/en/no-existe`): mensaje entendible y ayuda inglesa anunciada en inglés | 12 | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | No ejecutada | |
+| L1 | Título de la página e idioma anunciado (`lang`) | 1 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L2 | «Saltar al contenido» y enlaces: nombre claro y destino | 2, 10 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L3 | Selector de idioma: «Español / English», idioma actual anunciado, cambio de voz | 3, 4 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L4 | Botones Llamar: el nombre incluye el texto visible, el número y, en tarjetas, la presentación | 3, 5 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L5 | FAQ: pregunta, estado abierto/cerrado y respuesta | 6 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L6 | Mapa inicial: aviso de privacidad antes de «Ver mapa» y lista de fincas sin abrir el mapa | 7 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L7 | Mapa: «Cargando mapa…», mapa listo, zoom, marcadores y popup | 8 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L8 | Mapa: error, fallo parcial y «Reintentar» anunciados sin mover el foco (si no se puede provocar: No aplicable con motivo) | 9 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L9 | Pie: teléfono, correo, legales y SIC | 10 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L10 | Páginas legales y «Volver al inicio» en el mismo idioma | 11 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
+| L11 | 404 (`/no-existe` y `/en/no-existe`): mensaje entendible y ayuda inglesa anunciada en inglés | 12 | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | Sin datos | |
 
 Datos de cada entorno (completar al ejecutar): fecha, evaluador, sistema y versión, navegador y versión, lector y versión, voz e idioma, URL y commit, limitaciones.
 
@@ -169,5 +169,16 @@ Datos de cada entorno (completar al ejecutar): fecha, evaluador, sistema y versi
 | E2 | | | | | | | |
 | E3 | | | | | | | |
 
+
+### Aprobaciones del usuario (2026-10-25)
+
+Declaraciones del usuario, registradas como tales (no son pruebas ejecutadas por Claude Code). Detalle y procedencia: bitácora del 2026-10-25, «Aprobaciones del usuario: revisión visual, accesibilidad, zoom real e inglés».
+
+| Aprobación | Procedencia | Qué no se aportó | Estado |
+|---|---|---|---|
+| Aceptación visual de las tarjetas (F-02, paso 16) | Declaración del usuario | Versión o URL, navegador, ajuste de texto | Aceptado por el usuario |
+| Accesibilidad (F-09 / T-38) | Declaración del usuario | Entornos E1–E3 usados, versiones, lector, anuncios, resultados por celda de la hoja, versión evaluada | Aprobado por el usuario; evidencia detallada pendiente |
+| Zoom real del navegador (E4, paso 13) | Declaración del usuario | Porcentajes (200 % / 400 %), navegador, ancho de ventana, versión evaluada | Aprobado por el usuario; porcentajes sin confirmar |
+| Ampliación real del texto (E4 y E5, paso 14) | — (no incluida en las aprobaciones) | Todo | Pendiente; la aprobación del zoom no la acredita. Existe solo evidencia automática de Claude Code (ajuste de fuente del navegador a 32 px en Chromium, bitácora del 2026-10-25), que no sustituye la prueba humana |
 
 Cada falla se convierte en un hallazgo nuevo (`AUD-<fecha>-A11Y/<id>`) con prueba automática cuando sea posible. F-09 cierra cuando E1 a E5 estén hechos en los dos idiomas sin fallas abiertas de nivel A o AA, o con las restantes aceptadas por el usuario con su motivo.

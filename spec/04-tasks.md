@@ -290,7 +290,7 @@ Decisiones del usuario (2026-10-24), detalle en el plan §4:
 2. En la Ola 1, la regresión roja de T-102 va antes de cada corrección y se registra su salida fallida.
 3. No tocar datos de negocio (`site.json`, marcadores `(FICTICIO)`/`[POR CONFIRMAR]`), no añadir analítica, formularios, WhatsApp ni precios, no borrar archivos y no hacer commit ni push sin orden expresa.
 4. Al terminar cada tarea: bitácora, estado en este archivo y fila del registro de hallazgos (T-101).
-5. T-116 espera a RP-04; F-09 y F-11 solo cierran con la sesión humana (T-109) y la verificación del dominio final tras R-08.
+5. T-116 espera a RP-04; F-09 y F-11 solo cierran con la sesión humana (T-109) y la verificación del dominio final tras R-08. **Actualización 2026-10-25:** F-02 cerrado por aceptación visual del usuario; F-09 aprobado por el usuario con la evidencia detallada del protocolo pendiente; revisión editorial del inglés aprobada por el usuario.
 
 ## Resumen
 
@@ -326,7 +326,7 @@ Actualizado: 2026-10-25. Detalle de cada tarea en `doc/bitacora.md`.
 | **Fase 12 (español predeterminado e inglés opcional)** | Completa (2026-10-24): T-87 a T-99. AC-21 a AC-29 acreditados con `validate` y Lighthouse (bitácora). En `main` (`2bf312d`, `10cd67b`) y desplegada en la demo (ver «Estados de entrega»). Pendientes que no cierra: revisión editorial del inglés, revisión jurídica de los legales en los dos idiomas (T-05), idioma de la atención telefónica [POR CONFIRMAR] y prueba manual con lector de pantalla también en inglés (T-38) |
 | **Hecha** | T-01; T-07, T-08, T-09, T-10, T-11; T-12 a T-21, T-23, T-24, T-25, T-28, T-33, T-46, T-47; T-26, T-31; T-30, T-37, T-39, T-40, T-49 |
 | **Hecha con contenido provisional** | T-04: fotos generadas con IA, se reemplazan en RP-02. T-27: páginas legales en borrador, esperan T-05 |
-| **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
+| **Parcial** | T-38: auditoría automática con axe sin infracciones. Parte manual: aprobada por el usuario el 2026-10-25 (declaración, sin resultados por entorno; ver `doc/registro-hallazgos.md` F-09); evidencia detallada del protocolo pendiente |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
 | **Fase 11 (auditoría de causa raíz)** | Completa (2026-10-24): T-78 a T-86 |
@@ -348,8 +348,8 @@ Cuatro estados distintos: **implementado** (en el working tree), **commit** (en 
 | Fase 13 (T-100 a T-122) | 2026-10-25 | `b128a67` (original `af27959`, PR #7 fusionado con rebase) | Sí | Sí | `gh run` 40221231762 (push, `verificar`, `lighthouse` y `deploy` correctos, 2026-10-25 18:33 UTC); despliegue `github-pages` de `b128a67` (`gh api deployments`) |
 | Dependencias (Dependabot: lucide-react 1.61.0) | 2026-10-25 | `9a27d11` | Sí | Sí | `gh run` 40225394271 (push, todo correcto, 19:25 UTC) |
 | T-123 (textos de ejemplo en inglés y revisión asistida) | 2026-10-25 | `f3026a5`, fusionado con el merge `64dba55` (PR #9) | Sí | Sí | `gh run` 40228682526 (PR) y 40229133764 (push, `verificar`, `lighthouse` y `deploy` correctos, 20:12 UTC); despliegue `github-pages` de `64dba55`; `/en/` de la demo responde 200 (consulta del 2026-10-25) |
-| Límite de 3 min para instalar navegadores en CI | 2026-10-25 | ND | No | No | Cambio local en `.github/workflows/pages.yml`, sintaxis validada con el parser `yaml`; pendiente de commit |
-| Corrección visual de F-02 (botón en tarjetas y flotante con texto aumentado) y teclado ES/EN | 2026-10-25 | ND | No | No | Working tree; `validate` con salida 0 tras la corrección; pruebas de teclado nuevas verdes en los cinco proyectos; pendiente de commit y de la aceptación visual del usuario |
+| Límite de 3 min para instalar navegadores en CI, corrección visual de F-02 (botón en tarjetas y flotante con texto aumentado) y teclado ES/EN | 2026-10-25 | `04c4f8d` (PR #10) | Sí | Sí | `gh run` 40234464894 (PR: `verificar` correcto, instalación de navegadores 44 s) y 40234910019 (push: `verificar`, `deploy` y `lighthouse` correctos). F-02 aceptado por el usuario el 2026-10-25 (bitácora) |
+| Redacción en inglés (beneficios, mapa y derecho de retracto) | 2026-10-25 | `305291f` (PR #11) | Sí | Sí | `gh run` 40236322023 (push, todo correcto); despliegue `github-pages` de `305291f`. Revisión editorial del inglés aprobada por el usuario el 2026-10-25 |
 
 ---
 

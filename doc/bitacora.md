@@ -1,5 +1,28 @@
 # Bitácora del proyecto
 
+## 2026-10-25 — Aprobaciones del usuario: revisión visual, accesibilidad, zoom real e inglés
+
+Solicitud: consolidar en la documentación cuatro aprobaciones expresas del usuario, sin presentarlas como pruebas de Claude Code ni inventar evidencia, y mantener producción como bloque aparte. Antes, por orden directa del usuario, se borró `debug.log` (848 bytes, solo avisos `network_change_notifier_win` de Chromium, sin rastrear); el texto de la tarea decía no borrarlo y prevaleció la instrucción escrita por el usuario.
+
+**Estado comprobado:** `main`, HEAD `305291f` = `origin/main`, árbol limpio. `04c4f8d` (PR #10) y `305291f` (PR #11) son antecesores de HEAD. Último despliegue `github-pages`: `305291f` (2026-10-25 21:42 UTC), run de `main` correcto.
+
+**Procedencia:**
+- **Declarado por el usuario el 2026-10-25 (aprobaciones):** aceptación visual de F-02; accesibilidad F-09 / T-38; zoom real del navegador; revisión editorial del inglés. No aportó versión o URL evaluada, navegador, sistema, dispositivo, lectores usados, anuncios, porcentajes de zoom, ajustes de texto, resultados por comprobación ni archivos de evidencia. No se dedujo que evaluara `305291f` por ser la versión publicada.
+- **Verificaciones anteriores con herramientas (bitácora del 2026-10-25):** e2e de reflow, foco, teclado ES/EN y estados del mapa; sondas de Claude Code con ajuste de fuente del navegador a 32 px en Chromium; `validate` y CI de los PR #10 y #11.
+- **Verificado en esta sesión:** estado de Git y del despliegue (arriba) y coherencia documental; sin builds ni suites (cambio solo documental).
+- **No aportado:** lo enumerado en el primer punto.
+
+**Estados resultantes:**
+- F-02: **cerrado** por aceptación visual del usuario; versión evaluada no declarada.
+- F-09 / T-38: **aprobado por el usuario; evidencia detallada del protocolo pendiente**. La hoja §6 pasa de «No ejecutada» a «Sin datos». No es conformidad WCAG 2.2 AA acreditada.
+- Zoom real: aprobado por el usuario, sin porcentajes confirmados.
+- Ampliación real del texto (E4–E5): **pendiente, independiente**; la aprobación del zoom no la acredita.
+- Revisión editorial del inglés: **aprobada por el usuario**; la jurídica sigue en T-05.
+
+**Sin cambios (bloque de producción):** R-08, RP-01 a RP-05, T-03, T-05, D-13, F-11 / N-6 d, T-116, idioma de atención telefónica, Google Business Profile y Search Console, R-07 y medición comercial real, aprobación de lanzamiento. F-08 sigue aceptado; T-119 y F-17, diferidos; el cuelgue con prefijo, sin causa acreditada y sin refactor.
+
+**Archivos:** `doc/registro-hallazgos.md` (F-02, F-09), `doc/protocolo-accesibilidad.md` (hoja §6 y «Aprobaciones del usuario»), `doc/expediente-lanzamiento.md`, `spec/04-tasks.md`, `spec/05-alcance-y-roadmap.md` (A-08, D-16), `spec/06-plan-remediacion-auditoria-forense.md` (§7), `CLAUDE.md` y esta bitácora. También se corrigieron estados vigentes obsoletos: el límite de CI y la corrección de F-02 ya no figuran «pendientes de commit» (integrados con `04c4f8d`, PR #10) y la tabla de entregas añade `305291f` (PR #11). Sin commit, push ni despliegue.
+
 ## 2026-10-25 — Redacción en inglés: propuestas aplicadas
 
 - Por orden del usuario se aplicaron las propuestas de la revisión editorial ES/EN:
