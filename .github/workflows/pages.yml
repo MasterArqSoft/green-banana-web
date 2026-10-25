@@ -83,6 +83,12 @@ jobs:
       # Chromium para todo; WebKit y Firefox para el subconjunto @smoke (T-108, DR-05).
       - name: Navegadores para las pruebas e2e
         run: npx playwright install --with-deps chromium webkit firefox
+        # Límite propio (2026-10-25): en el run 40218894048 (intento 1, PR #7) este paso se
+        # colgó desde las 17:57 UTC hasta que el job se canceló al llegar a sus 20 min; el
+        # intento 2 pasó sin cambios. Duraciones normales: 39 s (run 40228682526) y 50 s
+        # (run 40229133764). 3 min deja margen para red y apt, y un cuelgue falla aquí,
+        # identificable, en vez de consumir todo el job. No corrige la causa (del runner).
+        timeout-minutes: 3
 
       - name: Pruebas e2e (Playwright + axe)
         run: npx playwright test

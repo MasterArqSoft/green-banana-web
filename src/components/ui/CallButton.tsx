@@ -21,7 +21,9 @@ type CallButtonProps = {
 const sizes = {
   sm: "min-h-11 max-w-full px-4 py-1 text-sm text-center rounded-control",
   md: "min-h-12 max-w-full px-6 py-1 text-base text-center rounded-control",
-  icon: "size-14 whitespace-nowrap rounded-full",
+  // En px: solo lleva ícono, así que no crece con el texto. En rem medía 112 px con la
+  // fuente al 200 % y tapaba el contenido (revisión visual de F-02); 56 px > 44 px táctiles.
+  icon: "size-[56px] whitespace-nowrap rounded-full",
 };
 
 // Botón de llamada reutilizable (FR-01, FR-02, FR-04, FR-11, FR-15). Siempre usa el
@@ -53,7 +55,7 @@ export function CallButton({
     >
       <Phone
         aria-hidden="true"
-        className={`shrink-0 ${size === "icon" ? "size-6" : "size-4"}`}
+        className={`shrink-0 ${size === "icon" ? "size-[24px]" : "size-4"}`}
       />
       {size === "icon" ? <span className="sr-only">{label}</span> : label}
     </a>
