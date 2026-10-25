@@ -24,7 +24,10 @@ npm run images       # regenera public/images/ desde fotos-originales/ (carpeta 
 ```
 
 ## Contenido
-Los textos, datos de contacto, productos, preguntas, recetas y textos legales se editan en `src/content/*.json`, sin tocar componentes. El build valida todo con Zod y falla si falta un dato, aparece un precio o hay una afirmación de salud prohibida.
+Los textos, datos de contacto, productos, preguntas, recetas y textos legales se editan en `src/content/`, sin tocar componentes. Los datos comunes (identidad, teléfono, cifras, IDs, coordenadas) van una sola vez en `src/content/*.json`; los textos, en un catálogo por idioma: `src/content/es-CO/` (español, predeterminado) y `src/content/en/` (inglés). El build valida todo con Zod y falla si falta un dato o una traducción, si los dos idiomas no tienen las mismas claves, IDs y marcadores, si aparece un precio o si hay una afirmación de salud prohibida en cualquier idioma.
+
+## Idiomas
+Español de Colombia en las URL de siempre (`/`, `/terminos`, `/privacidad`, `/garantia`) e inglés bajo `/en` (`/en`, `/en/terms`, `/en/privacy`, `/en/guarantee`). La URL decide el idioma: `/` siempre abre en español, sin detección del navegador ni cookies. El selector «Español / English» enlaza la página equivalente. Detalle en `spec/03-plan.md` D7.
 
 ## Despliegue
 - **Demo:** cada push a `main` se publica en GitHub Pages (`.github/workflows/pages.yml`).

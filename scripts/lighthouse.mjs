@@ -8,6 +8,8 @@
 // - LH_THROTTLING=devtools: throttling aplicado durante la carga en vez del simulado. Es
 //   solo diagnóstico: el presupuesto está medido con el simulado y no se evalúa.
 // - LH_SALIDA=<archivo.json>: guarda el resumen (corridas, medianas, subpartes, elemento).
+// - LH_RUTAS=/,/en: páginas a medir, separadas por comas. Por defecto las dos landings
+//   (T-96, AC-29): cada una se evalúa por separado contra el mismo presupuesto.
 // Uso: npm run build && npm run lighthouse
 import { execFileSync, spawn } from "node:child_process";
 import { appendFileSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -36,10 +38,19 @@ if (!["simulate", "devtools"].includes(METODO)) {
   );
 }
 const diagnostico = METODO !== "simulate";
+const RUTAS = (process.env.LH_RUTAS ?? "/,/en")
+  .split(",")
+  .map((ruta) => ruta.trim())
+  .filter(Boolean);
+if (RUTAS.some((ruta) => !ruta.startsWith("/"))) {
+  throw new Error(
+    `LH_RUTAS debe tener rutas que empiecen con / (recibido: ${RUTAS})`,
+  );
+}
 const port = 4190;
 const report = join(tmpdir(), "lighthouse-green-banana.json");
 
-function medir() {
+function medir(ruta) {
   // Sin restos de la corrida anterior: si esta falla a medias, no se lee el informe viejo.
   rmSync(report, { force: true });
   execFileSync(
@@ -47,7 +58,7 @@ function medir() {
     [
       "--yes",
       "lighthouse@13.5.0",
-      `http://localhost:${port}/`,
+      `http://localhost:${port}${ruta}`,
       "--quiet",
       // En CI (GitHub Actions, Ubuntu) Chrome no puede usar su sandbox: el sistema no
       // permite los espacios de nombres que necesita. Playwright hace lo mismo.
@@ -117,68 +128,71 @@ await new Promise((resolve, reject) => {
 });
 
 let failed = false;
+const resumenes = {};
 try {
   console.log(
     `Método de throttling: ${METODO}${diagnostico ? " (diagnóstico: el presupuesto no se evalúa)" : ""}`,
   );
-  const corridas = [];
-  for (let i = 1; i <= RUNS; i++) {
-    const corrida = medir();
-    corridas.push(corrida);
-    const lcp = corrida.metricas["largest-contentful-paint"];
+  for (const ruta of RUTAS) {
+    console.log(`
+${ruta}`);
+    const corridas = [];
+    for (let i = 1; i <= RUNS; i++) {
+      const corrida = medir(ruta);
+      corridas.push(corrida);
+      const lcp = corrida.metricas["largest-contentful-paint"];
+      console.log(
+        `  corrida ${i}/${RUNS}: Rendimiento ${corrida.categorias.performance}, LCP ${(lcp / 1000).toFixed(2)} s, TBT ${Math.round(corrida.metricas["total-blocking-time"])} ms`,
+      );
+    }
+    console.log(`Mediana de ${RUNS} corridas:`);
+    const filas = evaluar(corridas);
+    for (const { id, valor, unidad, limite, ok } of filas) {
+      if (!diagnostico) failed ||= !ok;
+      const texto =
+        unidad === "ms" ? `${Math.round(valor)}ms` : Number(valor.toFixed(3));
+      const marca = diagnostico ? "·" : ok ? "✓" : "✗";
+      console.log(`${marca} ${id}: ${texto} (${limite})`);
+    }
+    const { subpartes, elementos } = resumirDesgloses(
+      corridas.map((c) => c.desglose),
+    );
     console.log(
-      `  corrida ${i}/${RUNS}: Rendimiento ${corrida.categorias.performance}, LCP ${(lcp / 1000).toFixed(2)} s, TBT ${Math.round(corrida.metricas["total-blocking-time"])} ms`,
+      `Subpartes del LCP (mediana): ${SUBPARTES_LCP.map((id) => `${id} ${subpartes[id] === null ? "–" : `${Math.round(subpartes[id])}ms`}`).join(" · ")}`,
     );
-  }
-  console.log(`Mediana de ${RUNS} corridas:`);
-  const filas = evaluar(corridas);
-  for (const { id, valor, unidad, limite, ok } of filas) {
-    if (!diagnostico) failed ||= !ok;
-    const texto =
-      unidad === "ms" ? `${Math.round(valor)}ms` : Number(valor.toFixed(3));
-    const marca = diagnostico ? "·" : ok ? "✓" : "✗";
-    console.log(`${marca} ${id}: ${texto} (${limite})`);
-  }
-  const { subpartes, elementos } = resumirDesgloses(
-    corridas.map((c) => c.desglose),
-  );
-  console.log(
-    `Subpartes del LCP (mediana): ${SUBPARTES_LCP.map((id) => `${id} ${subpartes[id] === null ? "–" : `${Math.round(subpartes[id])}ms`}`).join(" · ")}`,
-  );
-  // Con el método simulado, Lighthouse calcula las subpartes sobre la traza sin
-  // throttling: no suman el LCP simulado. Para saber dónde se va el tiempo, DevTools.
-  if (!diagnostico) {
+    // Con el método simulado, Lighthouse calcula las subpartes sobre la traza sin
+    // throttling: no suman el LCP simulado. Para saber dónde se va el tiempo, DevTools.
+    if (!diagnostico) {
+      console.log(
+        "  (traza sin throttling: no suman el LCP simulado; para el desglose, LH_THROTTLING=devtools)",
+      );
+    }
+    // Comparar variantes solo vale si el elemento LCP no cambió (T-80).
     console.log(
-      "  (traza sin throttling: no suman el LCP simulado; para el desglose, LH_THROTTLING=devtools)",
+      elementos.length === 1
+        ? `Elemento LCP: ${elementos[0]}`
+        : `⚠ El elemento LCP cambió entre corridas: ${elementos.join(" | ")}`,
     );
-  }
-  // Comparar variantes solo vale si el elemento LCP no cambió (T-80).
-  console.log(
-    elementos.length === 1
-      ? `Elemento LCP: ${elementos[0]}`
-      : `⚠ El elemento LCP cambió entre corridas: ${elementos.join(" | ")}`,
-  );
-  // En GitHub Actions, tabla en el resumen del job (T-85).
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(
-      process.env.GITHUB_STEP_SUMMARY,
-      resumenMarkdown({
-        metodo: METODO,
-        runs: RUNS,
-        filas,
-        subpartes,
-        elementos,
-      }),
-    );
+    // En GitHub Actions, una tabla por página en el resumen del job (T-85, T-96).
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      appendFileSync(
+        process.env.GITHUB_STEP_SUMMARY,
+        resumenMarkdown({
+          metodo: METODO,
+          runs: RUNS,
+          filas,
+          subpartes,
+          elementos,
+          ruta,
+        }),
+      );
+    }
+    resumenes[ruta] = { corridas, mediana: filas, subpartes, elementos };
   }
   if (process.env.LH_SALIDA) {
     writeFileSync(
       process.env.LH_SALIDA,
-      JSON.stringify(
-        { metodo: METODO, corridas, mediana: filas, subpartes, elementos },
-        null,
-        2,
-      ),
+      JSON.stringify({ metodo: METODO, rutas: resumenes }, null, 2),
     );
     console.log(`Resumen guardado en ${process.env.LH_SALIDA}`);
   }

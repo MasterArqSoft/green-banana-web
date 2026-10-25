@@ -1,10 +1,13 @@
 import { Phone } from "lucide-react";
-import { copy, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { formatPhone, telHref } from "@/lib/tel";
 import { fill } from "@/lib/template";
 
 type CallButtonProps = {
-  /** Texto visible; por defecto copy.callButton.label. P. ej. callLabel de products.json. */
+  /** Idioma de los textos; el número es el mismo en todos (site.json). */
+  locale: Locale;
+  /** Texto visible; por defecto copy.callButton.label del idioma. P. ej. callLabel de products.json. */
   label?: string;
   /** "icon": botón redondo solo con ícono (botón flotante); el texto queda para lectores de pantalla. */
   size?: "sm" | "md" | "icon";
@@ -22,11 +25,14 @@ const sizes = {
 // Botón de llamada reutilizable (FR-01, FR-02, FR-04, FR-11, FR-15). Siempre usa el
 // número de site.json a través de telHref; nunca recibe el número por props.
 export function CallButton({
-  label = copy.callButton.label,
+  locale,
+  label,
   size = "md",
   context,
   className = "",
 }: CallButtonProps) {
+  const { copy, site } = getContent(locale);
+  label ??= copy.callButton.label;
   const telefono = formatPhone(site.phone);
   return (
     <a

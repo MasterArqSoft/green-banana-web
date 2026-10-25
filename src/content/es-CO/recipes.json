@@ -1,0 +1,27 @@
+{
+  "sancocho": {
+    "name": "Sancocho",
+    "description": "El guineo espesa el caldo y le da cuerpo.",
+    "imageAlt": "Sancocho con trozos de guineo verde, yuca, mazorca y pollo."
+  },
+  "cayeye": {
+    "name": "Cayeye",
+    "description": "Puré de guineo verde con queso costeño y mantequilla, típico del Magdalena.",
+    "imageAlt": "Cayeye de guineo verde con queso costeño y mantequilla."
+  },
+  "guineitos": {
+    "name": "Guineítos hervidos o en escabeche",
+    "description": "Se hierven hasta que un tenedor entre fácil. Acompañan pescado o carnes.",
+    "imageAlt": "Guineítos hervidos con escabeche de cebolla y pescado frito."
+  },
+  "patacon": {
+    "name": "Patacón de guineo",
+    "description": "Más pequeño y suave que el de plátano hartón.",
+    "imageAlt": "Patacones de guineo verde con hogao."
+  },
+  "chips-horneados": {
+    "name": "Chips horneados",
+    "description": "Láminas finas, aceite y sal al horno.",
+    "imageAlt": "Chips de guineo verde horneados."
+  }
+}

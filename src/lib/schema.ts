@@ -58,24 +58,30 @@ export const siteSchema = z.strictObject({
   acopio: z.strictObject({ city: text, department: text }),
 });
 
-export const presentationSchema = z.strictObject({
-  id: z.enum(["unit", "kg", "bag", "box"]),
-  label: text,
-  approxWeightG: approxWeightG.optional(),
-  approxUnits: text.optional(),
-  callLabel: text,
-  imageAlt: text,
-  // Cifras aún sin confirmar con el proveedor (T-03): se muestran entre corchetes y
-  // bloquean el build de producción. Se borra el campo al confirmarlas.
-  pendingConfirmation: z
-    .array(z.enum(["approxWeightG", "approxUnits"]))
-    .optional(),
-});
+// Datos comunes a los dos idiomas (spec/03-plan.md D7): IDs, cifras y estado de
+// confirmación viven una sola vez en src/content/; los textos, en cada catálogo de idioma.
+// Un texto por idioma, con la clave = id del dato común (content.ts comprueba que coincidan).
+const textosPorId = <T extends z.ZodType>(textos: T) => z.record(slug, textos);
 
 export const productsSchema = z
-  .array(presentationSchema)
+  .array(
+    z.strictObject({
+      id: z.enum(["unit", "kg", "bag", "box"]),
+      approxWeightG: approxWeightG.optional(),
+      approxUnits: text.optional(),
+      // Cifras aún sin confirmar con el proveedor (T-03): se muestran entre corchetes y
+      // bloquean el build de producción. Se borra el campo al confirmarlas.
+      pendingConfirmation: z
+        .array(z.enum(["approxWeightG", "approxUnits"]))
+        .optional(),
+    }),
+  )
   .min(1)
   .superRefine(uniqueIds);
+
+export const productTextsSchema = textosPorId(
+  z.strictObject({ label: text, callLabel: text, imageAlt: text }),
+);
 
 export const zonesSchema = z
   .array(
@@ -92,41 +98,40 @@ export const faqSchema = z
   .superRefine(uniqueIds);
 
 export const recipesSchema = z
+  .array(z.strictObject({ id: slug, time: text }))
+  .min(1)
+  .superRefine(uniqueIds);
+
+export const recipeTextsSchema = textosPorId(
+  z.strictObject({ name: text, description: text, imageAlt: text }),
+);
+
+// FR-12: solo testimonios reales y autorizados. Vacío (la sección no se publica, AC-11)
+// o de 3 a 5 testimonios. Nombre, foto y autorización son comunes; el texto, por idioma.
+export const testimonialsSchema = z
   .array(
     z.strictObject({
       id: slug,
       name: text,
-      time: text,
-      description: text,
-      imageAlt: text,
-    }),
-  )
-  .min(1)
-  .superRefine(uniqueIds);
-
-// FR-12: solo testimonios reales y autorizados. Vacío (la sección no se publica, AC-11)
-// o de 3 a 5 testimonios.
-export const testimonialsSchema = z
-  .array(
-    z.strictObject({
-      name: text,
-      // Negocio o barrio.
-      context: text,
-      text,
       // Nombre de la foto en fotos-originales/testimonio-<photo>.png; npm run images la
       // publica optimizada (testimonialImage en src/lib/images.ts).
       photo: slug,
-      photoAlt: text,
       // Constancia de que la persona autorizó publicar su testimonio y su foto.
       authorized: z.literal(true),
     }),
   )
+  .superRefine(uniqueIds)
   .refine(
     (items) => items.length === 0 || (items.length >= 3 && items.length <= 5),
     {
       message: "Deben ser 0 testimonios (sección oculta) o entre 3 y 5",
     },
   );
+
+export const testimonialTextsSchema = textosPorId(
+  // context: negocio o barrio.
+  z.strictObject({ context: text, text, photoAlt: text }),
+);
 
 export const originSchema = z.strictObject({
   producer: text,
@@ -264,6 +269,11 @@ export const copySchema = z.strictObject({
   notFound: z.strictObject({ title: text, text }),
   // skipToContent: enlace "Saltar al contenido" (UX-08, T-58, WCAG 2.4.1).
   navigation: z.strictObject({ backHome: text, skipToContent: text }),
+  // Selector de idioma (FR-26): cada idioma con su propio nombre («Español», «English»).
+  language: z.strictObject({
+    navLabel: text,
+    names: z.strictObject({ "es-CO": text, en: text }),
+  }),
   // FR-24. El aviso (consent) va antes del botón y es la base del consentimiento (AC-19).
   // zoomIn, zoomOut y closePopup reemplazan los textos en inglés de Leaflet.
   map: z.strictObject({
@@ -296,10 +306,10 @@ export const copySchema = z.strictObject({
 });
 
 // Mapa de fincas de origen (FR-24, spec/03-plan.md §5). Ficticias hasta RP-02.
+// El nombre se traduce (p. ej. el del acopio): va en el catálogo de cada idioma.
 const finca = z.strictObject({
   id: slug,
   tipo: z.enum(["finca", "acopio"]),
-  nombre: text,
   municipio: text,
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
@@ -315,6 +325,8 @@ export const fincasSchema = z.strictObject({
   zoom: z.number().int().min(5).max(15),
   fincas: z.array(finca).superRefine(uniqueIds),
 });
+
+export const fincaNamesSchema = textosPorId(text);
 
 // Páginas legales (FR-18). Los párrafos pueden usar {razonSocial}, {nit}, {direccion},
 // {correo}, {telefono} y {ciudad}, que se rellenan con site.json. Borrador hasta T-05.
@@ -335,15 +347,24 @@ export const legalSchema = z.strictObject({
 });
 
 export type Site = z.infer<typeof siteSchema>;
-export type Presentation = z.infer<typeof presentationSchema>;
 export type Zone = z.infer<typeof zonesSchema>[number];
 export type FaqItem = z.infer<typeof faqSchema>[number];
-export type Recipe = z.infer<typeof recipesSchema>[number];
 export type Origin = z.infer<typeof originSchema>;
-export type Testimonial = z.infer<typeof testimonialsSchema>[number];
 export type Copy = z.infer<typeof copySchema>;
-export type Fincas = z.infer<typeof fincasSchema>;
-export type Finca = Fincas["fincas"][number];
+export type Legal = z.infer<typeof legalSchema>;
+// Tipos compuestos: dato común + texto del idioma (content.ts los arma).
+export type Presentation = z.infer<typeof productsSchema>[number] &
+  z.infer<typeof productTextsSchema>[string];
+export type Recipe = z.infer<typeof recipesSchema>[number] &
+  z.infer<typeof recipeTextsSchema>[string];
+export type Testimonial = z.infer<typeof testimonialsSchema>[number] &
+  z.infer<typeof testimonialTextsSchema>[string];
+export type Finca = z.infer<typeof fincasSchema>["fincas"][number] & {
+  nombre: z.infer<typeof fincaNamesSchema>[string];
+};
+export type Fincas = Omit<z.infer<typeof fincasSchema>, "fincas"> & {
+  fincas: Finca[];
+};
 /** Finca sin el productor: lo que dibujan el mapa interactivo y el ilustrado. */
 export type Ubicacion = Omit<Finca, "productor">;
 /** Textos del mapa que recibe el componente cliente (solo los que usa). */
@@ -361,7 +382,4 @@ export type MapaTextos = Pick<
   | "zoomOut"
   | "closePopup"
 >;
-export type LegalPageKey = Exclude<
-  keyof z.infer<typeof legalSchema>,
-  "draftNotice"
->;
+export type LegalPageKey = Exclude<keyof Legal, "draftNotice">;

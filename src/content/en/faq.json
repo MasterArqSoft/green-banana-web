@@ -1,0 +1,47 @@
+[
+  {
+    "id": "diferencia-platano",
+    "question": "What's the difference between green banana (guineo verde), banana and green plantain?",
+    "answer": "Guineo verde is banana harvested green for cooking. Green plantain (hartón) is a different variety, larger and with a different flavor."
+  },
+  {
+    "id": "unidades-por-kilo",
+    "question": "How many bananas are in a kilo?",
+    "answer": "Between [4 and 5], depending on size."
+  },
+  {
+    "id": "conservacion",
+    "question": "How long does it keep and how should I store it?",
+    "answer": "Between [4 and 7] days in a cool, dry place. Do not refrigerate."
+  },
+  {
+    "id": "pelar",
+    "question": "How do I peel it without staining my hands?",
+    "answer": "Make a lengthwise cut in the peel and peel it with wet hands, or boil it with the peel on."
+  },
+  {
+    "id": "pinton",
+    "question": "Can it arrive partly ripe (pintón)?",
+    "answer": "Some pieces may have a soft yellow tint. If more than [X] percent arrives partly ripe, we replace it."
+  },
+  {
+    "id": "zonas",
+    "question": "Which areas do you deliver to?",
+    "answer": "We collect in Santa Marta and distribute to homes and retail outlets in the city. Call us to check whether we reach your area."
+  },
+  {
+    "id": "precio",
+    "question": "How much does it cost?",
+    "answer": "Prices are given over the phone. [TO BE CONFIRMED legal validation in RP-03]"
+  },
+  {
+    "id": "garantia",
+    "question": "What if it arrives damaged?",
+    "answer": "24-hour guarantee with replacement."
+  },
+  {
+    "id": "negocios",
+    "question": "Do you sell to shops, hotels or restaurants? And to individuals?",
+    "answer": "Yes, to all of them. Call us and we'll explain the terms for your case."
+  }
+]

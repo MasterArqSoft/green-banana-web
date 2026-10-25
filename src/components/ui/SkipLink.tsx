@@ -1,11 +1,13 @@
-import { copy } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 
 // Destino del enlace: el <main> de cada página lleva este id.
 export const MAIN_ID = "contenido";
 
 // "Saltar al contenido" (UX-08, T-58, WCAG 2.4.1): primer elemento enfocable de la
 // página. Oculto hasta recibir el foco con el teclado; entonces aparece arriba a la izquierda.
-export function SkipLink() {
+export function SkipLink({ locale }: { locale: Locale }) {
+  const { copy } = getContent(locale);
   return (
     <a
       href={`#${MAIN_ID}`}

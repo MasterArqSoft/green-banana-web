@@ -1,13 +1,15 @@
 import { CallButton } from "@/components/ui/CallButton";
 import { imageSrc } from "@/lib/asset";
-import { copy, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";
 
 // Hero (FR-02): H1 con propuesta de valor y acopio, usos, CTA Llamar, CTA "Ver origen"
 // y microcopy. Sin precio. En móvil el texto va primero para que el H1 y el botón
 // se vean sin hacer scroll (AC-01).
-export function Hero() {
+export function Hero({ locale }: { locale: Locale }) {
+  const { copy, site } = getContent(locale);
   const { hero } = copy;
   return (
     <section
@@ -24,7 +26,7 @@ export function Hero() {
         </h1>
         <p className="text-lg">{hero.subtitle}</p>
         <div className="flex flex-wrap gap-3">
-          <CallButton label={hero.primaryCta} />
+          <CallButton locale={locale} label={hero.primaryCta} />
           <a
             href="#origen"
             className="inline-flex min-h-12 items-center justify-center rounded-control border-2 border-hoja px-6 font-semibold text-hoja transition-colors hover:bg-hoja-claro"

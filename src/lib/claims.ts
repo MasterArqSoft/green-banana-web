@@ -18,10 +18,30 @@ export const FORBIDDEN_CLAIMS = [
   "quedan pocos",
   "solo hoy",
   "por tiempo limitado",
+  // Equivalentes en inglés (D-16, T-91). "cancer" ya lo cubre "cáncer" (sin tildes).
+  "weight loss",
+  "lose weight",
+  "losing weight",
+  "slimming",
+  "the best",
+  "100 % guaranteed",
+  "100% guaranteed",
+  "limited spots",
+  "limited places",
+  "last units",
+  "only a few left",
+  "today only",
+  "limited time",
 ];
 
-// Marcas de dato ficticio o pendiente que no pueden llegar a producción.
+// Marcas de dato ficticio o pendiente que no pueden llegar a producción. Son las mismas
+// en los dos idiomas: el inglés conserva "(FICTICIO)" y los corchetes (02 §1).
 const PENDING_MARKER = /\(FICTICIO\)|\[[^\]]*\]/;
+
+/** Cuántas marcas "(FICTICIO)" o "[…]" tiene un texto (paridad entre idiomas, AC-24). */
+export function countPendingMarkers(text: string): number {
+  return text.match(new RegExp(PENDING_MARKER, "g"))?.length ?? 0;
+}
 
 /**
  * Recorre el contenido y devuelve la ruta y el texto de cada valor con una marca

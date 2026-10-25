@@ -1,6 +1,6 @@
 # Spec funcional: Landing Guineo Verde
 
-**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.7 · **Fecha:** 2026-10-24 · **Estado:** Borrador; ampliación bilingüe implementada (Fase 12) · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.7
 
 ## Índice
 1. Contexto y objetivo
@@ -46,7 +46,7 @@
 
 ## 3. Alcance
 
-**Dentro (fase 1):** landing informativa de una página, contacto por llamada telefónica con número configurable, información de acopio y distribución en Santa Marta, página legal (términos, privacidad, garantía), datos de identidad del vendedor configurables, SEO local.
+**Dentro (fase 1):** landing informativa de una página, contacto por llamada telefónica con número configurable, información de acopio y distribución en Santa Marta, página legal (términos, privacidad, garantía), datos de identidad del vendedor configurables, SEO local. Ampliación A-08: español predeterminado e inglés opcional (Fase 12, implementada el 2026-10-24).
 **Fuera (fase 1):** precios publicados, pedido por WhatsApp, formulario B2B o de captura de datos, analítica de eventos, facturación electrónica, carrito, pasarela de pago, cuentas de usuario, blog completo, venta de harina o chips, envíos nacionales, distribución fuera de Santa Marta.
 **Roadmap:** R-01 precios, R-02 WhatsApp, R-03 cobertura, R-04 pedido en línea, R-05 harina y chips, R-06 formulario web, R-07 analítica, R-08 decisión de hosting (latencia desde Colombia y límites del plan gratuito), R-09 facturación electrónica, R-10 CI/CD y despliegue en varios entornos. Pendientes de producción: RP-01 a RP-05 (ver `05-alcance-y-roadmap.md`).
 **Datos ficticios en Fase 1:** nombre comercial, razón social, NIT, dirección, correo, número de contacto, origen y fotos se cargan con valores ficticios marcados como tales y se editan desde `site.json` y los archivos de contenido.
@@ -75,6 +75,15 @@
 | FR-18 | Página legal | Términos (incluye exclusión de retracto en perecederos), política de datos, política de garantía. | Must |
 | FR-19 | Navegación de retorno | En todas las páginas, la marca de la barra superior lleva al inicio. Las páginas legales muestran además un enlace visible "← Volver al inicio" antes del título, con foco visible y área táctil de 44 px. | Must |
 | FR-24 | Mapa de fincas de origen | Sección propia después de "Origen" (FR-06), con fincas ficticias y el acopio de Santa Marta en un mapa de la zona bananera del Magdalena (Zona Bananera, Ciénaga, Aracataca, Fundación). El mapa no se carga hasta que el visitante pulsa "Ver mapa", que aparece junto al aviso de conexión con OpenStreetMap (AC-19). Siempre hay una lista accesible con las mismas fincas. Datos en `fincas.json`; ubicaciones aproximadas [POR CONFIRMAR]. Numerado al final de la sección por ser posterior a la v1.4. | Should |
+
+Ampliación A-08 (Fase 12, implementada el 2026-10-24):
+
+| ID | Sección | Requisito | Prioridad |
+|---|---|---|---|
+| FR-25 | Idioma predeterminado | Las URL existentes sirven HTML en español de Colombia. `/` abre español incluso con navegador configurado en inglés. | Must |
+| FR-26 | Selector y navegación | Selector visible «Español / English», usable con teclado y sin JavaScript, en landing y legales. Cambia a la página equivalente; con mejora JS mínima conserva además parámetros y ancla cuando existan (AC-23). Marca el idioma activo. Marca, pie y retorno mantienen el idioma actual. | Must |
+| FR-27 | Contenido bilingüe | Inglés completo en `/en`, `/en/terms`, `/en/privacy`, `/en/guarantee`: secciones, datos descriptivos, FAQ, recetas, legales, avisos, etiquetas accesibles, alternativas de imagen, mapa ilustrado e interactivo y formatos. Mismos datos comerciales, teléfono, IDs, coordenadas y restricciones. | Must |
+| FR-28 | HTML y descubrimiento por idioma | Idioma correcto desde HTML inicial, metadatos y datos estructurados localizados, canonical propio, alternates recíprocos y sitemap de ocho páginas; exportación estática con y sin `basePath`. Demo noindex en ambos idiomas. 404 global accesible según AC-28. | Must |
 
 ### 4.1 Comportamiento del enlace de llamada
 - URL con formato `tel:+<número>`, leído desde `site.json`.
@@ -134,6 +143,20 @@
 | AC-19 | Antes de cargar el mapa se muestra un aviso: el navegador se conectará a OpenStreetMap, que recibe la dirección IP, con enlace a su política de privacidad. El botón "Ver mapa" es la acción de consentimiento | FR-24, D-13, Ley 1581 |
 | AC-20 | El mapa no precarga teselas fuera de la vista y respeta las cabeceras de caché del servidor | FR-24, política de teselas de OSM |
 
+Criterios de cierre de la Fase 12 (acreditados el 2026-10-24; evidencia en `doc/bitacora.md`):
+
+| ID | Criterio | Verifica |
+|---|---|---|
+| AC-21 | Con contexto nuevo y `Accept-Language: en`, `/` y las tres legales existentes muestran español desde el HTML inicial; no redirigen a inglés | FR-25 |
+| AC-22 | Las cuatro rutas inglesas se abren y recargan directamente; el HTML inicial tiene `lang="en"`, contenido y metadatos ingleses. Español conserva `lang="es-CO"`. Sin parpadeo de traducción ni errores de hidratación | FR-27, FR-28 |
+| AC-23 | Selector en las ocho páginas, sin banderas como único identificador; funciona sin JS, con teclado, foco visible y área táctil de 44 px. Sin JS cambia a la página equivalente; con JS conserva además query/hash mediante mejora mínima. El idioma activo es identificable. Marca y retorno no abandonan el idioma | FR-26, NFR-02 |
+| AC-24 | Build falla si falta una traducción, difieren IDs/claves o marcadores de plantilla, hay una afirmación prohibida en cualquier idioma o se intenta producción con ficticios. Pruebas negativas aisladas de cada causa. No hay fallback silencioso de inglés a español | FR-27, P1, P3, P9 |
+| AC-25 | Cada página tiene canonical propio, alternates `es-CO`, `en` y `x-default` hacia la pareja española; las ocho entradas del sitemap coinciden. Títulos, descripciones, OG, Twitter y JSON-LD usan el idioma y la URL correctos. Demo sigue noindex | FR-28, NFR-03 |
+| AC-26 | Inglés no cambia cobertura, teléfonos `tel:`, identidad, pesos, coordenadas ni condiciones del negocio. Avisos de ficticio/borrador siguen visibles y detectables. Listas, decimales y fechas se formatean según idioma; fechas ISO sin desplazamiento de día | FR-27 |
+| AC-27 | Ambos idiomas pasan axe WCAG 2.2 AA y revisión visual a 360 px y escritorio, sin desbordes ni pérdida de CTA. Mapa en inglés conserva carga por clic, atribución y estados de salud/reintento; ninguna conexión adicional a terceros | FR-26, FR-27, NFR-02, AC-12, AC-15 a AC-20 |
+| AC-28 | Una URL inexistente devuelve 404 real, también `/en/no-existe`. GitHub Pages solo garantiza una 404 global estática: español principal con ayuda en inglés marcada `lang="en"` y enlaces a ambos inicios. No se promete inferir el idioma del path desconocido. Noindex, `<main>`, salto al contenido y CSP conservados | FR-28 |
+| AC-29 | `validate` completo pasa para ocho páginas y 404 con y sin prefijo. Presupuesto ≤ 300 KB por página, hero ≤ 120 KB y Lighthouse local sobre ambas landings con umbrales existentes; ningún catálogo completo en el JS cliente ni prefetch nuevo. CI mantiene artefacto único verificado y Lighthouse informativo | FR-28, NFR-01, NFR-04 |
+
 ## 8. Preguntas y decisiones
 
 | # | Pregunta | Estado | Impacta |
@@ -187,5 +210,6 @@
 | Basket La Canasta: usos y consejo para pelar | FR-07 |
 | Amazon: aclarar que es para cocinar y no para madurar | FR-05 |
 | Ninguna página nombra Urabá ni Zona Bananera | FR-06 (ficticio hasta Q4) |
+| Solicitud del usuario: español predeterminado e inglés opcional (2026-10-24); plan local para implementación posterior por Claude Code | FR-25, FR-26, FR-27, FR-28 (A-08) |
 | Prueba social vacía o inflada en todas | FR-12, P1 |
 | Servientrega, Coordinadora y Envía no transportan perecederos | FR-10, Restricciones |

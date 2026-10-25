@@ -1,13 +1,15 @@
 import { ArrowRight } from "lucide-react";
 import { Picture } from "@/components/ui/Picture";
-import { copy, origin, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { formatDate } from "@/lib/format";
 import { IMAGES } from "@/lib/images";
 import { fill } from "@/lib/template";
 
 // Origen y trazabilidad (FR-06). Destino del botón "Ver origen" del hero (#origen).
 // Productor, municipio y lote son ficticios hasta RP-02.
-export function Origin() {
+export function Origin({ locale }: { locale: Locale }) {
+  const { copy, origin, site } = getContent(locale);
   const values = {
     ciudad: site.acopio.city,
     productor: origin.producer,
@@ -47,7 +49,7 @@ export function Origin() {
           <p className="text-sm font-semibold">
             {fill(copy.origin.batch, {
               codigo: origin.batch.code,
-              fecha: formatDate(origin.batch.cutDate),
+              fecha: formatDate(origin.batch.cutDate, locale),
             })}
           </p>
         </div>

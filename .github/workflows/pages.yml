@@ -110,7 +110,8 @@ jobs:
   # en paralelo a `deploy`, que no depende de él, así que no retrasa la publicación, y
   # Lighthouse (descargado con npx en versión exacta, fuera del lockfile) no corre en el
   # job que genera y sube el artefacto de Pages. Solo lectura, como todo el workflow.
-  # La tabla queda en el resumen del job y el JSON, como artefacto.
+  # Mide las dos landings, / y /en (T-96). Una tabla por página en el resumen del job y
+  # el JSON, como artefacto.
   lighthouse:
     needs: verificar
     runs-on: ubuntu-latest

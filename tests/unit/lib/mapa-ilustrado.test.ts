@@ -1,13 +1,15 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { copy, fincas } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import {
   COLORES,
   mapaIlustradoSvg,
   medidasMapa,
   proyectar,
 } from "@/lib/mapa-ilustrado";
+
+const { copy, fincas } = getContent("es-CO");
 
 describe("mapa ilustrado (fondo antes de «Ver mapa», FR-24)", () => {
   const escritorio = mapaIlustradoSvg(fincas.fincas, copy.map.previewLabels);
@@ -78,5 +80,24 @@ describe("mapa ilustrado (fondo antes de «Ver mapa», FR-24)", () => {
       const { ancho, alto } = medidasMapa(variante);
       expect(svg).toContain(`width="${ancho}" height="${alto}"`);
     }
+  });
+});
+
+describe("mapa ilustrado en inglés (T-95, AC-27)", () => {
+  const en = getContent("en");
+  const svg = mapaIlustradoSvg(en.fincas.fincas, en.copy.map.previewLabels);
+
+  it("traduce el rótulo del mar y conserva los nombres geográficos y las posiciones", () => {
+    expect(svg).toContain(">CARIBBEAN SEA</text>");
+    expect(svg).not.toContain("MAR CARIBE");
+    expect(svg).toContain(">SIERRA NEVADA</text>");
+    for (const finca of en.fincas.fincas) {
+      expect(svg).toContain(`>${finca.municipio}</text>`);
+    }
+    // Misma geometría y marcadores: solo cambian los rótulos.
+    const sinTexto = (s: string) => s.replace(/<text[^>]*>[^<]*<\/text>/g, "");
+    expect(sinTexto(svg)).toBe(
+      sinTexto(mapaIlustradoSvg(fincas.fincas, copy.map.previewLabels)),
+    );
   });
 });

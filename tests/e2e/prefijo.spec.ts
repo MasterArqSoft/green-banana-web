@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import copy from "../../src/content/copy.json";
+import enCopy from "../../src/content/en/copy.json";
+import copy from "../../src/content/es-CO/copy.json";
 
 // Prueba de humo del artefacto publicado en GitHub Pages (T-71, H-01). Corre con
 // playwright.prefijo.config.ts sobre out-pages/, servido solo bajo el prefijo: un
@@ -45,7 +46,12 @@ test.describe("artefacto con prefijo de GitHub Pages (T-71)", () => {
     "terminos/",
     "privacidad/",
     "garantia/",
+    "en/",
+    "en/terms/",
+    "en/privacy/",
+    "en/guarantee/",
     "no-existe",
+    "en/no-existe",
   ]) {
     test(`/${ruta} carga completa, sin recursos rotos ni violaciones de CSP`, async ({
       page,
@@ -61,20 +67,44 @@ test.describe("artefacto con prefijo de GitHub Pages (T-71)", () => {
     });
   }
 
-  test("las imágenes de la landing y el mapa ilustrado se ven", async ({
+  for (const [inicio, svgInicio] of [
+    ["", "/green-banana-web/mapa-fincas"],
+    ["en/", "/green-banana-web/en/mapa-fincas"],
+  ]) {
+    test(`/${inicio}: las imágenes de la landing y el mapa ilustrado se ven`, async ({
+      page,
+    }) => {
+      await page.goto(inicio);
+      await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
+      const svg = page.locator(`#mapa-fincas img[src^="${svgInicio}"]`);
+      await expect(svg).toHaveJSProperty("complete", true);
+      const rotas = await page.locator("img").evaluateAll((imgs) =>
+        imgs
+          .filter((img) => (img as HTMLImageElement).complete)
+          .filter((img) => (img as HTMLImageElement).naturalWidth === 0)
+          .map((img) => (img as HTMLImageElement).currentSrc),
+      );
+      expect(rotas).toEqual([]);
+    });
+  }
+
+  test("cambiar de idioma con el selector, con el prefijo y la barra final", async ({
     page,
   }) => {
-    await page.goto("");
-    await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
-    const svg = page.locator('#mapa-fincas img[src*="mapa-fincas"]');
-    await expect(svg).toHaveJSProperty("complete", true);
-    const rotas = await page.locator("img").evaluateAll((imgs) =>
-      imgs
-        .filter((img) => (img as HTMLImageElement).complete)
-        .filter((img) => (img as HTMLImageElement).naturalWidth === 0)
-        .map((img) => (img as HTMLImageElement).currentSrc),
-    );
-    expect(rotas).toEqual([]);
+    const { errores } = await vigilar(page);
+    await page.goto("privacidad/");
+    await page.getByRole("link", { name: "English" }).click();
+    await expect(page).toHaveURL(/\/green-banana-web\/en\/privacy\/$/);
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await page
+      .locator("main")
+      .getByRole("link", { name: enCopy.navigation.backHome })
+      .click();
+    await expect(page).toHaveURL(/\/green-banana-web\/en\/$/);
+    await page.getByRole("link", { name: "Español" }).click();
+    await expect(page).toHaveURL(/\/green-banana-web\/$/);
+    await expect(page.locator("html")).toHaveAttribute("lang", "es-CO");
+    expect(errores).toEqual([]);
   });
 
   test("ir a una página legal y volver al inicio, con el prefijo", async ({
@@ -134,6 +164,15 @@ test.describe("artefacto con prefijo de GitHub Pages (T-71)", () => {
       .getAttribute("href");
     expect(canonical).toMatch(/\/terminos\/$/);
     expect(sitemap).toContain(`<loc>${canonical}</loc>`);
+    // También las inglesas, sin el prefijo duplicado (AC-25).
+    await page.goto("en/terms/");
+    const canonicalEn = await page
+      .locator('link[rel="canonical"]')
+      .getAttribute("href");
+    expect(canonicalEn).toMatch(/\/green-banana-web\/en\/terms\/$/);
+    expect(canonicalEn).not.toContain("green-banana-web/green-banana-web");
+    expect(sitemap).toContain(`<loc>${canonicalEn}</loc>`);
+    expect(sitemap.match(/<loc>/g)).toHaveLength(8);
 
     const security = await page.request.get(".well-known/security.txt");
     expect(security.status()).toBe(200);

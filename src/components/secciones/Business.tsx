@@ -1,11 +1,13 @@
 import { Store } from "lucide-react";
 import { CallButton } from "@/components/ui/CallButton";
-import { copy, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { fill } from "@/lib/template";
 
 // Para negocios (FR-11): tiendas, hoteles y puntos de venta. Solo llamada;
 // el formulario B2B queda para el roadmap R-06.
-export function Business() {
+export function Business({ locale }: { locale: Locale }) {
+  const { copy, site } = getContent(locale);
   return (
     <section
       id="negocios"
@@ -28,7 +30,7 @@ export function Business() {
             </p>
           </div>
         </div>
-        <CallButton className="shrink-0" />
+        <CallButton locale={locale} className="shrink-0" />
       </div>
     </section>
   );

@@ -1,7 +1,8 @@
 import { MapPin } from "lucide-react";
 import { MapaFincasInteractivo } from "@/components/cliente/MapaFincasInteractivo";
 import { assetPath } from "@/lib/asset";
-import { copy, fincas } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import { recursoDe, type Locale } from "@/lib/i18n";
 import { medidasMapa } from "@/lib/mapa-ilustrado";
 import { fill } from "@/lib/template";
 
@@ -10,7 +11,8 @@ import { fill } from "@/lib/template";
 // carga cuando el visitante pulsa "Ver mapa", después de leer el aviso (AC-15, AC-19).
 // Fincas y coordenadas ficticias hasta RP-02. La lista no muestra coordenadas (AC-16):
 // solo las usa el mapa para ubicar los marcadores.
-export function MapaFincas() {
+export function MapaFincas({ locale }: { locale: Locale }) {
+  const { copy, fincas } = getContent(locale);
   const { map } = copy;
   return (
     <section
@@ -34,8 +36,9 @@ export function MapaFincas() {
           <MapaFincasInteractivo
             avisoId="mapa-fincas-aviso"
             previa={{
-              escritorio: assetPath("/mapa-fincas.svg"),
-              movil: assetPath("/mapa-fincas-movil.svg"),
+              // SVG con los rótulos en el idioma de la página (T-95).
+              escritorio: assetPath(recursoDe("/mapa-fincas.svg", locale)),
+              movil: assetPath(recursoDe("/mapa-fincas-movil.svg", locale)),
               ...medidasMapa("escritorio"),
             }}
             aviso={

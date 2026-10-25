@@ -5,6 +5,92 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
 
 ---
 
+## 2026-10-24: Fase 12, implementación de español predeterminado e inglés opcional (T-87 a T-99)
+
+### Solicitud
+- El usuario ordena implementar la Fase 12 (T-87 a T-99) respetando el orden de fuentes de `CLAUDE.md`, la decisión D7 y la puerta T-88 antes de migrar; actualizar estado y bitácora con evidencia real y ejecutar las validaciones. Sin push ni publicación. No se hizo commit (no se pidió). Los `git mv`/`git rm --cached` de la migración dejaron esos movimientos en el índice; nada más está preparado para commit.
+
+### T-87: línea base e inventario
+- Checkout: `main`, `5059813`, con cambios solo en specs, `CLAUDE.md` y bitácora (la planificación). Node 24.15.0, Next 16.4.2. Guías locales leídas: `route-groups.md`, `layout.md` (varios layouts raíz y recarga completa al cruzarlos), `not-found.md` (`global-not-found`, experimental) y `static-exports.md`.
+- **Línea base, `npm run validate` sin cambios de código: salida 0 en 1 min 18 s**: 367 unitarias, 94 e2e (8 omitidas por perfil), 18 con prefijo, landing 203,9 KB (204,0 KB con prefijo), 0 vulnerabilidades.
+- Inventario: 10 JSON de contenido; consumidores de `@/lib/content`: 23 componentes (17 secciones, 5 de `ui/` y `LocalBusinessJsonLd`), `legal.ts`, `seo.ts` y 6 archivos de `app/` (`layout`, `not-found`, `robots`, dos SVG y `security.txt`); formatos fijados a `es-CO` (`format.ts`); rutas españolas escritas a mano en `TopBar`, `Footer`, `LegalPage`, `NotFoundPage`, `seo.ts` (`PAGES`) y en 6 e2e; `budget.mjs` con 4 páginas fijas; `lighthouse.mjs` solo `/`; el mapa ilustrado con rótulos de `copy.map.previewLabels`. Campos mezclados (dato + texto) separados: `products` (label, callLabel, imageAlt), `recipes` (name, description, imageAlt), `testimonials` (context, text, photoAlt) y `fincas.nombre` (el del acopio es descriptivo). `site.schedule` y `fincas.productor` no se muestran: quedan comunes.
+
+### T-88: puerta técnica (superada antes de migrar)
+- En una copia aislada del checkout (en el scratchpad, con `npm ci` propio): grupos `(es)` y `(en)` con un layout raíz cada uno, sin `app/layout.tsx`, `global-not-found.tsx` y `experimental.globalNotFound`.
+- **Sin prefijo:** `out/` con `index.html` y `terminos.html` (`lang="es-CO"`), `en.html` y `en/terms.html` (`lang="en"`), `404.html` (`lang="es-CO"`, título propio, `noindex`), `en/mapa-fincas.svg`, íconos, `robots.txt`, `sitemap.xml` y `.well-known/security.txt` sin colisiones. **Con prefijo:** lo mismo en `out-pages/` (`en/index.html`, `en/terms/index.html`), con los íconos bajo `/green-banana-web/`.
+- `server.mjs` (los dos builds, `Accept-Language: en`): 200 en `/`, `/en`, `/en/terms`, `/terminos` y los SVG; **404 real** en `/no-existe`, `/en/no-existe`, `/fr` y `/es`, siempre con la 404 española.
+- **Sin `global-not-found`** (misma copia, bandera quitada): Next exporta su 404 por defecto, `<html>` sin `lang` y «404: This page could not be found.»: incumple AC-28. **Decisión fijada:** layouts raíz por idioma + `global-not-found` experimental (registrado en `next.config.ts`, D7 y D-15).
+
+### T-89 a T-91: contenido por idioma, paridad y guardas
+- Datos comunes en `src/content/` y textos en `src/content/es-CO/` y `src/content/en/` (copy, products, faq, recipes, legal, testimonials, fincas). Los catálogos españoles se generaron con un script desde los JSON anteriores, sin transcribir; `copy.json`, `faq.json` y `legal.json` de la raíz se retiraron (sin copia editable duplicada). Nuevo bloque `copy.language` (nombre del selector y de cada idioma).
+- `schema.ts`: esquemas de datos comunes y de textos por id (`textosPorId`), tipos compuestos con los nombres de siempre. `content.ts`: valida los 7 comunes y los 14 de catálogo en cada build, cruza ids, compara catálogos (`src/lib/paridad.ts`), busca frases prohibidas y pendientes en todo, y expone `getContent(locale)`; ya no exporta `copy`, `products`… monolingües.
+- `claims.ts`: 13 frases prohibidas en inglés y `countPendingMarkers`. Marcadores: `(FICTICIO)` literal también en inglés (el aviso de demo inglés lo explica) y corchetes con texto inglés. **Checklist de producción: 62 marcas** (43 de antes en datos comunes y español, 19 en inglés).
+- `format.ts` con idioma explícito: «1.5 kg», «A, B, and C», «October 15, 2026» (UTC, sin correr el día).
+- Pruebas negativas aisladas (`content.test.ts`): traducción faltante, texto sin dato común y dato sin texto, marcador `{…}` distinto, marca de pendiente perdida, id cambiado, frase prohibida inglesa, campo de precio; producción con contenido controlado limpio (compila) y luego un solo fallo en `origin`, `products`, `site.url` o en los dos catálogos (bloquea con «quedan 1» o «quedan 2»); una marca solo en inglés la detiene la paridad. Los archivos reales no se tocan (mocks).
+
+### T-90: traducción
+- Inglés completo: secciones, CTA, 4 presentaciones, 9 preguntas, 5 recetas (con explicación breve de sancocho y patacón), 3 legales en borrador, avisos de demo y borrador, nombres accesibles del botón Llamar, textos alternativos, metadatos y todo el mapa (aviso, estados, zoom, cierre del popup, rótulo «Caribbean Sea» del SVG). Se conservan marca, razón social, NIT, dirección, correo, teléfono, Santa Marta, nombres geográficos, fincas ficticias, cifras y la cobertura (solo Santa Marta). Sin revisión editorial ni jurídica.
+- **Pregunta abierta [POR CONFIRMAR]:** en qué idioma se atienden las llamadas. La página inglesa invita a llamar pero no promete atención en inglés; si no la hay, convendría decirlo en `hero.note` o en el aviso.
+
+### T-92 a T-95: composición, selector, SEO y mapa
+- `src/app/(es)/` y `src/app/(en)/en/`; `documento.tsx` (shell y `<html lang>`), `landing.tsx` y `mapa-svg.ts` compartidos; las páginas solo fijan idioma y metadatos.
+- `src/lib/i18n.ts` (puro): tabla `RUTAS`, `rutaDe`, `paginaDeRuta`, `rutaEquivalente`, `recursoDe`, `OG_LOCALE`. Marca, pie y «Volver al inicio» usan la ruta del idioma.
+- Selector `SelectorIdioma` (tercer componente cliente, +~1 KB): enlace en el HTML y sin JavaScript funciona; con JavaScript agrega `?consulta#ancla`. Franja propia sobre la barra superior: junto a la marca no cabía a 360 px. ESLint permite `@/lib/i18n` en clientes; se comprobó con archivos temporales que importar un catálogo fuera de `content.ts`, o `@/lib/content`/`@/lib/seo` en un cliente, sigue fallando.
+- SEO: `pageMetadata`/`homeMetadata`/`legalMetadata` por página e idioma; alternates `es-CO`, `en`, `x-default` (español); `og:locale` y `og:locale:alternate`; sitemap de 8 URL con alternates; JSON-LD con la misma identidad (`@id`) y `FAQPage` con `inLanguage`. `og.jpg` no tiene texto (revisada): se comparte y se traduce su `alt`. **Contrastado con el HTML exportado** (`index.html`, `en.html`, `terminos.html`, `en/terms.html`, `404.html`, `sitemap.xml`).
+- **Hallazgo y corrección:** la 404 heredaba el `robots` del layout además del `noindex` de Next (dos `meta robots`; en producción el segundo diría `index`). `baseMetadata` (sin robots) para la 404; prueba en `DemoBanner.test.tsx`, también en producción.
+- Mapa: `/en/mapa-fincas.svg` y `/en/mapa-fincas-movil.svg` (misma geometría; la prueba compara los SVG sin los `<text>`). Inter cubre los textos ingleses (`fuentes.test.ts` ahora recorre las subcarpetas): no se regeneró.
+- Ningún texto de los catálogos aparece en `out/_next/static/chunks/*.js` (búsqueda de «Hand-picked», «seleccionado a mano», «TO BE CONFIRMED», «POR CONFIRMAR», «Política de tratamiento»).
+
+### T-96 a T-98: controles, pruebas y revisión visual
+- `budget.mjs`: 8 páginas (desde `RUTAS`) y la 404, hero en las dos landings. `lighthouse.mjs`: `/` y `/en` (`LH_RUTAS`), presupuesto por página y una tabla por página en CI (`resumenMarkdown` con `ruta`). `pages.yml`: solo el comentario del job `lighthouse`; el deploy sigue publicando el artefacto verificado. `csp.mjs` y `server.mjs` sin cambios (ya recorrían y resolvían bien las rutas nuevas).
+- Unitarias: `i18n.test.ts` y `paridad.test.ts` nuevas; todas las de componentes conservan sus aserciones españolas y suman un bloque inglés; `seo`, `legal`, `format`, `content`, `claims`, `schema`, `images`, `mapa-ilustrado` y `fuentes` cubren los dos idiomas.
+- E2E: nueva `idioma.spec.ts` (AC-21, AC-22, AC-23 con y sin JavaScript, teclado, pestaña nueva, AC-28) y las existentes con las 8 páginas (orden, desborde, AC-01 a 360 px en `/en`, `tel:`, sin precios, axe, CSP, mapa inglés con éxito, parcial, error y reintento, retorno en inglés, prefijo con selector y sitemap inglés).
+- Revisión visual con capturas (360 px y 1280 px) de `/`, `/en`, `/en/terms` y `/en/no-existe`: sin desbordes, H1 y CTA visibles, selector legible con el idioma activo subrayado.
+
+### T-99: cierre
+- **`npm run validate` final: salida 0 en 1 min 52 s.** Prettier, ESLint y TypeScript sin errores; 487 unitarias (45 archivos); build con prefijo y sin prefijo; presupuesto de las 8 páginas y la 404 en `out/` (`/` 205,8 KB, `/en` 206,0 KB, legales ~190 KB, 404 147,1 KB; hero dentro de su límite) y en `out-pages/` (206,0 y 206,2 KB); 197 e2e (11 omitidas por perfil); 32 de humo con prefijo; `npm audit`, 0 vulnerabilidades. Un `validate` anterior, antes de separar `baseMetadata`, también dio salida 0 (485 unitarias).
+- **Criterios:** AC-21 (`idioma.spec.ts`, navegador en inglés), AC-22 (rutas inglesas directas, recarga, sin errores de consola), AC-23 (selector en las 8 páginas, con y sin JavaScript, teclado, 44 px, pestaña nueva), AC-24 (`content.test.ts` y `paridad.test.ts`), AC-25 (`seo.test.ts`, `legal.test.ts`, HTML exportado y `prefijo.spec.ts`), AC-26 (pruebas de componentes y `format.test.ts`), AC-27 (axe en 8 páginas y mapa inglés, revisión visual), AC-28 (404 real en `/no-existe` y `/en/no-existe`) y AC-29 (este `validate` y Lighthouse): acreditados.
+- **`npm run lighthouse` (simulado, mediana de 3 por página, salida 0):** `/` Rendimiento 93, LCP 2 978 ms, TBT 122 ms, CLS 0; `/en` 94, 2 989 ms, 117 ms, CLS 0; accesibilidad, buenas prácticas y SEO 100 en las dos. Elemento LCP: la foto del hero. El LCP sube ~125 ms frente al cierre de la Fase 11 (2 853 ms), dentro del presupuesto de 3,4 s; probablemente por la franja del selector y ~1 KB más de JavaScript (no se aisló la causa).
+- Revisión de arquitectura propia contra las invariantes de `CLAUDE.md` y `03` (capas, contenido solo por `content.ts`, textos solo en el contenido, clientes sin catálogos, `prefetch={false}`, CSP sin orígenes nuevos, sin dependencias nuevas, espejo de pruebas).
+- **Revisión de `arquitecto-software` (pedida por el usuario antes del commit): aprobado con observaciones, sin bloqueantes.** H1 (importante, aceptado sin cambios): tercer componente cliente, justificado en D7 y medido (+1,9 KB en la landing). Corregidos por decisión del usuario: **H2** (importante) `03` §3 a §5 y §8 describían el sistema monolingüe (diagrama, estructura de `app/`, `cliente/` y `lib/`, regla de ESLint de clientes, modelo de datos de `products` y `fincas`, cifras de peso) y `CLAUDE.md` decía que `imageAlt` estaba en `products.json`; **H3** `i18n.ts` lo carga `budget.mjs` con Node: nota en su cabecera y en `CLAUDE.md`, y prueba que falla si aparece un `import`; **H4** el `nombre` de `Finca` se deriva de `fincaNamesSchema`. **H5** (sugerencia, pendiente): revisar en la primera ejecución en CI cuánto tarda el job `lighthouse`, ahora con 6 corridas y límite de 15 min. Puntos abiertos que señala: idioma de la atención telefónica, datos comunes (origen, razón social, dirección) que se muestran en español en `/en` y deberán ser nombres propios con los datos reales (RP-01, RP-02), y `global-not-found` experimental.
+- `validate` tras las correcciones: salida 0 en 1 min 53 s: 488 unitarias, 197 e2e (11 omitidas por perfil), 32 con prefijo, presupuesto de las 8 páginas y la 404 en los dos builds, 0 vulnerabilidades.
+- Archivos: `src/app/` (nuevos `(es)/`, `(en)/en/`, `documento.tsx`, `landing.tsx`, `mapa-svg.ts`, `global-not-found.tsx`; movidos `layout.tsx`, `page.tsx`, legales y `not-found.tsx`; editados `sitemap.ts` y las rutas SVG), `src/components/` (todas las secciones, `ui/`, `seo/`, `cliente/FloatingCallVisibility.tsx` y el nuevo `cliente/SelectorIdioma.tsx`), `src/content/` (comunes editados, `es-CO/` y `en/` nuevos, 3 JSON retirados), `src/lib/` (`i18n.ts` y `paridad.ts` nuevos; `content`, `schema`, `claims`, `format`, `seo`, `legal`), `next.config.ts`, `eslint.config.mjs`, `scripts/budget.mjs`, `scripts/lighthouse.mjs`, `scripts/lighthouse-presupuesto.mjs`, `.github/workflows/pages.yml` (comentario), `tests/` (unitarias y e2e), `README.md`, `doc/creditos.md`, `CLAUDE.md`, `spec/01` a `05` y esta bitácora.
+
+### Pendiente (no lo cierra esta fase)
+- Revisión editorial del inglés; revisión jurídica de los legales en los dos idiomas (T-05); RP-01 a RP-05 siguen abiertos en los dos idiomas.
+- Idioma de la atención telefónica [POR CONFIRMAR].
+- T-38: la prueba manual con lector de pantalla debería cubrir también `/en`.
+- `global-not-found` es experimental: revisarlo al actualizar Next.
+- Commit, push y publicación: solo si el usuario los pide.
+
+---
+
+## 2026-10-24: planificación de español predeterminado e inglés opcional (Fase 12)
+
+### Solicitud y diagnóstico
+- El usuario solicita analizar el proyecto local, investigar buenas prácticas en internet y elaborar las tareas con el mismo formato del proyecto para que Claude Code las implemente después.
+- Checkout inicial: `main`, `5059813`, sin cambios locales. Se leyeron las instrucciones y specs vigentes, contenido, layout, rutas legales, formatos, SEO, mapa, scripts y restricciones de pruebas/lint. Stack instalado Next 16.4.2 con exportación estática; español ya implementado, sin biblioteca i18n.
+- Fuentes primarias: Next.js (internacionalización/exportación estática), next-intl (limitaciones de export sin Proxy), Google Search Central (URL por idioma y alternates recíprocos), W3C (idioma principal). Enlaces y aplicación contextual en `03` D7. También se consultaron las guías incluidas en `node_modules/next/dist/docs/`, incluida la advertencia experimental de `global-not-found`.
+
+### Plan preparado
+- A-08; FR-25 a FR-28; AC-21 a AC-29; D7; riesgos D-15/D-16. Español colombiano en rutas actuales, inglés opcional en `/en`, `/en/terms`, `/en/privacy`, `/en/guarantee`.
+- Recomendación técnica: catálogos tipados con Zod/Intl, datos comunes únicos, render estático y selector por enlaces. Sin detección automática ni cookies; la URL conserva el idioma. Comparada con next-intl, cuya estrategia estándar de export estático no resuelve prefijo opcional sin rewrites.
+- Fase 12: T-87 a T-99, 64 horas efectivas orientativas, dependencias y criterios de cierre. T-88 valida primero layouts por idioma, recursos globales y 404 en ambos builds; no se presupone compatible una función experimental.
+- Cobertura: textos completos, guardas bilingües, formatos, mapa/SVG, fuentes, legales, SEO, accesibilidad, CSP, rendimiento, tests y CI con prefijo. La 404 global conserva español principal y ayuda inglesa; no se promete detección por path desconocido en Pages.
+- Archivos modificados: `spec/05-alcance-y-roadmap.md`, `spec/01-spec.md`, `spec/02-content-spec.md`, `spec/03-plan.md`, `spec/04-tasks.md`, `CLAUDE.md` y esta bitácora. Se corrigió la matriz de versiones de `05` para reflejar las cabeceras reales.
+
+### Estado
+- **Solo planificación:** ninguna tarea T-87 a T-99 hecha; código, dependencias y configuración funcional sin modificar. Sin commit, push ni publicación.
+- La orden de implementación será posterior; los datos ficticios y pendientes de producción/jurídicos se mantienen abiertos.
+
+### Verificación de esta entrega documental
+- `git diff --check`: sin errores de espacios.
+- `npx vitest run tests/unit/estructura.test.ts`: 111 pruebas aprobadas; verifica el espejo de módulos/pruebas y la trazabilidad FR, incluidas las cuatro nuevas.
+- Comprobación de tabla: 13 IDs consecutivos (T-87 a T-99), suma de 64 h; FR-25 a FR-28 presentes en la matriz de `03` §12.
+- No se ejecutó `validate` completo ni builds/Lighthouse: solo cambió documentación. Las verificaciones funcionales del bilingüismo están pendientes en Fase 12.
+
+---
+
 ## 2026-10-24: Fase 11, auditoría de causa raíz (T-78 a T-86)
 
 ### Contexto

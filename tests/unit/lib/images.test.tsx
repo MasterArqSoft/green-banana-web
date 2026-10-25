@@ -5,8 +5,10 @@ import { describe, expect, it } from "vitest";
 import { Hero } from "@/components/secciones/Hero";
 import { ProductCards } from "@/components/secciones/ProductCards";
 import { Recipes } from "@/components/secciones/Recipes";
-import { products, recipes } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { allImages, IMAGES, recipeImage, testimonialImage } from "@/lib/images";
+
+const { products, recipes } = getContent("es-CO");
 
 describe("fotos publicadas (T-04, NFR-08)", () => {
   it.each(
@@ -75,7 +77,7 @@ describe("versiones menores (srcset)", () => {
   });
 
   it("las tarjetas ofrecen 200 px para el móvil", () => {
-    const html = renderToStaticMarkup(<ProductCards />);
+    const html = renderToStaticMarkup(<ProductCards locale="es-CO" />);
     expect(html).toContain("/images/presentaciones/unit-200.avif 200w");
     expect(html).toContain('sizes="(min-width: 1024px) 280px, 96px"');
   });
@@ -83,7 +85,7 @@ describe("versiones menores (srcset)", () => {
 
 describe("fotos en las secciones", () => {
   it("el hero tiene prioridad alta y versión móvil y de escritorio", () => {
-    const html = renderToStaticMarkup(<Hero />);
+    const html = renderToStaticMarkup(<Hero locale="es-CO" />);
     expect(html).toMatch(/fetchPriority="high"|fetchpriority="high"/);
     expect(html).not.toContain('loading="lazy"');
     expect(html).toContain("hero-movil.avif");
@@ -92,11 +94,24 @@ describe("fotos en las secciones", () => {
 
   it("las tarjetas y recetas tienen texto alternativo y carga diferida", () => {
     const html =
-      renderToStaticMarkup(<ProductCards />) +
-      renderToStaticMarkup(<Recipes />);
+      renderToStaticMarkup(<ProductCards locale="es-CO" />) +
+      renderToStaticMarkup(<Recipes locale="es-CO" />);
     for (const item of [...products, ...recipes]) {
       expect(html).toContain(`alt="${item.imageAlt}"`);
     }
     expect(html).not.toMatch(/fetchPriority="high"|fetchpriority="high"/);
+  });
+});
+
+describe("fotos en inglés (FR-27)", () => {
+  it("las mismas fotos con el texto alternativo traducido", () => {
+    const en = getContent("en");
+    const html =
+      renderToStaticMarkup(<ProductCards locale="en" />) +
+      renderToStaticMarkup(<Recipes locale="en" />);
+    for (const item of [...en.products, ...en.recipes]) {
+      expect(html).toContain(`alt="${item.imageAlt}"`);
+    }
+    expect(html).toContain("/images/presentaciones/unit-200.avif 200w");
   });
 });

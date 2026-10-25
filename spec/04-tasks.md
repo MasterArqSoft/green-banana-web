@@ -1,6 +1,6 @@
 # Tareas: Landing Guineo Verde
 
-**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.7 · **Fecha:** 2026-10-24 · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.7
 
 Estimaciones en horas efectivas, para una persona con perfil fullstack senior. `[P]` = se puede hacer en paralelo con otras tareas de la misma fase. Referencias: FR/NFR/AC de `01-spec.md` y secciones de `03-plan.md`.
 
@@ -14,7 +14,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Fases 7 a 10: cambio v1.5 y auditorías
+8. Fases 7 a 12: cambio v1.5, auditorías e internacionalización
 9. Resumen y estado de avance
 10. Roadmap (fuera de la Fase 1)
 11. Roadmap de producción (RP)
@@ -199,6 +199,40 @@ Decisiones del usuario:
 | T-85 | Lighthouse informativo en `verificar` (no bloquea) | CI-01 | 4 | T-80 |
 | T-86 | Cierre: `validate`, revisión de `arquitecto-software`, bitácora, estado y push | CLAUDE.md | 2 | T-78 a T-85 |
 
+## Fase 12: Español predeterminado e inglés opcional
+
+Origen: solicitud del usuario de analizar el proyecto local, consultar buenas prácticas y preparar tareas para implementación por Claude Code (2026-10-24). Alcance A-08 (`05` v1.6); requisitos FR-25 a FR-28 y AC-21 a AC-29 (`01` v1.6); contenido `02` §1 y decisión D7 (`03` v1.9).
+
+**Estado:** implementada el 2026-10-24 por orden del usuario (T-87 a T-99), sin dependencias nuevas, sin commit, push ni publicación. Evidencia por tarea en `doc/bitacora.md` (entrada «Fase 12, implementación»).
+
+Objetivo: conservar español colombiano en las URL actuales y añadir inglés bajo `/en`, con selector y HTML estático por idioma. La URL conserva el idioma al navegar y recargar; `/` sigue siendo española sin detección del navegador ni persistencia por cookies. No cambia la cobertura comercial ni cierra pendientes del negocio.
+
+| ID | Tarea | Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-87 | Al iniciar implementación, releer `05`, constitución, `01` a `04`, `CLAUDE.md`, bitácora y guías de Next instaladas. Confirmar HEAD y estado sin descartar cambios. Inventariar cada cadena visible/accesible y cada consumidor de contenido, rutas, formatos, mapa, SEO y pruebas; registrar cobertura por archivo y la línea base de validación. **Cierre:** inventario completo y baseline real; ningún resultado previo se da por ejecutado en esta fase | FR-25 a FR-28, D7 | 2 | — |
+| T-88 | Prueba técnica mínima de D7 antes de migrar: tabla tipada de equivalencias, layouts raíz por idioma y 404 global. Exportar español/inglés con `lang` correcto y recursos especiales sin colisiones, con y sin prefijo. Verificar recarga directa y 404 real. Si se necesita `global-not-found`, leer guía local, documentar su carácter experimental y demostrar que exporta `404.html`; si falla, registrar el ajuste y detener tareas dependientes sin retirar export estático. **Cierre:** evidencia de ambos builds y decisión de composición fijada | FR-25, FR-26, FR-28, AC-21, AC-22, AC-28, D-15 | 4 | T-87 |
+| T-89 | Diseñar e implementar contenido por idioma en `src/lib/content.ts` y Zod: datos comunes únicos, catálogos español/inglés por dominio, tipo cerrado y `getContent(locale)` sin estado mutable global. Validación de ambos catálogos, paridad de claves/IDs/referencias/variables y campos estrictos. Adaptar restricciones de imports para JSON anidados sin abrir acceso cliente. **Cierre:** mismo contrato para los dos idiomas, fallo por falta de traducción y ninguna copia editable del teléfono ni cifras | FR-27, AC-24, AC-26, NFR-07, P9 | 6 | T-88 |
+| T-90 | Migrar contenido español y preparar inglés completo: secciones, productos, recetas, FAQ, origen, cobertura, fincas, testimonios condicionales, legales, avisos demo/borrador, CTA, alternativas de imagen, `aria-label`, metadatos y mapa. Aplicar reglas editoriales de `02` §1. **Cierre:** inventario T-87 cubierto en ambos idiomas, nombres propios y datos comunes conservados; legales siguen en borrador y sin inventar datos pendientes | FR-27, AC-24, AC-26, P1, P3 | 8 | T-89 |
+| T-91 | Guardas bilingües de publicación y formatos: frases prohibidas inglesas, ficticios y pendientes en todos los catálogos; fechas/listas/decimales por idioma con UTC para fecha sin hora y unidades métricas. **Cierre:** pruebas negativas independientes de guardas, ausencia de traducción y variables inconsistentes; probar producción con contenido controlado válido y luego cada fallo aislado, sin tocar los datos reales del repositorio | FR-27, AC-24, AC-26, D-16 | 4 | T-89, T-90 |
+| T-92 | Componer ocho páginas estáticas según tabla D7 y layouts validados en T-88. Compartir shell, landing y legales; pasar idioma/contenido explícitos a secciones y props mínimos a clientes. Marca, pie, anclas y retorno usan rutas del idioma. 404 global con ayuda inglesa. **Cierre:** HTML y texto correctos sin JS, sin duplicar lógica ni mutación de `lang` tras hidratación | FR-25 a FR-28, AC-21, AC-22, AC-26, AC-28 | 8 | T-88, T-90, T-91 |
+| T-93 | Selector «Español / English» en las ocho páginas: enlaces a equivalentes, estado activo, `lang`/`hreflang`, foco y 44 px; sin banderas como único identificador. Mejora cliente mínima para query/hash si hace falta, sin importar catálogos; sin JS cambia a la página equivalente. **Cierre:** cambio en ambos sentidos, recarga, apertura en pestaña y navegación manteniendo idioma; sin prefetch ni activación del mapa | FR-26, AC-23, NFR-02 | 4 | T-92 |
+| T-94 | SEO por idioma en cada página: canonical propio, alternates recíprocos `es-CO`/`en`/`x-default`, sitemap de ocho páginas, títulos/descripciones/OG/Twitter/JSON-LD y alt de OG. Revisar si la imagen OG contiene texto. Mantener noindex/robots de demo y una sola identidad de negocio. **Cierre:** URLs absolutas sin prefijo duplicado, rutas legales inglesas correctas y metadata contrastada contra HTML exportado | FR-28, AC-25, NFR-03 | 4 | T-92 |
+| T-95 | Localizar mapa ilustrado e interactivo: SVG por idioma desktop/móvil, etiquetas, alternativas, controles Leaflet y mensajes de todos los estados; conservar geometría común, carga por clic, atribución y salud por vista. Verificar cobertura de fuentes con ambos catálogos; regenerar solo si faltan caracteres y registrar licencia. **Cierre:** SVG ingleses exportados, estados bilingües y ninguna petición nueva a terceros ni carga anticipada | FR-27, AC-27, AC-15 a AC-20, D-16 | 5 | T-92 |
+| T-96 | Ampliar controles de artefactos: budget de las ocho páginas y hero en ambas landings, Lighthouse de `/` y `/en`, CSP en todas las páginas y 404. Revisar resolución de rutas del servidor de pruebas, smoke con prefijo, workflow y coherencia de artifacts. **Cierre:** medición por idioma y builds completos, sin debilitar límites ni el audit; el deploy sigue usando el artefacto verificado y Lighthouse en CI informativo | FR-28, AC-29, NFR-01, NFR-04 | 5 | T-94, T-95 |
+| T-97 | Pruebas unitarias de módulos nuevos/modificados, según espejo exigido por `estructura.test.ts`: rutas/basePath, paridad, variables, datos comunes, guardas, formatos, componentes, metadata, sitemap y SVG. Actualizar pruebas españolas sin perder sus aserciones. **Cierre:** regresiones negativas reproducibles y todas las FR nuevas en la matriz de `03` §12; no agregar excepciones al espejo sin justificar | FR-25 a FR-28, AC-21 a AC-26 | 6 | T-91, T-93, T-94, T-95 |
+| T-98 | E2E y revisión visual bilingüe: ocho páginas con fixtures existentes, axe, teclado y 360 px/escritorio; navegador inglés abre español en `/`, selector/persistencia por URL/query/hash, sin JS, recarga directa, legales/retorno/CTA, 404 y build con prefijo. Mapa: carga por clic, éxito, parcial, error, reintento y navegación; teselas interceptadas, sin OSM real. **Cierre:** sin `pageerror`, violaciones CSP, desbordes ni descargas iniciales de catálogos completos, otras páginas o Leaflet | FR-25 a FR-28, AC-21 a AC-29 | 6 | T-93, T-96, T-97 |
+| T-99 | Cierre de implementación: ejecutar `npm run validate` completo y `npm run lighthouse` con cobertura bilingüe; revisión de arquitectura según práctica del proyecto. Registrar comandos/resultados y riesgos, actualizar este estado, `CLAUDE.md`, README, D7 y bitácora con archivos tocados. **Cierre:** criterios AC-21 a AC-29 acreditados o pendientes explícitos; no confundir cierre de la fase con aprobación legal/producción. Commit/push solo si el usuario los solicita | FR-25 a FR-28, AC-21 a AC-29, CLAUDE.md | 2 | T-87 a T-98 |
+
+**Total Fase 12: 64 h efectivas** (estimación orientativa, no compromiso de duración de Claude Code; excluye esperas de revisión editorial/jurídica y ampliaciones por incompatibilidad de T-88). Ruta de dependencia principal: T-87 → T-88 → T-89 → T-90 → T-91 → T-92 → T-93/T-94/T-95 → T-96/T-97 → T-98 → T-99. No delega trabajo en subagentes automáticamente.
+
+### Ejecución posterior por Claude Code
+
+1. Leer primero `CLAUDE.md` y las fuentes en su orden; esta solicitud autoriza preparar el plan, no significa que la implementación ya empezó. Cuando el usuario ordene ejecutar Fase 12, trabajar sobre T-87 a T-99 y conservar los IDs históricos.
+2. Confirmar estado real del checkout y volver a leer guías locales de Next antes de usar APIs. D7 contiene la investigación y la tabla de rutas. No instalar `next-intl`, Proxy, backend ni traductor remoto como atajo.
+3. Resolver T-88 antes de migrar los catálogos/componentes. Registrar decisiones de implementación y evidencia. No pedir al usuario de nuevo decisiones ya fijadas por su orden de ejecución; escalar únicamente cambios materiales de alcance o una incompatibilidad real.
+4. Actualizar bitácora y estado por tarea, con pruebas reales. Las dependencias son obligatorias aunque no se hagan commits intermedios. Los pendientes RP/T-05 permanecen abiertos.
+5. Entregar resumen de archivos, validaciones y limitaciones. La implementación local no implica permiso para publicar ni hacer push.
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -215,7 +249,8 @@ Decisiones del usuario:
 | 9. Auditoría independiente | 14 |
 | 10. Reauditoría de cierre | 10 |
 | 11. Auditoría de causa raíz | 56 |
-| **Total** | **~202 h** |
+| 12. Español predeterminado e inglés opcional | 64 |
+| **Total** | **~266 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -227,6 +262,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 
 | Estado | Tareas |
 |---|---|
+| **Fase 12 (español predeterminado e inglés opcional)** | Completa (2026-10-24): T-87 a T-99. AC-21 a AC-29 acreditados con `validate` y Lighthouse (bitácora). Sin commit ni publicación. Pendientes que no cierra: revisión editorial del inglés, revisión jurídica de los legales en los dos idiomas (T-05), idioma de la atención telefónica [POR CONFIRMAR] y prueba manual con lector de pantalla también en inglés (T-38) |
 | **Hecha** | T-01; T-07, T-08, T-09, T-10, T-11; T-12 a T-21, T-23, T-24, T-25, T-28, T-33, T-46, T-47; T-26, T-31; T-30, T-37, T-39, T-40, T-49 |
 | **Hecha con contenido provisional** | T-04: fotos generadas con IA, se reemplazan en RP-02. T-27: páginas legales en borrador, esperan T-05 |
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |

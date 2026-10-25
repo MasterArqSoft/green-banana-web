@@ -1,0 +1,22 @@
+{
+  "unit": {
+    "label": "Guineo suelto",
+    "callLabel": "Llamar para precio",
+    "imageAlt": "Un guineo verde suelto sobre una tabla de madera."
+  },
+  "kg": {
+    "label": "Kilo",
+    "callLabel": "Llamar para precio",
+    "imageAlt": "Guineos verdes sobre una pesa de cocina."
+  },
+  "bag": {
+    "label": "Bolsa familiar",
+    "callLabel": "Llamar para precio",
+    "imageAlt": "Bolsa de tela abierta con guineo verde."
+  },
+  "box": {
+    "label": "Caja para negocios",
+    "callLabel": "Llamar para precio",
+    "imageAlt": "Caja de madera llena de guineo verde."
+  }
+}

@@ -1,6 +1,6 @@
 # 05 · Alcance Fase 1 y roadmap: Landing Guineo Verde
 
-**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** vigente
+**Versión:** 1.7 · **Fecha:** 2026-10-24 · **Estado:** vigente; ampliación bilingüe implementada en la demo (Fase 12)
 
 Fuente de verdad del alcance. Si un spec contradice este documento, gana este documento y el spec se corrige (ver `00-constitution.md` §5).
 
@@ -27,6 +27,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | A-05 | No funcionales | Mobile-first, LCP ≤ 2.5 s, CLS ≤ 0.1, INP ≤ 200 ms (p75 de usuarios reales, medido en campo), peso ≤ 300 KB, WCAG 2.2 AA, OWASP ASVS nivel 1. En laboratorio, `npm run lighthouse` (mediana de 3 corridas) bloquea con LCP > 3,4 s, CLS > 0,1 o TBT > 200 ms: guarda contra regresiones fijada en lo logrado con margen (decisiones del usuario del 2026-10-24, T-75 y T-76). Cumplir ese presupuesto no acredita los 2,5 s de campo (auditoría de causa raíz, PERF-01). **CI-01:** Lighthouse corre en GitHub Actions en el job `lighthouse`, aparte e informativo, sin bloquear ni retrasar la publicación, por la variabilidad de los servidores de GitHub (decisión del usuario del 2026-10-24, T-85); el bloqueo sigue siendo local y la pipeline de R-10 decidirá si pasa a bloquear con un entorno estable. |
 | A-06 | Imágenes | Solo libres de derechos de autor o propias ficticias, hasta RP-02. |
 | A-07 | Navegación de retorno y mapa de fincas de origen | Enlace de la marca y "Volver al inicio" en las páginas legales (FR-19). Mapa de fincas ficticias de la zona bananera del Magdalena, cargado solo al pulsar "Ver mapa" con aviso previo (FR-24, D-13). |
+| A-08 | Español predeterminado e inglés opcional | Ampliación solicitada por el usuario: conservar las URL actuales en español y generar versiones inglesas bajo `/en`. Selector visible en todas las páginas de contenido; traducción de contenido, accesibilidad, mapa y SEO. Implementada en la Fase 12 (T-87 a T-99, 2026-10-24). La traducción no tiene revisión editorial ni jurídica: los legales ingleses siguen en borrador como los españoles (T-05). |
 
 ## 3. Fuera del alcance de la Fase 1
 
@@ -50,6 +51,7 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | Q5 Reparto | Reparto propio de la empresa |
 | Q13 Público objetivo | Personas naturales, tiendas, hoteles y otros puntos de venta |
 | Canal de contacto | Llamada telefónica |
+| Idiomas (Fase 12) | Español de Colombia predeterminado (`es-CO`); inglés opcional (`en`). La URL determina el idioma: `/` siempre abre español, aunque el navegador esté en inglés. La navegación y recarga dentro de `/en` mantienen inglés. No se exige recordar una preferencia al volver a `/`: sin detección automática, cookies ni almacenamiento de idioma en esta entrega. Implementada según `03` D7 (2026-10-24). |
 | Precio | Se informa por teléfono, no se publica en la landing |
 | Framework | Next.js (exportación estática) + React + TypeScript |
 | Q15 Destinatarios del reparto | Personas naturales y puntos de venta |
@@ -76,6 +78,8 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 | D-11 | Demo pública con datos ficticios: el build de producción falla con `phoneIsPlaceholder: true` (hace falta un modo demo), el número y los datos legales ficticios quedan visibles, y GitHub Pages no permite cabeceras propias (CSP, NFR-04) | **Parcialmente resuelto (2026-10-18):** el bloqueo solo actúa con `SITE_ENV=production`, que define únicamente la pipeline de producción; fuera de producción se muestra una franja de aviso de datos ficticios (`demoNotice`). **Mitigado en parte (2026-10-24, T-62 y T-66):** la CSP (con hashes de los scripts en línea) y `Referrer-Policy` van por `<meta>`. Sigue abierto lo que solo puede ir por cabecera: `frame-ancestors`, HSTS, `X-Content-Type-Options` y `Permissions-Policy` (T-32, con el hosting de R-08) |
 | D-13 | El mapa de fincas (Leaflet con teselas de OpenStreetMap) envía la dirección IP del visitante a OpenStreetMap Foundation al cargarse. OSMF registra esa IP y la usa para estimar la ubicación del visitante. Choca con AC-12 y NFR-09 en la versión 1.4 | **Aprobado por el usuario (2026-10-19):** carga solo tras la acción del visitante ("Ver mapa") con aviso previo (AC-19), y AC-12 enmendado en la 1.5. Pendiente: revisión jurídica dentro de T-56 y T-05. Si el asesor la rechaza, se usa el plan B: mapa estático sin terceros (`03-plan.md` D6) |
 | D-14 | `npm audit` bloquea la publicación desde T-72 (H-08, decisión del usuario del 2026-10-24): una vulnerabilidad alta o crítica, en producción o desarrollo, frena `verificar` aunque no venga del cambio en curso. `npm audit` no permite ignorar avisos concretos | **Política de excepciones:** 1) actualizar la dependencia o forzar una versión corregida del paquete transitivo con `overrides` en `package.json`; 2) si no hay versión corregida, evaluar si el código vulnerable llega a ejecutarse (en build o en el navegador) y quitar la dependencia si es posible; 3) solo si nada de eso es viable, registrar aquí una excepción con el aviso (GHSA), la justificación y una fecha de revisión, y la decide el usuario. Si `npm audit` falla por una caída del servicio, se vuelve a correr el job |
+| D-15 | Bilingüismo con exportación estática: la negociación por Proxy/cookies no funciona en GitHub Pages; cambiar solo los textos en cliente deja HTML, SEO y `lang` incoherentes | D7: HTML por idioma, rutas explícitas y contenido validado en build. **Resuelto (T-88, 2026-10-24):** un layout raíz por idioma (grupos `(es)` y `(en)`) y la 404 global con `experimental.globalNotFound`, comprobados con Next 16.4.2 en los dos builds (con y sin prefijo). Riesgo residual: `global-not-found` es experimental; revisar al actualizar Next (sin él, Next exporta una 404 en inglés sin `lang`). |
+| D-16 | Traducciones incompletas o que eluden los controles comerciales y de datos ficticios; la fuente Inter está recortada | T-89 a T-91: paridad de claves, IDs, marcadores y variables; validación de ambos idiomas y frases prohibidas en inglés. T-95 verifica todos los caracteres. La traducción legal conserva su condición de borrador y revisión pendiente (T-05). **Mitigado (2026-10-24):** el build falla por cada causa, con pruebas negativas aisladas; Inter cubre los textos ingleses sin regenerarse. Sigue pendiente la revisión editorial del inglés y, con T-05, la jurídica. |
 
 ## 6. Roadmap
 
@@ -106,13 +110,23 @@ Fuente de verdad del alcance. Si un spec contradice este documento, gana este do
 
 | Documento | Versión | Ubicación |
 |---|---|---|
-| `00-constitution.md` | 1.4 | `spec/` |
-| `01-spec.md` | 1.5 | `spec/` |
-| `02-content-spec.md` | 1.5 | `spec/` |
-| `03-plan.md` | 1.5 | `spec/` |
-| `04-tasks.md` | 1.5 | `spec/` |
-| `05-alcance-y-roadmap.md` | 1.5 | `spec/` |
+| `00-constitution.md` | 1.5 | `spec/` |
+| `01-spec.md` | 1.7 | `spec/` |
+| `02-content-spec.md` | 1.7 | `spec/` |
+| `03-plan.md` | 2.0 | `spec/` |
+| `04-tasks.md` | 1.7 | `spec/` |
+| `05-alcance-y-roadmap.md` | 1.7 | `spec/` |
 | Versión original (respaldo) | 1.0 | `spec/_v1.0/` |
+
+**Cambios de la versión 1.7 (2026-10-24):**
+- Fase 12 implementada en la demo (T-87 a T-99): español en las URL de siempre e inglés bajo `/en`, selector «Español / English», catálogos por idioma validados en el build, SEO por idioma y 404 global. Detalle y evidencia en `03` D7, `04` y la bitácora.
+- D-15 resuelto con layouts raíz por idioma y `global-not-found` (experimental); D-16 mitigado. Los pendientes RP-01 a RP-05 y T-05 siguen abiertos en los dos idiomas.
+
+**Cambios de la versión 1.6 (2026-10-24):**
+- Plan solicitado para español predeterminado e inglés opcional: A-08, FR-25 a FR-28, AC-21 a AC-29, D7 y Fase 12 (T-87 a T-99).
+- Investigación en documentación oficial y análisis del checkout local `5059813`; no se modifica código ni se instala una biblioteca de i18n.
+- Se mantienen los pendientes de producción y el carácter ficticio de la demo en ambos idiomas. El estado real sigue siendo monolingüe hasta ejecutar el plan.
+- Corregidas las versiones de la matriz para reflejar las cabeceras reales de los documentos.
 
 **Cambios de la versión 1.5 (2026-10-19):**
 - Navegación de retorno (FR-19) y mapa de fincas de origen (FR-24, A-07).

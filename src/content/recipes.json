@@ -1,37 +1,22 @@
 [
   {
     "id": "sancocho",
-    "name": "Sancocho",
-    "time": "[60–90] min",
-    "description": "El guineo espesa el caldo y le da cuerpo.",
-    "imageAlt": "Sancocho con trozos de guineo verde, yuca, mazorca y pollo."
+    "time": "[60–90] min"
   },
   {
     "id": "cayeye",
-    "name": "Cayeye",
-    "time": "[30] min",
-    "description": "Puré de guineo verde con queso costeño y mantequilla, típico del Magdalena.",
-    "imageAlt": "Cayeye de guineo verde con queso costeño y mantequilla."
+    "time": "[30] min"
   },
   {
     "id": "guineitos",
-    "name": "Guineítos hervidos o en escabeche",
-    "time": "[15–20] min",
-    "description": "Se hierven hasta que un tenedor entre fácil. Acompañan pescado o carnes.",
-    "imageAlt": "Guineítos hervidos con escabeche de cebolla y pescado frito."
+    "time": "[15–20] min"
   },
   {
     "id": "patacon",
-    "name": "Patacón de guineo",
-    "time": "[20] min",
-    "description": "Más pequeño y suave que el de plátano hartón.",
-    "imageAlt": "Patacones de guineo verde con hogao."
+    "time": "[20] min"
   },
   {
     "id": "chips-horneados",
-    "name": "Chips horneados",
-    "time": "[25] min",
-    "description": "Láminas finas, aceite y sal al horno.",
-    "imageAlt": "Chips de guineo verde horneados."
+    "time": "[25] min"
   }
 ]

@@ -14,8 +14,9 @@ import tseslint from "typescript-eslint";
 // a todo jsx-a11y recommended. Se pierden solo las reglas @next/next, que en un
 // sitio estático sin <Script> ni pages/ casi no aplican.
 // Restricciones de importación entre capas (ver los bloques de "Capas de src/").
+// También los catálogos de idioma (src/content/es-CO/, src/content/en/; spec/03-plan.md D7).
 const SOLO_CONTENT_TS = {
-  group: ["@/content/*", "**/content/*.json"],
+  group: ["@/content/**", "**/content/**/*.json"],
   message:
     "Los JSON de contenido solo se importan en src/lib/content.ts, que los valida. Usa @/lib/content.",
 };
@@ -38,10 +39,11 @@ const LIB_CLIENTE = {
     "!@/lib/format",
     "!@/lib/tel",
     "!@/lib/salud-mapa",
+    "!@/lib/i18n",
     "!@/lib/content",
   ],
   message:
-    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel o salud-mapa. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
+    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel, salud-mapa o i18n. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
 };
 // Directivas que agregan JavaScript o código de servidor.
 const USE_CLIENT = {

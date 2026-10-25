@@ -1,13 +1,22 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { MAIN_ID } from "@/components/ui/SkipLink";
-import { copy, legal } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import { rutaDe, type Locale } from "@/lib/i18n";
 import { legalValues } from "@/lib/legal";
 import type { LegalPageKey } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
-// Página legal (FR-18): términos, privacidad o garantía, desde legal.json.
-export function LegalPage({ page }: { page: LegalPageKey }) {
+// Página legal (FR-18): términos, privacidad o garantía, desde el legal.json del idioma.
+// El retorno lleva al inicio del mismo idioma (FR-26).
+export function LegalPage({
+  page,
+  locale,
+}: {
+  page: LegalPageKey;
+  locale: Locale;
+}) {
+  const { copy, legal } = getContent(locale);
   const { title, sections } = legal[page];
   const values = legalValues();
   return (
@@ -15,7 +24,7 @@ export function LegalPage({ page }: { page: LegalPageKey }) {
       <article className="max-w-prose">
         {/* Retorno al inicio antes del título (FR-19, AC-14); área táctil de 44 px. */}
         <Link
-          href="/"
+          href={rutaDe("inicio", locale)}
           prefetch={false}
           className="mb-4 inline-flex min-h-11 items-center gap-2 font-semibold text-hoja underline underline-offset-4"
         >

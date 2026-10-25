@@ -140,6 +140,13 @@
     "backHome": "Volver al inicio",
     "skipToContent": "Saltar al contenido"
   },
+  "language": {
+    "navLabel": "Idioma",
+    "names": {
+      "es-CO": "Español",
+      "en": "English"
+    }
+  },
   "map": {
     "title": "Fincas de origen en la zona bananera",
     "text": "Estas son fincas de referencia de nuestro origen en la zona bananera del Magdalena. Las ubicaciones son aproximadas. [POR CONFIRMAR autorización de cada productor, RP-02]",

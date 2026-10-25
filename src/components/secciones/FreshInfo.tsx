@@ -1,8 +1,10 @@
 import { Lightbulb } from "lucide-react";
-import { copy } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 
 // "Verde de verdad" (FR-05): para cocinar y no para madurar, vida útil y conservación.
-export function FreshInfo() {
+export function FreshInfo({ locale }: { locale: Locale }) {
+  const { copy } = getContent(locale);
   const { freshInfo } = copy;
   return (
     <section

@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // Un layout raíz por idioma, (es) y (en) (spec/03-plan.md D7): no queda uno común para
+  // componer la 404, y Next exportaba una propia en inglés y sin lang. global-not-found
+  // (src/app/global-not-found.tsx) es experimental en Next 16.4; T-88 comprobó que
+  // exporta out/404.html con y sin prefijo. Revisar al actualizar Next.
+  experimental: {
+    globalNotFound: true,
+  },
   // `experimental.inlineCss` se probó en T-30 y se descartó: el LCP de laboratorio
   // solo bajaba de 2,7 a 2,6 s y el HTML pasaba de 14,5 a 29,2 KB gzip, porque el
   // CSS queda duplicado en la carga de React.

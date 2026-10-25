@@ -1,7 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import copy from "../../src/content/copy.json";
+import enCopy from "../../src/content/en/copy.json";
+import copy from "../../src/content/es-CO/copy.json";
 
 // T-55: mapa de fincas (FR-24) y navegación de retorno (FR-19).
 // Las teselas se interceptan y se responden en local: las pruebas no cargan los
@@ -424,6 +425,109 @@ test.describe("navegación de retorno (FR-19, AC-14)", () => {
       await page.goto(path);
       await page.locator("header").getByRole("link").first().click();
       await expect(page).toHaveURL(/\/$/);
+    });
+  }
+});
+
+// Fase 12 (T-95, T-98, AC-27): el mismo mapa en /en, con sus textos en inglés. Mismos
+// controles: carga por clic, atribución, salud por vista y reintento; teselas interceptadas.
+test.describe("mapa de fincas en inglés (AC-27)", () => {
+  const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
+
+  test("Leaflet no se pide antes del clic; el mapa ilustrado es el inglés", async ({
+    page,
+  }) => {
+    const red = await vigilarRed(page);
+    await page.goto("/en");
+    await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
+    const svg = page.locator('#mapa-fincas img[src$="/en/mapa-fincas.svg"]');
+    await expect(svg).toHaveJSProperty("complete", true);
+    expect(red.leaflet).toEqual([]);
+    expect(red.teselas).toEqual([]);
+    await expect(page.locator("#mapa-fincas-aviso")).toContainText(
+      enCopy.map.consent,
+    );
+
+    await page.getByRole("button", { name: enCopy.map.showButton }).click();
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+    await expect.poll(() => red.teselas.length).toBeGreaterThan(0);
+    await expect(page.locator(".leaflet-control-attribution")).toHaveText(
+      enCopy.map.attribution,
+    );
+    await expect(
+      page.getByRole("button", { name: enCopy.map.zoomIn }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: enCopy.map.zoomOut }),
+    ).toBeVisible();
+
+    await page.locator(".marcador-acopio.leaflet-marker-icon").click();
+    const popup = page.locator(".leaflet-popup");
+    await expect(popup).toContainText("Santa Marta collection center");
+    await expect(
+      popup.getByRole("button", { name: enCopy.map.closePopup }),
+    ).toBeAttached();
+  });
+
+  test("error y reintento en inglés", async ({ page }) => {
+    let caidas = true;
+    await page.route(TILE, (route) =>
+      caidas
+        ? route.fulfill({ status: 500, body: "" })
+        : route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+    );
+    await page.goto("/en");
+    await page.getByRole("button", { name: enCopy.map.showButton }).click();
+    await expect(estado(page)).toHaveText(enCopy.map.error);
+    const reintentar = page.getByRole("button", { name: enCopy.map.retry });
+    await expect(reintentar).toBeFocused();
+    caidas = false;
+    await reintentar.click();
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(reintentar).toHaveCount(0);
+  });
+
+  test("fallo parcial en inglés: el mapa sigue usable con «Try again»", async ({
+    page,
+  }) => {
+    let servidas = 0;
+    await page.route(TILE, (route) => {
+      servidas += 1;
+      return servidas <= 1
+        ? route.fulfill({ status: 200, contentType: "image/png", body: PNG })
+        : route.fulfill({ status: 500, body: "" });
+    });
+    await page.goto("/en");
+    await page.getByRole("button", { name: enCopy.map.showButton }).click();
+    await expect(estado(page)).toHaveText(enCopy.map.partial);
+    await expect(page.locator(".leaflet-container")).toHaveCount(1);
+    await expect(
+      page.getByRole("button", { name: enCopy.map.retry }),
+    ).toBeVisible();
+    const results = await new AxeBuilder({ page })
+      .include("#mapa-fincas")
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+  });
+});
+
+test.describe("navegación de retorno en inglés (FR-19, FR-26)", () => {
+  for (const path of ["/en/terms", "/en/privacy", "/en/guarantee"]) {
+    test(`${path} vuelve a /en, no al español`, async ({ page }) => {
+      await page.goto(path);
+      const volver = page
+        .locator("main")
+        .getByRole("link", { name: enCopy.navigation.backHome });
+      const box = await volver.boundingBox();
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+      await volver.click();
+      await expect(page).toHaveURL(/\/en$/);
+      await expect(page.locator("html")).toHaveAttribute("lang", "en");
+
+      await page.goto(path);
+      await page.locator("header").getByRole("link").first().click();
+      await expect(page).toHaveURL(/\/en$/);
     });
   }
 });

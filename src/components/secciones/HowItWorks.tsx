@@ -1,7 +1,9 @@
-import { copy } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 
 // Cómo funciona (FR-09): tres pasos numerados. El número lo da la lista ordenada.
-export function HowItWorks() {
+export function HowItWorks({ locale }: { locale: Locale }) {
+  const { copy } = getContent(locale);
   const { howItWorks } = copy;
   return (
     <section

@@ -94,11 +94,19 @@ export function resumirDesgloses(desgloses) {
 
 // Resumen en Markdown para el job de GitHub Actions ($GITHUB_STEP_SUMMARY, T-85).
 // En CI el paso es informativo (CI-01): la tabla dice qué cumplió, pero no bloquea.
-export function resumenMarkdown({ metodo, runs, filas, subpartes, elementos }) {
+export function resumenMarkdown({
+  metodo,
+  runs,
+  filas,
+  subpartes,
+  elementos,
+  ruta = "",
+}) {
   const valor = ({ valor: v, unidad }) =>
     unidad === "ms" ? `${Math.round(v)} ms` : String(Number(v.toFixed(3)));
   const lineas = [
-    `### Lighthouse móvil (${metodo}, mediana de ${runs} corridas)`,
+    // Una tabla por página medida (/ y /en, T-96).
+    `### Lighthouse móvil${ruta ? `, ${ruta}` : ""} (${metodo}, mediana de ${runs} corridas)`,
     "",
     "Paso informativo: no bloquea la publicación (CI-01). Los servidores de GitHub varían entre corridas; el presupuesto se verifica en local con `npm run lighthouse`.",
     "",

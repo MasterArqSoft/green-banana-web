@@ -1,8 +1,10 @@
-import { copy } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 
 // Beneficios nutricionales (FR-08, prioridad Could). Solo la formulación permitida por P3:
 // "fuente de almidón resistente, un tipo de fibra". Sin promesas médicas.
-export function Benefits() {
+export function Benefits({ locale }: { locale: Locale }) {
+  const { copy } = getContent(locale);
   return (
     <section
       id="beneficios"

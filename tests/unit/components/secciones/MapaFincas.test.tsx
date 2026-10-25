@@ -1,11 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MapaFincas } from "@/components/secciones/MapaFincas";
-import { copy, fincas } from "@/lib/content";
+import { getContent } from "@/lib/content";
 import { fill } from "@/lib/template";
 
+const { copy, fincas } = getContent("es-CO");
+
 describe("MapaFincas (FR-24)", () => {
-  const html = renderToStaticMarkup(<MapaFincas />);
+  const html = renderToStaticMarkup(<MapaFincas locale="es-CO" />);
   const items = html.match(/<li[\s>][\s\S]*?<\/li>/g) ?? [];
 
   it("lista las 6 ubicaciones con nombre y municipio en HTML (AC-16)", () => {
@@ -56,5 +58,29 @@ describe("MapaFincas (FR-24)", () => {
 
   it("no muestra ningún precio (AC-02)", () => {
     expect(html).not.toMatch(/\$\s?\d|COP/);
+  });
+});
+
+describe("MapaFincas en inglés (FR-27, AC-27)", () => {
+  const en = getContent("en");
+  const html = renderToStaticMarkup(<MapaFincas locale="en" />);
+  const items = html.match(/<li[\s>][\s\S]*?<\/li>/g) ?? [];
+
+  it("lista las mismas ubicaciones con el nombre traducido y el municipio sin traducir", () => {
+    expect(items).toHaveLength(fincas.fincas.length);
+    en.fincas.fincas.forEach((finca, index) => {
+      expect(finca.id).toBe(fincas.fincas[index].id);
+      expect(finca.municipio).toBe(fincas.fincas[index].municipio);
+      expect(items[index]).toContain(finca.nombre);
+    });
+    expect(html).toContain("Santa Marta collection center");
+  });
+
+  it("traduce el aviso y el botón, y sigue sin cargar el mapa (AC-15, AC-19)", () => {
+    expect(html).toContain(en.copy.map.consent);
+    expect(html).toContain(`>${en.copy.map.showButton}</button>`);
+    expect(html).toContain(`href="${en.copy.map.privacyUrl}"`);
+    expect(html).not.toMatch(/<script/i);
+    expect(html).not.toContain("tile.openstreetmap.org");
   });
 });

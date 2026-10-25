@@ -1,11 +1,13 @@
 import { Clock } from "lucide-react";
 import { Picture } from "@/components/ui/Picture";
-import { copy, recipes } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { recipeImage } from "@/lib/images";
 
 // Usos y recetas (FR-07): tarjetas con foto, nombre, tiempo y descripción corta.
 // Si algún día se publican recetas completas, van en la propia página, sin enlaces externos.
-export function Recipes() {
+export function Recipes({ locale }: { locale: Locale }) {
+  const { copy, recipes } = getContent(locale);
   return (
     <section
       id="recetas"

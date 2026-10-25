@@ -43,7 +43,7 @@ Los originales están en `fotos-originales/` (fuera de Git). Las versiones publi
 | [Leaflet](https://leafletjs.com) 1.9.4 (`leaflet`, por npm, sin CDN) | Mapa interactivo, cargado solo al pulsar "Ver mapa" | BSD-2-Clause |
 | Teselas de [OpenStreetMap](https://www.openstreetmap.org/copyright) (`tile.openstreetmap.org`) | Fondo del mapa | Datos © OpenStreetMap contributors, ODbL 1.0. Atribución visible "© OpenStreetMap contributors" (AC-18), según la política de uso de teselas de OSMF |
 
-| Mapa ilustrado de la zona (`/mapa-fincas.svg` y `/mapa-fincas-movil.svg`, generados en el build desde `src/lib/mapa-base.json`) | Fondo de la sección del mapa antes de pulsar "Ver mapa" | Ilustración propia. La geometría (costa, ciénagas, ríos y Troncal del Caribe) se deriva de datos de OpenStreetMap, © OpenStreetMap contributors, ODbL 1.0: es una "obra producida" que solo exige atribución, que va visible sobre el mapa. Extracto de Overpass del 2026-10-20, simplificado una sola vez. El relieve de la Sierra es un dibujo esquemático propio |
+| Mapa ilustrado de la zona (`/mapa-fincas.svg` y `/mapa-fincas-movil.svg`, y sus versiones inglesas `/en/mapa-fincas.svg` y `/en/mapa-fincas-movil.svg` desde la Fase 12, generados en el build desde `src/lib/mapa-base.json`; solo cambian los rótulos) | Fondo de la sección del mapa antes de pulsar "Ver mapa" | Ilustración propia. La geometría (costa, ciénagas, ríos y Troncal del Caribe) se deriva de datos de OpenStreetMap, © OpenStreetMap contributors, ODbL 1.0: es una "obra producida" que solo exige atribución, que va visible sobre el mapa. Extracto de Overpass del 2026-10-20, simplificado una sola vez. El relieve de la Sierra es un dibujo esquemático propio |
 
 Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals.css`); no se usan las imágenes de marcador de Leaflet.
 
@@ -56,6 +56,7 @@ Los marcadores son CSS propio (`.marcador-finca`, `.marcador-acopio` en `globals
 
 ## Historial
 
+- 2026-10-24 (Fase 12, T-95): versiones inglesas del mapa ilustrado, con la misma geometría derivada de OSM y la misma atribución. Sin fotos, íconos ni fuentes nuevas: la foto para redes (`og.jpg`) no tiene texto y la comparten los dos idiomas, e Inter recortada ya cubre los caracteres de los textos ingleses (verificado por `tests/unit/lib/fuentes.test.ts`).
 - 2026-10-18 (T-04): se publican las 12 fotos generadas con ChatGPT. La imagen para redes pasa de una tarjeta de texto generada a un recorte del hero.
 - 2026-10-19: mapa ilustrado de la zona como fondo antes de "Ver mapa" (geometría derivada de OSM, ODbL).
 - 2026-10-24 (T-82): Inter pasa a un subconjunto propio (23,9 KB frente a 48,4 KB) generado con fontTools; procedimiento en `doc/bitacora.md`.

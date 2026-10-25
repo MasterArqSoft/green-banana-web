@@ -1,12 +1,16 @@
 import { ChevronDown } from "lucide-react";
-import { copy, faq } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
+import type { FaqItem } from "@/lib/schema";
 import { jsonLd } from "@/lib/seo";
 
-// Datos estructurados FAQPage (FR-13, NFR-03), escapados con jsonLd().
-function faqJsonLd(): string {
+// Datos estructurados FAQPage (FR-13, NFR-03), escapados con jsonLd(), en el idioma
+// de la página (inLanguage, FR-28).
+function faqJsonLd(faq: FaqItem[], locale: Locale): string {
   return jsonLd({
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    inLanguage: locale,
     mainEntity: faq.map((item) => ({
       "@type": "Question",
       name: item.question,
@@ -17,7 +21,8 @@ function faqJsonLd(): string {
 
 // Preguntas frecuentes (FR-13). Acordeón con <details>/<summary> nativos: accesible
 // por teclado y lector de pantalla sin JavaScript en el navegador (AC-09).
-export function Faq() {
+export function Faq({ locale }: { locale: Locale }) {
+  const { copy, faq } = getContent(locale);
   return (
     <section
       id="preguntas-frecuentes"
@@ -50,7 +55,7 @@ export function Faq() {
       </div>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: faqJsonLd() }}
+        dangerouslySetInnerHTML={{ __html: faqJsonLd(faq, locale) }}
       />
     </section>
   );

@@ -1,15 +1,19 @@
 import { Picture } from "@/components/ui/Picture";
-import { copy, testimonials } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { testimonialImage } from "@/lib/images";
 import type { Testimonial } from "@/lib/schema";
 
 // Testimonios (FR-12). Solo reales y autorizados (P1). Sin testimonios, la sección
 // no se renderiza (AC-11). `items` existe para poder probar el caso con datos.
 export function Testimonials({
-  items = testimonials,
+  locale,
+  items = getContent(locale).testimonials,
 }: {
+  locale: Locale;
   items?: Testimonial[];
 }) {
+  const { copy } = getContent(locale);
   if (items.length === 0) return null;
   return (
     <section
@@ -26,7 +30,7 @@ export function Testimonials({
       <ul className="mt-6 grid gap-4 md:grid-cols-3">
         {items.map((item) => (
           <li
-            key={item.name}
+            key={item.id}
             className="flex flex-col gap-4 rounded-card bg-white p-5 shadow-suave"
           >
             <blockquote className="text-lg">“{item.text}”</blockquote>

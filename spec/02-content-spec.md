@@ -1,8 +1,8 @@
 # Spec de contenido y diseño: Landing Guineo Verde
 
-**Versión:** 1.5 · **Fecha:** 2026-10-19 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 1.7 · **Fecha:** 2026-10-24 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.7
 
-Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. Los textos van en español de Colombia, tono cercano y regional, sin exageraciones. **La landing no publica precios ni pedidos en la Fase 1.** El copy de esta sección se implementa en `src/content/copy.json` (un bloque por sección); los datos del negocio siguen en `site.json` y los demás archivos de contenido.
+Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy es una propuesta editable. El contenido base va en español de Colombia, tono cercano y regional, sin exageraciones; la traducción inglesa sigue las reglas de §1 y D7. **La landing no publica precios ni pedidos en la Fase 1.** El copy de esta sección se implementa en `src/content/es-CO/copy.json` (un bloque por sección) y su traducción en `src/content/en/copy.json`; los demás textos por idioma (productos, FAQ, recetas, legales, nombres de fincas) van en esas mismas carpetas, y los datos del negocio, una sola vez, en `site.json` y los demás archivos de `src/content/`.
 
 ## Índice
 1. Voz y tono
@@ -16,6 +16,17 @@ Todo texto entre `[corchetes]` es un dato que debe confirmar el negocio. El copy
 ---
 
 ## 1. Voz y tono
+La Fase 12 agregó inglés opcional (2026-10-24). El español colombiano es el contenido editorial base y mantiene sus URL. El inglés debe ser natural, fiel a los mismos datos y condiciones, sin añadir promesas ni ampliar la distribución fuera de Santa Marta.
+
+- Selector: «Español» y «English», con `lang`/`hreflang` apropiados; nombre accesible y estado activo. No depender de banderas.
+- Traducir toda cadena mostrada o anunciada: CTA, títulos, FAQ, recetas, descripciones, testimonios si existen, textos alternativos, legales, aviso demo, borrador, mapa (incluidas etiquetas SVG y controles de zoom), carga/error/parcial/reintento, 404 y metadatos.
+- Conservar nombres propios, marcas, nombres de fincas, Santa Marta, NIT, dirección, contactos, identificadores y datos numéricos. «Green banana» para el producto; conservar nombres culturales como «cayeye» con explicación breve cuando sea útil. No presentar el guineo como un producto distinto.
+- Los marcadores de plantilla (`{ciudad}`, `{telefono}`, etc.) y sus nombres son idénticos por idioma. Mantener `(FICTICIO)` y corchetes de pendientes como marcadores técnicos detectables, acompañados de explicación inglesa. Implementado: `(FICTICIO)` se conserva literal en inglés y el aviso de demostración inglés lo explica; los pendientes ingleses usan corchetes con texto inglés (`[TO BE CONFIRMED …]`, `[4 to 7]`) y cada texto debe tener las mismas marcas que su par español. No convertir una traducción en aprobación jurídica ni en validación de un dato pendiente.
+- Claves semánticas estables; mismos conjuntos de IDs de productos, preguntas y recetas. Inglés completo: una traducción faltante rompe el build, sin recurrir silenciosamente al español.
+- Datos comunes y textos traducibles se separan según D7. No duplicar teléfono, razón social, NIT, URL base, coordenadas, cifras ni estado de confirmación en dos fuentes editables.
+- Fechas ISO conservan su significado y UTC para fechas sin hora; `Intl` recibe el idioma de forma explícita (`es-CO` / `en`). Mantener unidades métricas y teléfono colombiano.
+- Revisar las frases prohibidas equivalentes en inglés y la cobertura de caracteres de Inter/Fraunces. La validación lexical complementa la revisión editorial; no la sustituye.
+
 - Cercano, costeño sin caricatura, claro y directo.
 - Frases cortas. Cifras concretas y con respaldo documentado.
 - Prohibido: "el mejor", "100 % garantizado", "cupos limitados" falsos, promesas de salud, precios o cifras de ahorro.

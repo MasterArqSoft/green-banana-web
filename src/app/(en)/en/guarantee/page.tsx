@@ -1,8 +1,8 @@
 import { LegalPage } from "@/components/ui/LegalPage";
 import { legalMetadata } from "@/lib/legal";
 
-export const metadata = legalMetadata("privacidad");
+export const metadata = legalMetadata("garantia", "en");
 
 export default function Page() {
-  return <LegalPage page="privacidad" />;
+  return <LegalPage page="garantia" locale="en" />;
 }

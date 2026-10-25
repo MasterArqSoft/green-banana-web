@@ -1,0 +1,22 @@
+{
+  "unit": {
+    "label": "Single banana",
+    "callLabel": "Call for price",
+    "imageAlt": "A single green banana on a wooden board."
+  },
+  "kg": {
+    "label": "Kilo",
+    "callLabel": "Call for price",
+    "imageAlt": "Green bananas on a kitchen scale."
+  },
+  "bag": {
+    "label": "Family bag",
+    "callLabel": "Call for price",
+    "imageAlt": "Open cloth bag with green bananas."
+  },
+  "box": {
+    "label": "Box for businesses",
+    "callLabel": "Call for price",
+    "imageAlt": "Wooden crate full of green bananas."
+  }
+}

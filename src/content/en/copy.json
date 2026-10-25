@@ -1,0 +1,173 @@
+{
+  "seo": {
+    "title": "Green banana in {ciudad} | {marca}",
+    "legalTitle": "{pagina} | {marca}",
+    "description": "Hand-picked green banana (guineo verde), collected in {ciudad}. Call us for prices and delivery to homes and businesses.",
+    "ogImageAlt": "{marca}: green banana collected in {ciudad}"
+  },
+  "demoNotice": "Demo: company and contact details are fictitious (marked “FICTICIO”).",
+  "callButton": {
+    "label": "Call",
+    "accessibleName": "{texto}, {telefono}",
+    "accessibleNameWithContext": "{texto}: {contexto}, {telefono}"
+  },
+  "topBar": {
+    "acopio": "Collection center in {ciudad}",
+    "phone": "Call us: {telefono}"
+  },
+  "hero": {
+    "title": "Freshly cut green banana, collected in {ciudad}",
+    "subtitle": "For sancocho, cayeye and patacón. Firm and hand-picked.",
+    "primaryCta": "Call to order",
+    "secondaryCta": "See origin",
+    "note": "We give you the price over the phone. 24-hour freshness guarantee.",
+    "imageAlt": "Bunch of freshly cut green bananas on a wooden table."
+  },
+  "trustBar": [
+    {
+      "icon": "camion",
+      "title": "Collection center in {ciudad}",
+      "text": "We deliver to homes and retail outlets"
+    },
+    {
+      "icon": "telefono",
+      "title": "Price by phone",
+      "text": "We serve you over the phone"
+    },
+    {
+      "icon": "escudo",
+      "title": "Freshness guarantee",
+      "text": "Claim within 24 hours with a photo"
+    },
+    {
+      "icon": "mano",
+      "title": "Hand-picked",
+      "text": "Only firm, green bananas"
+    }
+  ],
+  "products": {
+    "title": "Pack sizes",
+    "unitWeight": "~{peso} each",
+    "units": "~{unidades} bananas",
+    "note": "Prices are given over the phone. The delivery cost is also given before you confirm."
+  },
+  "freshInfo": {
+    "title": "For cooking, not for ripening",
+    "text": "We cut the bananas while green so they hold up when cooked and don't fall apart in the pot. Stored in a cool, dry place, they keep for [4 to 7] days [TO BE CONFIRMED with the supplier].",
+    "tipLabel": "Tip",
+    "tip": "Don't refrigerate them if you don't want the peel to darken."
+  },
+  "origin": {
+    "title": "From {municipio} to {ciudad}",
+    "text": "We work with {productor} in {municipio}, {departamento}. We receive the bananas at our collection center in {ciudad} and distribute them from there. Every batch carries its cutting date.",
+    "steps": ["Farm", "Collection center in {ciudad}", "Your home or business"],
+    "batch": "Batch {codigo} · Cut on {fecha}",
+    "imageAlt": "Hands sorting green bananas at the collection center."
+  },
+  "recipes": {
+    "title": "What can you cook with green banana?",
+    "timeLabel": "Preparation time:"
+  },
+  "benefits": {
+    "title": "What it provides",
+    "text": "Green banana is a source of resistant starch, a type of fiber. It is a traditional cooking food and does not replace advice from a health professional."
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "steps": [
+      {
+        "highlight": "Call",
+        "text": "and tell us what you need."
+      },
+      {
+        "highlight": "We confirm",
+        "text": "the pack size, price and area over the phone."
+      },
+      {
+        "highlight": "You receive",
+        "text": "your order and pay as agreed."
+      }
+    ]
+  },
+  "coverage": {
+    "title": "Coverage",
+    "acopioLabel": "Collection center",
+    "acopio": "{ciudad}, {departamento}",
+    "distributionLabel": "Distribution",
+    "distribution": "Only in {zonas}, with the company's own delivery, to homes and retail outlets.",
+    "notListed": "Your neighborhood or business isn't listed? Call us and we'll tell you if we deliver there."
+  },
+  "business": {
+    "title": "Do you run a shop, hotel or retail outlet?",
+    "text": "We distribute in {ciudad} from our collection center. Call us and we'll explain the terms."
+  },
+  "testimonials": {
+    "title": "Testimonials"
+  },
+  "faq": {
+    "title": "Frequently asked questions"
+  },
+  "guarantee": {
+    "title": "If it arrives damaged, we replace it",
+    "text": "You have 24 hours from delivery to call us or email the contact address with a photo of the product and the receipt. We replace it in the next delivery or refund your money [TO BE CONFIRMED policy, RP-04].",
+    "legalNote": "As a perishable product, the right of withdrawal does not apply. This guarantee is in addition to your rights as a consumer."
+  },
+  "finalCta": {
+    "title": "Call us and let's talk about your order"
+  },
+  "footer": {
+    "labels": {
+      "razonSocial": "Company name",
+      "nit": "NIT (tax ID)",
+      "direccion": "Address",
+      "telefono": "Phone",
+      "correo": "Email"
+    },
+    "navLabel": "Legal links",
+    "links": {
+      "terminos": "Terms",
+      "privacidad": "Privacy",
+      "garantia": "Guarantee"
+    },
+    "pqr": "PQR (petitions, complaints and claims): channel and how the receipt is delivered [TO BE CONFIRMED, RP-05].",
+    "sic": "Superintendence of Industry and Commerce (SIC)"
+  },
+  "notFound": {
+    "title": "We couldn't find this page",
+    "text": "The link may be mistyped or the page may no longer exist. From the home page you can see our pack sizes and call us."
+  },
+  "navigation": {
+    "backHome": "Back to home",
+    "skipToContent": "Skip to content"
+  },
+  "language": {
+    "navLabel": "Language",
+    "names": {
+      "es-CO": "Español",
+      "en": "English"
+    }
+  },
+  "map": {
+    "title": "Origin farms in the banana-growing area",
+    "text": "These are reference farms of our origin in the banana-growing area of Magdalena. Locations are approximate. [TO BE CONFIRMED authorization from each producer, RP-02]",
+    "showButton": "Show map",
+    "consent": "When you view the map, your browser will connect to OpenStreetMap, which receives your IP address.",
+    "privacyUrl": "https://wiki.osmfoundation.org/wiki/Privacy_Policy",
+    "privacyLink": "OpenStreetMap privacy policy",
+    "loading": "Loading map…",
+    "error": "We couldn't load the map. The farms are in the list below.",
+    "retry": "Try again",
+    "partial": "Part of the map didn't load. The farms are in the list.",
+    "listTitle": "Farms on the map",
+    "acopioDetail": "Collection center · {municipio}",
+    "attribution": "© OpenStreetMap contributors",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "closePopup": "Close",
+    "previewLabels": {
+      "sea": ["Caribbean Sea"],
+      "lagoon": ["Ciénaga Grande", "de Santa Marta"],
+      "sierra": ["Sierra Nevada", "de Santa Marta"]
+    }
+  }
+}

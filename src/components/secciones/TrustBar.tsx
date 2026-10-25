@@ -1,5 +1,6 @@
 import { Hand, Phone, ShieldCheck, Truck } from "lucide-react";
-import { copy, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { fill } from "@/lib/template";
 
 // El ícono es una decisión de diseño, no de copy: copy.json solo elige cuál.
@@ -11,7 +12,8 @@ const icons = {
 };
 
 // Franja de confianza (FR-03): cuatro íconos con título y texto corto.
-export function TrustBar() {
+export function TrustBar({ locale }: { locale: Locale }) {
+  const { copy, site } = getContent(locale);
   return (
     <div className="bg-hoja-claro">
       <ul className="contenedor grid grid-cols-2 gap-x-4 gap-y-6 py-8 md:grid-cols-4">

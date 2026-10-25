@@ -1,20 +1,22 @@
 import { CallButton } from "@/components/ui/CallButton";
 import { Picture } from "@/components/ui/Picture";
-import { copy, products } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { formatWeight, markPending } from "@/lib/format";
 import { IMAGES } from "@/lib/images";
-import type { Presentation } from "@/lib/schema";
+import type { Copy, Presentation } from "@/lib/schema";
 import { fill } from "@/lib/template";
 
 // Detalle de cada presentación según 02-content-spec.md §2 (FR-04):
 // "~220 g por unidad", "~4–5 unidades", "3 kg · ~13–15 unidades", "18–20 kg".
 // Las cifras sin confirmar van entre corchetes, como en el spec: "~[220] g por unidad".
-function detail(product: Presentation): string {
+function detail(product: Presentation, copy: Copy, locale: Locale): string {
   const pending = product.pendingConfirmation ?? [];
   const parts: string[] = [];
   if (product.approxWeightG !== undefined) {
     const weight = formatWeight(
       product.approxWeightG,
+      locale,
       pending.includes("approxWeightG"),
     );
     parts.push(
@@ -37,7 +39,8 @@ function detail(product: Presentation): string {
 }
 
 // Presentaciones (FR-04): tarjetas sin precio con botón "Llamar para precio".
-export function ProductCards() {
+export function ProductCards({ locale }: { locale: Locale }) {
+  const { copy, products } = getContent(locale);
   return (
     <section
       id="presentaciones"
@@ -68,8 +71,9 @@ export function ProductCards() {
               <h3 className="text-lg font-semibold text-hoja">
                 {product.label}
               </h3>
-              <p className="text-sm">{detail(product)}</p>
+              <p className="text-sm">{detail(product, copy, locale)}</p>
               <CallButton
+                locale={locale}
                 label={product.callLabel}
                 context={product.label}
                 size="sm"

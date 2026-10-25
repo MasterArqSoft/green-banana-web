@@ -1,11 +1,13 @@
 {
-  "centro": { "lat": 10.88, "lng": -74.21 },
+  "centro": {
+    "lat": 10.88,
+    "lng": -74.21
+  },
   "zoom": 9,
   "fincas": [
     {
       "id": "acopio-santa-marta",
       "tipo": "acopio",
-      "nombre": "Acopio en Santa Marta",
       "municipio": "Santa Marta",
       "lat": 11.2408,
       "lng": -74.199,
@@ -14,7 +16,6 @@
     {
       "id": "finca-a",
       "tipo": "finca",
-      "nombre": "Finca de ejemplo A (FICTICIO)",
       "municipio": "Zona Bananera",
       "lat": 10.7964,
       "lng": -74.178,
@@ -23,7 +24,6 @@
     {
       "id": "finca-b",
       "tipo": "finca",
-      "nombre": "Finca de ejemplo B (FICTICIO)",
       "municipio": "Zona Bananera",
       "lat": 10.95,
       "lng": -74.1,
@@ -32,7 +32,6 @@
     {
       "id": "finca-c",
       "tipo": "finca",
-      "nombre": "Finca de ejemplo C (FICTICIO)",
       "municipio": "Ciénaga",
       "lat": 11.0069,
       "lng": -74.25,
@@ -41,7 +40,6 @@
     {
       "id": "finca-d",
       "tipo": "finca",
-      "nombre": "Finca de ejemplo D (FICTICIO)",
       "municipio": "Aracataca",
       "lat": 10.5937,
       "lng": -74.1928,
@@ -50,7 +48,6 @@
     {
       "id": "finca-e",
       "tipo": "finca",
-      "nombre": "Finca de ejemplo E (FICTICIO)",
       "municipio": "Fundación",
       "lat": 10.5207,
       "lng": -74.185,

@@ -1,13 +1,8 @@
-import { copy, fincas } from "@/lib/content";
-import { mapaIlustradoSvg } from "@/lib/mapa-ilustrado";
+import { respuestaMapa } from "@/app/mapa-svg";
 
-// Requerido por `output: "export"`: el SVG se genera una sola vez en el build.
+// Requerido por `output: "export"`: el SVG se genera una sola vez en el build (out/mapa-fincas-movil.svg).
 export const dynamic = "force-static";
 
-// Variante móvil del mapa ilustrado (FR-24): recortada a las fincas, con símbolos más grandes.
 export function GET() {
-  return new Response(
-    mapaIlustradoSvg(fincas.fincas, copy.map.previewLabels, "movil"),
-    { headers: { "Content-Type": "image/svg+xml; charset=utf-8" } },
-  );
+  return respuestaMapa("es-CO", "movil");
 }

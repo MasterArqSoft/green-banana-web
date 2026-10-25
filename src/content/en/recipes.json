@@ -1,0 +1,27 @@
+{
+  "sancocho": {
+    "name": "Sancocho",
+    "description": "A traditional Colombian stew: green banana thickens the broth and gives it body.",
+    "imageAlt": "Sancocho with pieces of green banana, cassava, corn on the cob and chicken."
+  },
+  "cayeye": {
+    "name": "Cayeye",
+    "description": "Mashed green banana with costeño cheese and butter, typical of Magdalena.",
+    "imageAlt": "Green banana cayeye with costeño cheese and butter."
+  },
+  "guineitos": {
+    "name": "Boiled or pickled guineítos",
+    "description": "Boil them until a fork goes in easily. They go well with fish or meat.",
+    "imageAlt": "Boiled guineítos with pickled onion and fried fish."
+  },
+  "patacon": {
+    "name": "Green banana patacón",
+    "description": "Flattened fried slices, smaller and softer than those made with hartón plantain.",
+    "imageAlt": "Green banana patacones with hogao, a tomato and onion sauce."
+  },
+  "chips-horneados": {
+    "name": "Baked chips",
+    "description": "Thin slices with oil and salt, baked in the oven.",
+    "imageAlt": "Baked green banana chips."
+  }
+}

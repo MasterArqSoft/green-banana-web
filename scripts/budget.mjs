@@ -6,6 +6,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
+import { LOCALES, PAGINAS, rutaDe } from "../src/lib/i18n.ts";
 import { IMAGES } from "../src/lib/images.ts";
 import { recursosIniciales } from "./budget-recursos.mjs";
 
@@ -14,12 +15,23 @@ const LIMIT_KB = 300;
 // Pages, con prefijo y barra final) con `node scripts/budget.mjs out-pages`.
 const outDir = process.argv[2] ?? "out";
 const out = join(process.cwd(), outDir);
-// Con barra final (trailingSlash), cada página queda en <ruta>/index.html.
-const pages = ["index", "terminos", "privacidad", "garantia"].map((page) =>
-  page === "index" || existsSync(join(out, `${page}.html`))
-    ? `${page}.html`
-    : `${page}/index.html`,
+// Las ocho páginas de los dos idiomas (src/lib/i18n.ts, T-96) y la 404. Con barra final
+// (trailingSlash), cada página queda en <ruta>/index.html.
+const html = (ruta) => {
+  const base = ruta === "/" ? "index" : ruta.slice(1);
+  return base === "index" || existsSync(join(out, `${base}.html`))
+    ? `${base}.html`
+    : `${base}/index.html`;
+};
+const inicios = new Set(
+  LOCALES.map((locale) => html(rutaDe("inicio", locale))),
 );
+const pages = [
+  ...PAGINAS.flatMap((pagina) =>
+    LOCALES.map((locale) => html(rutaDe(pagina, locale))),
+  ),
+  "404.html",
+];
 console.log(`Presupuesto de ${outDir}/`);
 
 const transferred = (file) => {
@@ -50,11 +62,11 @@ for (const page of pages) {
   console.log(
     `${ok ? "✓" : "✗"} ${page}: ${total.toFixed(1)} KB de ${LIMIT_KB} (${detail})`,
   );
-  // La landing además descarga la foto del hero (la imagen LCP, no diferida). Tiene su
+  // Cada landing (/ y /en) además descarga la foto del hero (la imagen LCP, no diferida). Tiene su
   // propio límite (maxKB en images.ts) y no entra en los 300 KB (P5, decisión del
   // usuario del 2026-10-24, T-73). Se informa el total para no leer el indicador como
   // la carga completa. El navegador elige AVIF; los demás formatos son respaldo.
-  if (page === "index.html") {
+  if (inicios.has(page)) {
     for (const [viewport, spec] of [
       ["móvil", IMAGES.heroMobile],
       ["escritorio", IMAGES.heroDesktop],

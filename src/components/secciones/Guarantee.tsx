@@ -1,9 +1,11 @@
 import { ShieldCheck } from "lucide-react";
-import { copy } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 
 // Garantía (FR-14): reclamo en 24 horas con foto y aclaración de que el derecho
 // de retracto no aplica a perecederos (Ley 1480, art. 47). Política definitiva: RP-04.
-export function Guarantee() {
+export function Guarantee({ locale }: { locale: Locale }) {
+  const { copy } = getContent(locale);
   const { guarantee } = copy;
   return (
     <section

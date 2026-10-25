@@ -1,0 +1,95 @@
+{
+  "draftNotice": "Draft pending legal review [TO BE CONFIRMED, T-05]. This text is not final.",
+  "terminos": {
+    "title": "Terms and conditions",
+    "description": "Terms of sale of green banana in {ciudad}.",
+    "sections": [
+      {
+        "heading": "Who sells",
+        "paragraphs": [
+          "{razonSocial}, NIT {nit}, domiciled at {direccion}. Phone {telefono}. Email {correo}."
+        ]
+      },
+      {
+        "heading": "Prices and orders",
+        "paragraphs": [
+          "This site is for information only. The total price and the delivery cost are given over the phone, separately, before the order is confirmed [TO BE CONFIRMED legal validation in RP-03]."
+        ]
+      },
+      {
+        "heading": "Right of withdrawal",
+        "paragraphs": [
+          "As a perishable product, the right of withdrawal does not apply (Law 1480 of 2011, article 47)."
+        ]
+      },
+      {
+        "heading": "Guarantee",
+        "paragraphs": [
+          "The terms of the freshness guarantee are in the guarantee policy. This guarantee is in addition to your rights as a consumer."
+        ]
+      },
+      {
+        "heading": "Petitions, complaints and claims (PQR)",
+        "paragraphs": [
+          "Channel and how the receipt is delivered [TO BE CONFIRMED, RP-05]. You can also contact the Superintendence of Industry and Commerce (SIC)."
+        ]
+      }
+    ]
+  },
+  "privacidad": {
+    "title": "Personal data processing policy",
+    "description": "How we process personal data (Law 1581 of 2012).",
+    "sections": [
+      {
+        "heading": "Data controller",
+        "paragraphs": [
+          "{razonSocial}, NIT {nit}, domiciled at {direccion}. Email {correo}."
+        ]
+      },
+      {
+        "heading": "What data this site collects",
+        "paragraphs": [
+          "This site has no forms, does not use analytics or advertising cookies, and does not ask you for personal data.",
+          "Like any website, the service that hosts it receives technical data from each visit, such as the IP address [TO BE CONFIRMED provider, purpose and retention period, R-08 and T-05]."
+        ]
+      },
+      {
+        "heading": "Farm map (optional)",
+        "paragraphs": [
+          "The interactive map only loads if you press “Show map”. At that moment your browser connects to OpenStreetMap, which receives your IP address to deliver the map images, according to the privacy policy of the OpenStreetMap Foundation.",
+          "If you don't press the button, the site does not connect to OpenStreetMap. The farms also appear in the list in the same section."
+        ]
+      },
+      {
+        "heading": "Data you share by phone",
+        "paragraphs": [
+          "If you call us, we use your name, phone number and address only to handle your order. Purposes, retention period and procedure to exercise your rights [TO BE CONFIRMED, T-05]."
+        ]
+      },
+      {
+        "heading": "Your rights",
+        "paragraphs": [
+          "You can access, update, rectify and request the deletion of your data, under Law 1581 of 2012, by writing to {correo}."
+        ]
+      }
+    ]
+  },
+  "garantia": {
+    "title": "Guarantee policy",
+    "description": "Freshness guarantee for green banana.",
+    "sections": [
+      {
+        "heading": "If it arrives damaged",
+        "paragraphs": [
+          "You have 24 hours from delivery to call us at {telefono} or email {correo} with a photo of the product and the receipt. We replace it in the next delivery or refund your money [TO BE CONFIRMED policy, RP-04]."
+        ]
+      },
+      {
+        "heading": "Perishable product",
+        "paragraphs": [
+          "As a perishable product, the right of withdrawal does not apply. This guarantee is in addition to your rights as a consumer."
+        ]
+      }
+    ]
+  }
+}

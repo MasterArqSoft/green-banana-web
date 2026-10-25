@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
-import copyJson from "@/content/copy.json";
+import enCopy from "@/content/en/copy.json";
+import enProducts from "@/content/en/products.json";
+import copyJson from "@/content/es-CO/copy.json";
 import fincasJson from "@/content/fincas.json";
 import productsJson from "@/content/products.json";
 import siteJson from "@/content/site.json";
 import {
   copySchema,
+  fincaNamesSchema,
   fincasSchema,
   productsSchema,
+  productTextsSchema,
   siteSchema,
 } from "@/lib/schema";
 
@@ -18,6 +22,16 @@ describe("esquemas de contenido", () => {
     const products = clone(productsJson) as Record<string, unknown>[];
     products[1].pricePerKg = 3500;
     expect(productsSchema.safeParse(products).success).toBe(false);
+  });
+
+  it("rechaza un precio en los textos de una presentación, en cualquier idioma", () => {
+    expect(productTextsSchema.safeParse(enProducts).success).toBe(true);
+    const products = clone(enProducts) as Record<
+      string,
+      Record<string, unknown>
+    >;
+    products.kg.price = "3500";
+    expect(productTextsSchema.safeParse(products).success).toBe(false);
   });
 
   it("rechaza un teléfono sin formato E.164", () => {
@@ -63,6 +77,13 @@ describe("esquema de fincas (FR-24, AC-17)", () => {
     expect(fincasSchema.safeParse(data).success).toBe(false);
   });
 
+  it("los datos comunes no llevan el nombre: va en el catálogo de cada idioma", () => {
+    const data = clone(fincasJson) as { fincas: Record<string, unknown>[] };
+    data.fincas[1].nombre = "Finca A";
+    expect(fincasSchema.safeParse(data).success).toBe(false);
+    expect(fincaNamesSchema.safeParse({ "finca-a": " " }).success).toBe(false);
+  });
+
   it("rechaza un zoom fuera de 5 a 15", () => {
     expect(
       fincasSchema.safeParse({ ...clone(fincasJson), zoom: 18 }).success,
@@ -74,6 +95,18 @@ describe("esquema de copy.json", () => {
   it("rechaza un texto al que le falta su marcador", () => {
     const copy = structuredClone(copyJson);
     copy.topBar.acopio = "Acopio en Santa Marta";
+    expect(copySchema.safeParse(copy).success).toBe(false);
+  });
+
+  it("acepta el copy inglés con el mismo esquema", () => {
+    expect(copySchema.safeParse(enCopy).success).toBe(true);
+  });
+
+  it("rechaza un selector de idioma sin el nombre de un idioma", () => {
+    const copy = structuredClone(enCopy) as {
+      language: { names: Record<string, string> };
+    };
+    delete copy.language.names.en;
     expect(copySchema.safeParse(copy).success).toBe(false);
   });
 

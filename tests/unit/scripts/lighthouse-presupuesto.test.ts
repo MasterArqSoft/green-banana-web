@@ -141,6 +141,20 @@ describe("resumen para GitHub Actions (T-85)", () => {
       elementos: ["section#hero > picture > img"],
     });
 
+  it("con la ruta, la nombra en el título de su tabla (T-96)", () => {
+    const texto = resumenMarkdown({
+      metodo: "simulate",
+      runs: 1,
+      filas: evaluar([corrida(3000)]),
+      subpartes: resumirDesgloses([desgloseLcp(informe(1951))]).subpartes,
+      elementos: ["section#hero > picture > img"],
+      ruta: "/en",
+    });
+    expect(texto).toContain(
+      "### Lighthouse móvil, /en (simulate, mediana de 1 corridas)",
+    );
+  });
+
   it("muestra cada control con su mediana, su límite y si cumple", () => {
     const texto = resumen([corrida(3000), corrida(3100), corrida(2900)]);
     expect(texto).toContain(

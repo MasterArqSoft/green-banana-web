@@ -1,6 +1,6 @@
 # Plan técnico: Landing Guineo Verde
 
-**Versión:** 1.8 · **Fecha:** 2026-10-24 · **Estado:** Borrador · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.5
+**Versión:** 2.0 · **Fecha:** 2026-10-24 · **Estado:** Borrador; D7 implementada · **Alcance vigente:** `05-alcance-y-roadmap.md` v1.7
 
 ## Índice
 1. Contexto arquitectónico
@@ -43,7 +43,7 @@ flowchart LR
 | Curva para tu perfil | Baja | Baja (ya usas React) | Nula (ya usas Angular) | Nula (.NET) |
 | Idoneidad para landing | **Alta** | Media-alta | Baja | Baja |
 
-**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita a dos componentes en `src/components/cliente/`: la visibilidad del botón flotante y el mapa de fincas, que carga Leaflet solo al pulsar "Ver mapa" (D6). El acordeón de FAQ usa `<details>` nativo, sin JavaScript. Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
+**Decisión: Next.js (exportación estática) + React + TypeScript + Tailwind CSS.** Sin formularios en la Fase 1, el JavaScript en cliente se limita a tres componentes en `src/components/cliente/`: la visibilidad del botón flotante, el mapa de fincas, que carga Leaflet solo al pulsar "Ver mapa" (D6), y el selector de idioma, que solo completa la consulta y el ancla del enlace (D7). El acordeón de FAQ usa `<details>` nativo, sin JavaScript. Alternativa descartada: Astro + React (islas), con menos JavaScript pero una herramienta nueva para el equipo.
 
 ### D2. Hosting
 
@@ -78,6 +78,111 @@ Fase 1: llamada telefónica (`tel:`). No hay backend. El formulario B2B, el endp
   - `Referrer-Policy` compatible con OSM (NFR-04).
   - Las teselas se piden solo para la vista actual (AC-20).
 
+### D7. Español predeterminado e inglés opcional (plan de Fase 12)
+
+**Estado:** implementada el 2026-10-24 (Fase 12, T-87 a T-99), sin dependencias nuevas. El diagnóstico y la investigación que siguen son los del plan; las decisiones tomadas al implementar están en «Implementación» al final de D7.
+
+#### Diagnóstico del checkout local
+
+Punto de partida: rama `main`, commit `5059813`, checkout limpio antes de esta planificación. Stack instalado: Next.js 16.4.2, React 19.3.1 y `output: "export"`; `next-intl` no está instalado.
+
+| Evidencia local | Implicación para el plan |
+|---|---|
+| `src/app/layout.tsx`: `lang="es-CO"`, metadata y OG españoles; landing y tres legales | No basta traducir textos en cliente. Cada variante necesita HTML inicial y metadatos propios. |
+| `src/lib/content.ts`: exports globales monolingües de diez JSON, Zod y validaciones de publicación | Migrar a acceso por idioma explícito sin estado mutable global; validar los dos idiomas en cada build. |
+| `src/lib/format.ts`: tres formateadores fijados a `es-CO` | Recibir locale para fecha, número y lista. Mantener UTC para fechas ISO sin hora. |
+| `src/lib/seo.ts`, `legal.ts` y `app/sitemap.ts`: rutas y textos españoles | Tabla única de equivalencias, canonical por página, alternates y sitemap bilingüe. |
+| Componentes de servidor importan `copy`, `site`, etc.; clientes reciben props | Reutilizar componentes con contenido localizado por props. No convertir la landing en cliente ni enviar ambos catálogos al navegador. |
+| `src/lib/mapa-ilustrado.ts` y dos Route Handlers SVG estáticos | Generar también SVG ingleses; etiquetas y alternativas se localizan en build. Geometría y coordenadas se comparten. |
+| `src/lib/claims.ts`: frases y marcador `(FICTICIO)` españoles | Ampliar guardas a inglés sin permitir eludir los pendientes de producción. |
+| `src/app/fonts/inter-es.woff2`, `src/lib/fuentes.ts` | Comprobar caracteres reales de ambos catálogos antes de regenerar la fuente; no descargar otra familia por idioma. |
+| `scripts/budget.mjs` enumera cuatro páginas; e2e enumeran rutas/textos españoles | Ampliar cobertura a ocho páginas, 404, ambas landings y ambos builds. Revisar también Lighthouse, servidor estático y workflow. |
+| `eslint.config.mjs`: acceso único al contenido y lista de imports permitidos en clientes; `tests/unit/estructura.test.ts` exige pruebas y trazabilidad | Mantener estas garantías al crear módulos y carpetas de idioma; ajustar patrones para JSON anidados, sin relajar el lint general. |
+| `assetPath()` agrega `PAGES_BASE_PATH`; `absoluteUrl()` usa `site.url`, que ya contiene el subdirectorio de la demo | Evitar duplicar `/green-banana-web` y evitar que `/en` contamine las rutas de recursos compartidos. |
+
+#### Buenas prácticas investigadas y decisión contextual
+
+Consulta: 2026-10-24 (America/Bogota). Fuentes primarias; antes de programar, prevalecen las guías incluidas en la versión instalada.
+
+| Fuente | Práctica comprobada | Aplicación al proyecto |
+|---|---|---|
+| [Next.js: internacionalización](https://nextjs.org/docs/app/guides/internationalization) y `node_modules/next/dist/docs/01-app/02-guides/internationalization.md` | Diccionarios por idioma y render de contenido en Server Components; rutas dinámicas estáticas requieren parámetros generados | Cargar contenido durante el build y pasar solo los textos necesarios al mapa cliente. |
+| [Next.js: exportación estática](https://nextjs.org/docs/app/guides/static-exports) y guía local `static-exports.md` | Sin Proxy, cookies de servidor, rewrites ni lógica dependiente de Request; parámetros dinámicos deben predefinirse | Conservar `output: "export"`; no copiar la negociación por `Accept-Language` del ejemplo general. |
+| [next-intl: static export](https://next-intl.dev/docs/routing/middleware#usage-without-proxy--middleware-static-export) | Su routing estático exige prefijos de locale; `pathnames` depende de rewrites | No aplicar `localePrefix: "as-needed"` como si funcionara sin servidor. No se recomienda añadir esta dependencia para dos idiomas y cuatro páginas. |
+| [Google: sitios multilingües](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites) | URL distinta por idioma y acceso explícito a variantes | Mantener español sin prefijo y añadir inglés bajo `/en`; no forzar cambios por configuración del navegador. |
+| [Google: versiones localizadas](https://developers.google.com/search/docs/specialty/international/localized-versions) | Alternates completos y recíprocos con códigos válidos | `es-CO`, `en` y `x-default` a español para cada pareja; canonical autorreferente. |
+| [W3C: idioma de la página](https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html) | El idioma principal debe poder determinarse programáticamente | `html lang` correcto desde HTML inicial; textos en otro idioma marcados cuando corresponda. |
+
+**Recomendación:** diccionarios propios tipados, Zod e `Intl`, con rutas estáticas explícitas. Reutiliza el sistema editorial que ya existe y evita un runtime adicional de traducción. **Alternativa:** `next-intl` si más idiomas, plurales complejos o flujo editorial justifican la dependencia; exige replanificar su routing estático (normalmente ambos idiomas prefijados) y verificar presupuesto. No es parte de esta fase instalarla.
+
+#### Contrato de idioma y rutas
+
+| Página lógica | Español (`es-CO`, predeterminado) | Inglés (`en`) |
+|---|---|---|
+| Inicio | `/` | `/en` |
+| Términos | `/terminos` | `/en/terms` |
+| Privacidad | `/privacidad` | `/en/privacy` |
+| Garantía | `/garantia` | `/en/guarantee` |
+
+- La URL es la fuente de idioma. `/` siempre español; `/en` siempre inglés. Sin detección por IP, navegador, cookies ni localStorage. Recargar o compartir una URL preserva su idioma; volver explícitamente a `/` muestra español.
+- Rutas inglesas explícitas: no aceptar arbitrariamente `/fr` ni crear `/es` como otra copia indexable. Resolver con 404 las rutas no publicadas. No hay redirecciones de servidor nuevas.
+- Tabla tipada de página lógica → ruta por idioma en un módulo puro (propuesto `src/lib/i18n.ts`), utilizable sin cargar contenido. Links Next reciben rutas sin `basePath` y `prefetch={false}`; recursos compartidos siguen usando `assetPath()`. URL absolutas se componen con `site.url` una sola vez.
+- Selector como enlaces nativos a equivalentes, renderizado en servidor, con «Español / English» y estado activo. Para conservar query/hash, una mejora cliente mínima puede completar el destino al interactuar usando URL y la tabla pura: nunca traduce el HTML después de cargarlo, nunca importa catálogos. Sin JS mantiene al menos la página equivalente. No agregar un proveedor cliente global.
+- Conservar IDs de anclas entre idiomas. Verificar query y hash en ambos sentidos, incluidos enlaces abiertos en nueva pestaña. El selector no añade prefetch ni activa el mapa.
+- Respetar `trailingSlash` existente: sin prefijo en local; con `/green-banana-web/` en demo. Ejemplo inglés publicado: `/green-banana-web/en/privacy/`.
+
+#### Composición y comprobación de compatibilidad (T-88)
+
+Diseño propuesto: grupos de rutas `(es)` y `(en)`, cada uno con layout raíz que emite `<html>` con idioma constante; las páginas inglesas viven bajo `(en)/en/`. Compartir shell, secciones y componentes, sin copiar la landing ni duplicar lógica. Mover el shell actual a una pieza de servidor compartida. Con múltiples layouts raíz, cambiar de idioma puede hacer una carga completa: es aceptable; no exigir navegación SPA. No mantener un layout raíz español envolviendo el inglés ni corregir `document.documentElement.lang` tras hidratación.
+
+**Puerta técnica previa a la migración:** leer las guías locales de route groups, layouts y `not-found.md`; demostrar con Next 16.4.2 el HTML español/inglés, layouts raíz, rutas especiales y exportación de `404.html` en ambos builds. `global-not-found` está documentado como **experimental** y contempla múltiples layouts raíz: si se usa, registrar `experimental.globalNotFound`, justificación y evidencia de exportación en D7/bitácora. No dar por probada su compatibilidad solo por existir en la documentación. Si la prueba no exporta correctamente, detener tareas dependientes y documentar el ajuste arquitectónico necesario sin migrar parcialmente ni quitar `output: "export"`.
+
+404: una página global estática con español principal y ayuda inglesa marcada `lang="en"`, enlaces a ambos inicios, sin canonical/alternates de una página válida y siempre noindex. El hosting estático no elige una 404 por idioma para una URL desconocida; no prometerlo ni cambiar solo el servidor de pruebas para aparentar soporte. Los archivos globales `robots`, `sitemap`, íconos y `security.txt` conservan su dirección; evitar colisiones al mover layouts.
+
+#### Contenido y controles
+
+- Mantener `site.json` como fuente única de identidad/contacto, URL y datos comunes. Separar también IDs, cifras, fechas ISO, coordenadas y flags de confirmación de las descripciones traducibles. El horario visible, notas de origen y otros campos hoy mezclados con datos requieren inventario y separación, no una copia indiscriminada de todos los JSON.
+- Propuesta: conservar JSON de datos comunes en `src/content/` y catálogos localizados en `src/content/es-CO/` y `src/content/en/`, con archivos por dominio (copy, products, faq, recipes, origin, zones, legal, testimonials y textos de fincas según inventario). No mantener dos copias editables del español tras migrar.
+- `src/lib/content.ts` sigue siendo el único acceso a JSON dentro de `src/`. Exponer `getContent(locale)` con tipo cerrado `"es-CO" | "en"`; sin variable global `currentLocale` ni cambios de idioma por mutación. Validar ambos catálogos incluso si solo se solicita una página española.
+- Zod estricto y validación cruzada: igualdad de claves, IDs, número de elementos y conjuntos de variables `{...}` por cadena equivalente; detectar referencias faltantes o duplicadas, claves sobrantes y diferencias de marcadores de pendiente. Componer datos comunes con texto localizado antes del render.
+- Mantener helpers puros sin React en `lib/`. Componentes reciben idioma/contenido explícitos; clientes solo props mínimos. Ampliar los patrones de ESLint para carpetas anidadas y permitir únicamente el módulo puro de rutas en el selector, si se necesita.
+- Revisar `findForbiddenClaims` para equivalentes ingleses y variantes; revisar `findPendingMarkers` sobre datos comunes y ambos catálogos. Conservar los marcadores actuales o agregar equivalentes detectables probados; no traducirlos de forma que deje pasar producción. Nunca debilitar guards para poder medir inglés.
+- Mantener legales como borradores y RP-01 a RP-05 abiertos. Traducir no autoriza publicar producción. No inventar testimonios ni completar datos de negocio pendientes.
+- `formatDate`, `formatList` y `formatWeight` reciben idioma explícito. No convertir métricas a libras ni teléfonos a otro país. Mantener placeholders culturales y nombres propios según `02` §1.
+- Mapa: mismos datos y estado de salud; props localizadas para todos los estados y controles Leaflet (incluido zoom). Exportar SVG ingleses desktop/móvil bajo `/en/mapa-fincas.svg` y `/en/mapa-fincas-movil.svg` con etiquetas traducidas. Mantener atribución, lazy loading, consentimiento, errores y límites actuales; no traducir geometría ni nombres geográficos.
+
+#### SEO, rendimiento y validación
+
+- Generar metadata por página/idioma: título, descripción, canonical, alternates, OG (incluido locale válido como `en_US` para inglés), Twitter y alternativa de imagen. JSON-LD conserva la misma identidad de negocio y localiza textos/FAQ; `inLanguage` donde el tipo lo admita. Ningún enlace inglés canonicaliza a español.
+- `hreflang` recíproco también incluye la propia variante y `x-default` española. T-64 retiró una anotación monolingüe innecesaria; con variantes reales se incorpora de nuevo justificadamente. Sitemap: ocho páginas y alternates consistentes; imágenes y SVG no son páginas de contenido. `robots`/noindex de demo siguen activos para ambos idiomas.
+- Auditar texto incrustado en `og.jpg`: si lo contiene, generar variante inglesa y registrar el recurso; si es solo foto, compartirla y traducir `alt`.
+- Presupuesto por cada HTML: 300 KB gzip y límite independiente del hero 120 KB. `budget.mjs` debe medir las ocho rutas y ambos heroes, no solo la entrada española. Lighthouse mide `/` y `/en` con el mismo método y límites; CI conserva su carácter informativo.
+- `csp.mjs` ya recorre HTML recursivamente: comprobar nuevos HTML y 404, no asumir que necesita cambiar. Validar también SVG localizados con MIME correcto, carga de fuentes, assets sin duplicar prefijo, y ninguna violación CSP.
+- Unitarias de módulos nuevos según estructura; e2e importan fixtures existentes, fallan con `pageerror` y no llaman realmente a OSM. Parametrizar pruebas existentes por idioma sin perder las aserciones españolas. Cubrir los tres legales ingleses, navegación de regreso y descarga inicial sin prefetch ni Leaflet.
+- Cierre: `npm run validate` y `npm run lighthouse` con cobertura bilingüe, revisión visual/teclado en móvil y escritorio y evidencia real registrada. No marcar tareas hechas por haber redactado el plan. Actualizar bitácora, estado y documentación; no hacer commit/push ni publicar por esta planificación.
+
+#### Implementación (2026-10-24)
+
+**T-88, puerta técnica (superada).** En una copia aislada del checkout, con Next 16.4.2: grupos `(es)` y `(en)` con un layout raíz cada uno, sin `app/layout.tsx`. Ambos builds (sin prefijo y con `/green-banana-web`) exportan las ocho páginas con su `lang`, `404.html`, íconos, `robots.txt`, `sitemap.xml`, `security.txt` y los SVG sin colisiones; `server.mjs` devuelve 200 en las rutas publicadas y 404 en `/no-existe`, `/en/no-existe`, `/es` y `/fr`. **Sin `global-not-found`, Next exporta su propia 404 en inglés y con `<html>` sin `lang`** (incumple AC-28): se usa `global-not-found.tsx` con `experimental.globalNotFound`, que sí exporta `404.html` con `lang="es-CO"`. Es experimental: revisar al actualizar Next (riesgo residual de D-15).
+
+**Composición.**
+- `src/app/(es)/` (`/`, `/terminos`, `/privacidad`, `/garantia`) y `src/app/(en)/en/` (`/en`, `/en/terms`, `/en/privacy`, `/en/guarantee`, y los SVG `/en/mapa-fincas*.svg`). Cada layout usa `src/app/documento.tsx` (`<html lang>`, fuentes, CSS y el shell compartido) con su idioma; la landing compartida es `src/app/landing.tsx` y los SVG salen de `src/app/mapa-svg.ts`. Ninguna página duplica lógica: solo fijan su idioma y sus metadatos.
+- `src/lib/i18n.ts` (puro, sin contenido): `LOCALES`, `RUTAS` (tabla tipada página → ruta por idioma), `rutaDe`, `paginaDeRuta`, `rutaEquivalente`, `recursoDe` y `OG_LOCALE`. Enlaces internos con `next/link` y `prefetch={false}`; `assetPath()` sigue solo para archivos de `public/` y los SVG.
+- **Selector:** `src/components/cliente/SelectorIdioma.tsx`, tercer componente cliente, en el documento compartido (todas las páginas salvo la 404). Calcula la pareja con `usePathname()` y `rutaEquivalente()`: el enlace ya está en el HTML exportado y sin JavaScript cambia de idioma; en el navegador solo agrega `location.search` y `location.hash` (`useSyncExternalStore`, también tras `hashchange`). Recibe los nombres de los idiomas por props; no importa catálogos. Se eligió frente a un selector de servidor por página porque el layout no conoce la página y así no se duplica el shell. Va en una franja propia sobre la barra superior (no fija): en 360 px no cabe junto a la marca y el botón Llamar, y la franja no tapa el H1 ni el CTA (AC-01 sigue pasando).
+- **404:** `global-not-found.tsx` con el mismo documento en español, sin selector, y una sección `lang="en"` con la ayuda y el enlace a `/en` (`NotFoundPage`). No hereda `robots` de los layouts: Next ya agrega `noindex` y en producción el layout diría `index`.
+
+**Contenido.**
+- Datos comunes una sola vez en `src/content/`: `site`, `zones` y `origin` sin cambios; `products` (id, pesos, unidades, `pendingConfirmation`), `recipes` (id, tiempo), `testimonials` (id, nombre, foto, autorización) y `fincas` (sin `nombre`). Textos en `src/content/es-CO/` y `src/content/en/`: `copy`, `faq` (lista con id), `legal` y registros por id para `products`, `recipes`, `testimonials` y los nombres de `fincas` (el del acopio se traduce; los de las fincas son nombres propios ficticios).
+- `src/lib/content.ts` valida siempre los dos catálogos y expone `getContent(locale)`, que devuelve el contenido ya compuesto (mismos tipos que antes: `Presentation`, `Recipe`, `Finca`…), creado una vez por idioma; `site` e `isProduction` siguen exportados. Ya no hay exports monolingües (`copy`, `products`…): un componente que olvide el idioma no compila.
+- `src/lib/paridad.ts` (puro): `diferenciasDeCatalogo` compara el inglés con el español (claves, tipos, largo de listas, `id` por posición, marcadores `{…}` y cantidad de marcas de pendiente) e `idsSinPareja` cruza textos con datos comunes. Cualquier diferencia rompe el build; no hay respaldo de un idioma a otro.
+- Guardas: `FORBIDDEN_CLAIMS` suma equivalentes ingleses; la búsqueda de frases y `findPendingMarkers` recorren datos comunes y los dos catálogos (62 marcas hoy: 43 de antes y 19 inglesas). Se conservan los marcadores: `(FICTICIO)` literal en inglés y corchetes con texto inglés.
+- `format.ts` recibe el idioma (`Intl` con `es-CO` o `en`, UTC para fechas ISO, unidades métricas). Componentes de servidor reciben `locale` por props y leen `getContent(locale)`.
+- ESLint: `SOLO_CONTENT_TS` cubre JSON anidados (`@/content/**`) y los clientes pueden importar `@/lib/i18n`; se comprobó con archivos temporales que importar un catálogo fuera de `content.ts`, o `@/lib/content` y `@/lib/seo` desde un cliente, falla.
+
+**SEO y controles.** `seo.ts` arma `pageMetadata(página, idioma)` (título, descripción, canonical, `alternates.languages` con `es-CO`, `en` y `x-default` español, OG con `og:locale` y `og:locale:alternate`, Twitter) y `rootMetadata` (metadataBase, referrer, robots de demo). `sitemap.ts`: ocho URL con sus alternates. JSON-LD: misma identidad (`@id` común) en los dos idiomas; `FAQPage` con `inLanguage`. `og.jpg` es solo foto: se comparte y se traduce su `alt`. `budget.mjs` mide las ocho páginas y la 404 (lista derivada de `RUTAS`) y el hero en las dos landings; `lighthouse.mjs` mide `/` y `/en` (`LH_RUTAS`), cada una contra el mismo presupuesto y con su tabla en CI. `csp.mjs` y `server.mjs` no necesitaron cambios.
+
+**Pendiente, fuera de esta fase:** revisión editorial del inglés; revisión jurídica de los legales en los dos idiomas (T-05); idioma en que se atienden las llamadas [POR CONFIRMAR] (la página inglesa no promete atención en inglés); prueba manual con lector de pantalla en los dos idiomas (T-38).
+
 ## 3. Arquitectura
 
 ```mermaid
@@ -87,20 +192,23 @@ flowchart TB
       I1[Acordeón FAQ: details/summary nativo, sin JS]
       I2[Componente cliente: visibilidad del botón flotante Llamar]
       I3[Componente cliente: mapa de fincas; Leaflet con import() al pulsar "Ver mapa"]
+      I4[Componente cliente: selector de idioma; completa ?consulta#ancla del enlace]
     end
-    subgraph Datos de contenido
+    subgraph Datos comunes en src/content
       D1[site.json: marca, contacto, legales, acopio]
-      D2[products.json: presentaciones sin precio]
+      D2[products.json: id, pesos, unidades, pendientes; sin precio]
       D3[zones.json: acopio y puntos de distribución]
-      D4[faq.json]
-      D5[recipes.json]
+      D5[recipes.json: id y tiempo]
       D6[origin.json: lote vigente]
-      D7[copy.json: textos de interfaz por sección]
       D8[testimonials.json: vacío hasta tener testimonios reales]
-      D9[legal.json: términos, privacidad y garantía]
-      D10[fincas.json: fincas de origen del mapa]
+      D10[fincas.json: ubicaciones y municipios del mapa]
     end
-    D1 & D2 & D3 & D4 & D5 & D6 & D7 & D8 & D9 & D10 -->|Build + validación Zod en lib/content.ts| P
+    subgraph Catálogos por idioma: src/content/es-CO y src/content/en
+      C1[copy.json: textos de interfaz por sección]
+      C2[faq.json, legal.json]
+      C3[products, recipes, testimonials y fincas: textos por id]
+    end
+    D1 & D2 & D3 & D5 & D6 & D8 & D10 & C1 & C2 & C3 -->|Build: Zod, paridad entre idiomas y guardas en lib/content.ts; getContent locale| P
 ```
 
 **Flujo del botón de llamada**
@@ -120,18 +228,21 @@ sequenceDiagram
 ```
 green-banana-web/
 ├─ src/
-│  ├─ app/               # Rutas (App Router): layout.tsx, page.tsx, terminos/, privacidad/, garantia/,
-│  │                     # robots.ts, sitemap.ts, mapa-fincas.svg/ y mapa-fincas-movil.svg/ (SVG en build),
-│  │                     # globals.css (tokens de diseño) y fonts.ts (next/font, autoalojadas)
+│  ├─ app/               # Rutas (App Router): (es)/ y (en)/en/ con un layout raíz por idioma (D7), global-not-found.tsx,
+│  │                     # documento.tsx (<html lang> y shell compartido), landing.tsx (landing de los dos idiomas),
+│  │                     # robots.ts, sitemap.ts, mapa-fincas.svg/ y mapa-fincas-movil.svg/ (SVG en build; las
+│  │                     # inglesas en (en)/en/, generadas con mapa-svg.ts), globals.css (tokens de diseño)
+│  │                     # y fonts.ts (next/font, autoalojadas)
 │  ├─ components/
 │  │  ├─ secciones/      # Una por sección de la página: TopBar, Hero, TrustBar, ProductCards, Origin,
 │  │  │                  # MapaFincas, Recipes, ..., FinalCta, Footer
 │  │  ├─ ui/             # Piezas reutilizables: CallButton, Picture, LegalPage, NotFoundPage, DemoBanner, FloatingCall, SkipLink
-│  │  ├─ cliente/        # Los únicos componentes con "use client": FloatingCallVisibility, MapaFincasInteractivo
+│  │  ├─ cliente/        # Los únicos componentes con "use client": FloatingCallVisibility, MapaFincasInteractivo, SelectorIdioma
 │  │  └─ seo/            # Datos estructurados: LocalBusinessJsonLd
-│  ├─ content/           # JSON editables: site, products, zones, faq, recipes, origin, copy, testimonials, legal, fincas
+│  ├─ content/           # JSON editables: datos comunes (site, products, zones, recipes, origin, testimonials, fincas) y textos en es-CO/ y en/ (copy, products, faq, recipes, legal, testimonials, fincas)
 │  └─ lib/               # Lógica pura sin React: content.ts (único acceso al contenido), schema.ts (Zod),
-│                        # claims.ts, tel.ts, seo.ts, legal.ts, images.ts, asset.ts, template.ts, format.ts,
+│                        # claims.ts, paridad.ts (paridad entre idiomas), i18n.ts (idiomas y rutas), tel.ts, seo.ts,
+│                        # legal.ts, images.ts, asset.ts, template.ts, format.ts, fuentes.ts, salud-mapa.ts,
 │                        # mapa-ilustrado.ts + mapa-base.json, csp.ts, security-txt.ts (analytics.ts entra con R-07)
 ├─ public/               # images/ (generadas por npm run images); robots.txt lo genera src/app/robots.ts
 ├─ scripts/              # images.mjs, icons.mjs, csp.mjs (después de next build), build-prefijo.mjs, budget.mjs,
@@ -152,7 +263,7 @@ Dependencias entre capas (en un solo sentido): `app/` → `components/` → `lib
 ESLint hace cumplir estas reglas en `npm run lint` (y por tanto en `validate`), con `no-restricted-imports` y `no-restricted-syntax` en `eslint.config.mjs`:
 - los JSON de `src/content/` solo se importan en `src/lib/content.ts`. La regla vale dentro de `src/`, no en `scripts/` ni en `tests/` (decisión del usuario, 2026-10-23): `scripts/images.mjs` corre en Node sin el alias `@/`, y las pruebas alteran los JSON para comprobar que los esquemas los rechazan. Lo que llega al navegador queda protegido, y `testimonialImage` valida `photo` antes de que el script arme la ruta;
 - `components/` y `lib/` no importan `src/app/`, y `lib/` no importa componentes;
-- `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format` y `tel`;
+- `components/cliente/` no importa `@/lib/content` ni los demás módulos de `lib/` que lo cargan: solo `schema` (tipos), `template`, `format`, `tel`, `salud-mapa` e `i18n`;
 - `"use client"` solo se permite en `components/cliente/`, y `"use server"` en ninguna parte (no hay servidor con `output: "export"`);
 - todo `<Link>` declara `prefetch` (en la práctica `prefetch={false}`): con exportación estática, Next descargaba completas las páginas enlazadas al cargar, sin clic (T-61).
 
@@ -162,17 +273,23 @@ No hay carpeta `api/` en la Fase 1 (ver roadmap R-06).
 
 ## 5. Modelo de datos de contenido
 
+Datos comunes en `src/content/*.json`; textos en un catálogo por idioma, `src/content/es-CO/` y `src/content/en/` (D7). `getContent(locale)` entrega los tipos ya compuestos (dato común + texto del idioma).
+
 ```ts
-// src/content/products.json (esquema Fase 1: sin precios)
-type Presentation = {
+// src/content/products.json (esquema Fase 1: sin precios). Datos comunes.
+type ProductData = {
   id: 'unit' | 'kg' | 'bag' | 'box';
-  label: string;
   approxWeightG?: number | [number, number];  // peso por unidad o total; rango [mín, máx] p. ej. la caja
   approxUnits?: string;          // "4–5"
-  callLabel: string;             // "Llamar para precio"
-  imageAlt: string;              // texto alternativo de la foto
   pendingConfirmation?: Array<'approxWeightG' | 'approxUnits'>;  // cifras sin confirmar (T-03): se muestran entre corchetes y bloquean producción
 };
+// src/content/<idioma>/products.json: un texto por id.
+type ProductTexts = Record<ProductData['id'], {
+  label: string;
+  callLabel: string;             // "Llamar para precio" / "Call for price"
+  imageAlt: string;              // texto alternativo de la foto
+}>;
+type Presentation = ProductData & ProductTexts[string];  // lo que reciben los componentes
 
 // src/content/site.json (esquema Fase 1)
 type Site = {
@@ -193,15 +310,15 @@ type Zone = {
   type: 'punto_de_venta' | 'municipio';
 };
 
-// src/content/fincas.json (FR-24; datos ficticios en Fase 1, esquema estricto)
+// src/content/fincas.json (FR-24; datos ficticios en Fase 1, esquema estricto). Datos comunes;
+// el nombre de cada ubicación va en src/content/<idioma>/fincas.json ({ [id]: nombre }).
 type Fincas = {
   centro: { lat: number; lng: number };  // valor inicial si no hay ubicaciones
   zoom: number;                          // 5 a 15
   fincas: Array<{
     id: string;                          // slug
     tipo: 'finca' | 'acopio';
-    nombre: string;                      // "Finca de ejemplo A (FICTICIO)"
-    municipio: string;
+    municipio: string;                   // nombre propio: no se traduce
     lat: number;                         // -90 a 90
     lng: number;                         // -180 a 180
     productor: string;                   // "(FICTICIO)" hasta RP-02
@@ -209,9 +326,11 @@ type Fincas = {
 };
 ```
 
-Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content.ts`; los objetos son estrictos, así que un campo no previsto (por ejemplo, un precio) también rompe la compilación. Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. "Producción" es el build con `SITE_ENV=production`, que solo usa la pipeline de producción; el build local y el de la demo no lo definen (D-11). `faq`, `recipes` y `origin` siguen el copy de `02-content-spec.md`.
+Del mismo modo, `recipes.json` guarda id y tiempo, y `testimonials.json` id, nombre, foto y autorización; sus textos van por id en cada catálogo. `faq.json`, `legal.json` y `copy.json` son enteramente por idioma.
 
-**Textos de interfaz (`copy.json`, principio P9).** Títulos, subtítulos, botones y microcopy de cada sección viven en `src/content/copy.json`, con un bloque por sección que se agrega al construirla. Los componentes no escriben texto propio. Un texto que combina datos usa marcadores, p. ej. `"Acopio en {ciudad}"`, que rellena `src/lib/template.ts` con datos de `site.json`; el esquema exige que cada marcador esté presente. La franja de demo (`demoNotice`, D-11) también vive aquí. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
+Los esquemas se validan en build (Zod) en `src/lib/schema.ts` y `src/lib/content.ts`, para los datos comunes y los dos catálogos; `src/lib/paridad.ts` exige que el inglés tenga las mismas claves, IDs, marcadores y marcas de pendiente que el español; los objetos son estrictos, así que un campo no previsto (por ejemplo, un precio) también rompe la compilación. Un dato legal faltante o un número con `phoneIsPlaceholder: true` en producción rompe la compilación. "Producción" es el build con `SITE_ENV=production`, que solo usa la pipeline de producción; el build local y el de la demo no lo definen (D-11). `faq`, `recipes` y `origin` siguen el copy de `02-content-spec.md`.
+
+**Textos de interfaz (`copy.json`, principio P9).** Títulos, subtítulos, botones y microcopy de cada sección viven en el `copy.json` de cada idioma (`src/content/es-CO/` y `src/content/en/`, D7), con un bloque por sección que se agrega al construirla. Los componentes no escriben texto propio. Un texto que combina datos usa marcadores, p. ej. `"Acopio en {ciudad}"`, que rellena `src/lib/template.ts` con datos de `site.json`; el esquema exige que cada marcador esté presente. La franja de demo (`demoNotice`, D-11) también vive aquí. Los precios y su esquema (`pricePerKg`, `priceTotal`) se agregan con el roadmap R-01, no antes.
 
 ## 6. Roadmap técnico (fuera de la Fase 1)
 
@@ -282,11 +401,11 @@ default-src 'self'; script-src 'self' 'sha256-…'; style-src 'self' 'unsafe-inl
 | HTML estático | Todo el contenido renderizado en build |
 | Imágenes | AVIF/WebP (JPG de respaldo en el hero), `srcset` con versiones menores (tarjetas 200 px, recetas 400 px, origen 600 px), `width` y `height` explícitos, `loading="lazy"` fuera del primer viewport, imagen del hero con `fetchpriority="high"`. Configuración en `src/lib/images.ts`; las genera `npm run images` |
 | Fuentes | Autoalojadas, subconjunto latino, máximo 2 familias, `font-display: swap` |
-| JavaScript | Dos componentes cliente (`'use client'`): la visibilidad del botón flotante y el mapa de fincas (D6; Leaflet se carga con `import()` solo al pulsar "Ver mapa", fuera de la carga inicial); el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
+| JavaScript | Tres componentes cliente (`'use client'`): la visibilidad del botón flotante, el mapa de fincas (D6; Leaflet se carga con `import()` solo al pulsar "Ver mapa", fuera de la carga inicial) y el selector de idioma (D7; ~1 KB); el acordeón de FAQ usa `<details>`/`<summary>` nativos (accesible y sin JavaScript); el resto se renderiza en build |
 | CSS | Tailwind con purga, en un archivo enlazado. El CSS en línea (`experimental.inlineCss`) se probó y se descartó: duplica el CSS en el HTML |
 | Terceros | Ninguno en Fase 1. La analítica (R-07) tendrá como máximo un script diferido |
 | SEO | Metadatos, Open Graph, JSON-LD (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt`. La URL base es `url` en `site.json`. Fuera de producción (demo con datos ficticios, D-11) la página lleva `noindex` y `robots.txt` bloquea el rastreo; con `SITE_ENV=production` se permite y se publica el sitemap. **En la demo, la señal efectiva es el `noindex`:** GitHub Pages sirve el sitio en un subdirectorio y los buscadores solo leen `robots.txt` en la raíz del host (`masterarqsoft.github.io/robots.txt`, que da 404), así que el que genera el proyecto no se aplica ahí (SEO-OBS, T-84). Con dominio propio sí se lee. No combinar en un mismo sitio `Disallow` con `noindex`: si el rastreo está bloqueado, el buscador no llega a leer el `noindex` |
-| Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas; sin los polyfills `<script noModule>`, que los navegadores actuales no descargan, T-83), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB por archivo, que `budget` también verifica (P5). `budget` informa además el total con la foto del hero de cada viewport (2026-10-24, tras T-83: landing 203,9 KB; con el hero, 235,3 KB en móvil y 260,8 KB en escritorio. El AVIF del hero usa calidad 50, `avifQuality` en `images.ts`, e Inter va recortada a 23,9 KB), para no leer los 300 KB como la carga completa (T-73) |
+| Presupuesto | Peso inicial ≤ 300 KB transferido con gzip (HTML + JS + CSS + fuentes precargadas; sin los polyfills `<script noModule>`, que los navegadores actuales no descargan, T-83), medido por `npm run budget` en cada `validate`; imagen del hero ≤ 120 KB por archivo, que `budget` también verifica (P5). `budget` informa además el total con la foto del hero de cada viewport (2026-10-24, tras la Fase 12: `/` 205,8 KB y `/en` 206,0 KB; con el hero, 237,3 KB en móvil y 262,8 KB en escritorio; las legales, ~190 KB, y la 404, 147,1 KB. Mide las ocho páginas y la 404. El AVIF del hero usa calidad 50, `avifQuality` en `images.ts`, e Inter va recortada a 23,9 KB), para no leer los 300 KB como la carga completa (T-73) |
 
 ## 9. Analítica (roadmap R-07, fuera de Fase 1)
 
@@ -356,6 +475,10 @@ Mientras R-10 esté pendiente, la validación completa se ejecuta en local (`npm
 | FR-19 | Marca de `TopBar` y "Volver al inicio" en `LegalPage` | T-51 | AC-14 |
 | FR-20, FR-21, FR-22, FR-23 | Roadmap R-07 (analítica) | – | AC-10 (ausencia de scripts) |
 | FR-24 | `MapaFincas`, `MapaFincasInteractivo`, `fincas.json` (D6) | T-52 a T-56 | AC-15 a AC-20 |
+| FR-25 | Idioma de URL y layouts raíz `(es)`/`(en)` (D7) | T-88, T-92 | AC-21, AC-22 |
+| FR-26 | `lib/i18n.ts` y `SelectorIdioma` (D7) | T-88, T-93 | AC-23 |
+| FR-27 | `getContent(locale)`, `lib/paridad.ts`, guardas, formatos, mapa y fuentes (D7) | T-89 a T-92, T-95 | AC-24, AC-26, AC-27 |
+| FR-28 | `pageMetadata`, sitemap, `global-not-found`, budget y Lighthouse bilingües (D7) | T-88, T-94, T-96 a T-99 | AC-22, AC-25, AC-28, AC-29 |
 | NFR-01 a 03 | Optimización, SEO | T-30, T-31 | AC-08 |
 | NFR-04 | Cabeceras, CSP | T-32 | Escaneo de cabeceras |
 | NFR-09 | Sin formularios; sin analítica en Fase 1 | T-27 | AC-12 |

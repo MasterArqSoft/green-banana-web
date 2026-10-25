@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { copy, site } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import { rutaDe, type Locale } from "@/lib/i18n";
 import { formatPhone, telHref } from "@/lib/tel";
 
 // Pie legal (FR-16, AC-05; Ley 1480 art. 50): identidad del vendedor desde site.json,
 // enlaces legales, PQR y enlace visible a la SIC. Datos ficticios hasta RP-01.
-export function Footer() {
+export function Footer({ locale }: { locale: Locale }) {
+  const { copy, site } = getContent(locale);
   const { footer } = copy;
   const { legal } = site;
   const identity = [
@@ -53,17 +55,29 @@ export function Footer() {
         <nav aria-label={footer.navLabel}>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
             <li>
-              <Link href="/terminos" prefetch={false} className={linkClass}>
+              <Link
+                href={rutaDe("terminos", locale)}
+                prefetch={false}
+                className={linkClass}
+              >
                 {footer.links.terminos}
               </Link>
             </li>
             <li>
-              <Link href="/privacidad" prefetch={false} className={linkClass}>
+              <Link
+                href={rutaDe("privacidad", locale)}
+                prefetch={false}
+                className={linkClass}
+              >
                 {footer.links.privacidad}
               </Link>
             </li>
             <li>
-              <Link href="/garantia" prefetch={false} className={linkClass}>
+              <Link
+                href={rutaDe("garantia", locale)}
+                prefetch={false}
+                className={linkClass}
+              >
                 {footer.links.garantia}
               </Link>
             </li>

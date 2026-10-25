@@ -1,35 +1,23 @@
 [
   {
     "id": "unit",
-    "label": "Guineo suelto",
     "approxWeightG": 220,
-    "callLabel": "Llamar para precio",
-    "pendingConfirmation": ["approxWeightG"],
-    "imageAlt": "Un guineo verde suelto sobre una tabla de madera."
+    "pendingConfirmation": ["approxWeightG"]
   },
   {
     "id": "kg",
-    "label": "Kilo",
     "approxUnits": "4–5",
-    "callLabel": "Llamar para precio",
-    "pendingConfirmation": ["approxUnits"],
-    "imageAlt": "Guineos verdes sobre una pesa de cocina."
+    "pendingConfirmation": ["approxUnits"]
   },
   {
     "id": "bag",
-    "label": "Bolsa familiar",
     "approxWeightG": 3000,
     "approxUnits": "13–15",
-    "callLabel": "Llamar para precio",
-    "pendingConfirmation": ["approxUnits"],
-    "imageAlt": "Bolsa de tela abierta con guineo verde."
+    "pendingConfirmation": ["approxUnits"]
   },
   {
     "id": "box",
-    "label": "Caja para negocios",
     "approxWeightG": [18000, 20000],
-    "callLabel": "Llamar para precio",
-    "pendingConfirmation": ["approxWeightG"],
-    "imageAlt": "Caja de madera llena de guineo verde."
+    "pendingConfirmation": ["approxWeightG"]
   }
 ]

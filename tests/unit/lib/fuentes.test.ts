@@ -26,9 +26,10 @@ describe("recorte de Inter (T-82)", () => {
 
   // Todo texto visible sale de src/content/: si aparece un carácter nuevo, hay que
   // regenerar el recorte (procedimiento en doc/bitacora.md, T-82) y ampliar los rangos.
-  const contenido = readdirSync("src/content").filter((f) =>
-    f.endsWith(".json"),
-  );
+  // Datos comunes y los catálogos de los dos idiomas (T-95, D-16).
+  const contenido = readdirSync("src/content", { recursive: true })
+    .map(String)
+    .filter((f) => f.endsWith(".json"));
   it.each(contenido)("src/content/%s solo usa caracteres del recorte", (f) => {
     expect(fueraDeInter(readFileSync(join("src/content", f), "utf8"))).toEqual(
       [],

@@ -1,39 +1,50 @@
 import { expect, test } from "./fixtures";
 
-// T-33: composición y revisión móvil a 360 px.
-const pages = ["/", "/terminos", "/privacidad", "/garantia"];
+// T-33: composición y revisión móvil a 360 px. Las ocho páginas de los dos idiomas (T-98).
+const pages = [
+  "/",
+  "/terminos",
+  "/privacidad",
+  "/garantia",
+  "/en",
+  "/en/terms",
+  "/en/privacy",
+  "/en/guarantee",
+];
 
 test.describe("composición de la landing", () => {
-  test("las secciones siguen el orden del spec (FR-01 a FR-17)", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    const order = [
-      "header",
-      "#hero",
-      "#presentaciones",
-      "#verde-de-verdad",
-      "#origen",
-      "#mapa-fincas",
-      "#recetas",
-      "#beneficios",
-      "#como-funciona",
-      "#cobertura",
-      "#negocios",
-      "#preguntas-frecuentes",
-      "#garantia",
-      "#pie",
-    ];
-    const tops = await Promise.all(
-      order.map((selector) =>
-        page
-          .locator(selector)
-          .first()
-          .evaluate((el) => el.getBoundingClientRect().top + window.scrollY),
-      ),
-    );
-    expect(tops).toEqual([...tops].sort((a, b) => a - b));
-  });
+  for (const inicio of ["/", "/en"]) {
+    test(`${inicio}: las secciones siguen el orden del spec (FR-01 a FR-17)`, async ({
+      page,
+    }) => {
+      await page.goto(inicio);
+      const order = [
+        "header",
+        "#hero",
+        "#presentaciones",
+        "#verde-de-verdad",
+        "#origen",
+        "#mapa-fincas",
+        "#recetas",
+        "#beneficios",
+        "#como-funciona",
+        "#cobertura",
+        "#negocios",
+        "#preguntas-frecuentes",
+        "#garantia",
+        "#pie",
+      ];
+      const tops = await Promise.all(
+        order.map((selector) =>
+          page
+            .locator(selector)
+            .first()
+            .evaluate((el) => el.getBoundingClientRect().top + window.scrollY),
+        ),
+      );
+      expect(tops).toEqual([...tops].sort((a, b) => a - b));
+    });
+  }
 
   for (const path of pages) {
     test(`${path} no se desborda a lo ancho`, async ({ page }) => {
@@ -51,15 +62,20 @@ test.describe("composición de la landing", () => {
 test.describe("móvil a 360 px", () => {
   test.skip(({ isMobile }) => !isMobile, "Solo en móvil");
 
-  test("el H1 y el botón Llamar se ven sin hacer scroll (AC-01)", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    await expect(page.locator("h1")).toBeInViewport();
-    await expect(
-      page.locator("#hero").getByRole("link", { name: /^Llamar para pedir/ }),
-    ).toBeInViewport();
-  });
+  for (const [inicio, cta] of [
+    ["/", /^Llamar para pedir/],
+    ["/en", /^Call to order/],
+  ] as const) {
+    test(`${inicio}: el H1 y el botón Llamar se ven sin hacer scroll (AC-01)`, async ({
+      page,
+    }) => {
+      await page.goto(inicio);
+      await expect(page.locator("h1")).toBeInViewport();
+      await expect(
+        page.locator("#hero").getByRole("link", { name: cta }),
+      ).toBeInViewport();
+    });
+  }
 
   test("el botón flotante aparece tras el hero y se esconde en el pie (FR-17)", async ({
     page,
@@ -133,7 +149,7 @@ test.describe("carga de la página (PERF-05, T-61)", () => {
 });
 
 test.describe("«Saltar al contenido» (T-58)", () => {
-  for (const path of [...pages, "/no-existe"]) {
+  for (const path of [...pages, "/no-existe", "/en/no-existe"]) {
     test(`${path} tiene el enlace y su destino`, async ({ page }) => {
       await page.goto(path);
       await expect(page.locator('a[href="#contenido"]')).toHaveCount(1);

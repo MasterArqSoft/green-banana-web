@@ -1,12 +1,14 @@
 import { MapPin, Truck } from "lucide-react";
 import { CallButton } from "@/components/ui/CallButton";
-import { copy, site, zones } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import type { Locale } from "@/lib/i18n";
 import { formatList } from "@/lib/format";
 import { fill } from "@/lib/template";
 
 // Cobertura (FR-10): acopio y distribución en Santa Marta con reparto propio.
 // No publica horarios ni costos de envío; se informan por teléfono (AC-04).
-export function Coverage() {
+export function Coverage({ locale }: { locale: Locale }) {
+  const { copy, site, zones } = getContent(locale);
   const { coverage } = copy;
   const items = [
     {
@@ -21,7 +23,10 @@ export function Coverage() {
       icon: Truck,
       label: coverage.distributionLabel,
       value: fill(coverage.distribution, {
-        zonas: formatList(zones.map((zone) => zone.name)),
+        zonas: formatList(
+          zones.map((zone) => zone.name),
+          locale,
+        ),
       }),
     },
   ];
@@ -54,7 +59,7 @@ export function Coverage() {
       </dl>
       <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
         <p>{coverage.notListed}</p>
-        <CallButton />
+        <CallButton locale={locale} />
       </div>
     </section>
   );
