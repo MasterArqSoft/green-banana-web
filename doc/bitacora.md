@@ -20,6 +20,25 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-80: medición comparable de Lighthouse (PERF-01, PERF-02)
+- **`scripts/lighthouse-presupuesto.mjs`:** funciones puras `desgloseLcp(informe)` (selector del elemento LCP y las cuatro subpartes del insight `lcp-breakdown-insight` de Lighthouse 13) y `resumirDesgloses()` (mediana por subparte y lista de elementos LCP distintos). El comentario del presupuesto ya no dice que "el simulado infla": los dos métodos dan valores distintos, ninguno es el dato de campo y el presupuesto no se traslada de uno a otro.
+- **`scripts/lighthouse.mjs`:**
+  - `LH_THROTTLING=devtools` pasa `--throttling-method=devtools`; es solo diagnóstico: muestra las medianas con `·` y no evalúa el presupuesto (medido con el simulado);
+  - informa las subpartes del LCP (mediana) y el elemento LCP, con un aviso si cambió entre corridas (comparar variantes solo vale con el mismo elemento);
+  - en modo simulado aclara que las subpartes salen de la traza sin throttling y no suman el LCP simulado;
+  - `LH_SALIDA=archivo.json` guarda el resumen (corridas, medianas, subpartes, elementos).
+- **Pruebas unitarias** nuevas en `tests/unit/scripts/lighthouse-presupuesto.test.ts`: extracción del desglose, informe sin insight (nulos), mediana por subparte y cambio de elemento LCP.
+- **Línea base sobre `6ba9362`** (3 corridas por método, mismo build; resumen en el scratchpad de la sesión, no versionado):
+
+  | Método | Rendimiento | LCP | TBT | CLS | TTFB | Retraso de carga | Descarga | Retraso de pintado |
+  |---|---:|---:|---:|---:|---:|---:|---:|---:|
+  | Simulado (con presupuesto) | 92 | 3241 ms | 130 ms | 0 | 10 ms* | 20 ms* | 19 ms* | 501 ms* |
+  | DevTools (diagnóstico) | 84 | 2714 ms | 390 ms | 0 | 8 ms | 703 ms | 1943 ms | 50 ms |
+
+  \* Traza sin throttling. Elemento LCP en las 6 corridas: la foto del hero móvil. Coincide con la auditoría (3186 y 2710 ms): con throttling aplicado, **la descarga de la foto domina el LCP**, lo que orienta T-81 (peso del hero) y T-82 (fuentes que compiten por la red).
+- `CLAUDE.md` describe las variables nuevas.
+- Archivos: `scripts/lighthouse.mjs`, `scripts/lighthouse-presupuesto.mjs`, `tests/unit/scripts/lighthouse-presupuesto.test.ts`, `CLAUDE.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-79: salud del mapa por vista (MAP-01, MAP-02, H-03)
 - **`MapaFincasInteractivo.tsx`:** el contador acumulado se reemplaza por un registro del estado de cada tesela (`z/x/y` → pendiente, ok o error) con los eventos públicos de Leaflet `tileloadstart`, `tileload`, `tileerror` y `tileunload`.
 - **Evaluación:** al terminar cada lote (`load`, aplazado con `setTimeout(…, 0)`) o a los 15 s de empezarlo (`loading` inicia la espera de cada lote), cuenta solo las teselas del zoom actual dentro de `map.getPixelBounds()`:

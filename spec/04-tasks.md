@@ -232,7 +232,7 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
 | **Pendiente del usuario o de terceros** | T-03 (confirmaciones del proveedor), T-05 (texto legal), T-36 (necesita RP-01), T-32 (necesita R-08; en la demo, conflicto D-11) |
 | **Pendiente, Fase 6** | T-42, T-43, T-44, T-45 (necesitan RP-01 a RP-05, R-08 y R-10) |
-| **Fase 11 (auditoría de causa raíz)** | En curso (2026-10-24): T-78 y T-79 hechas; T-80 a T-86 pendientes |
+| **Fase 11 (auditoría de causa raíz)** | En curso (2026-10-24): T-78 a T-80 hechas; T-81 a T-86 pendientes |
 | **Fase 10 (reauditoría de cierre)** | Completa (2026-10-24): T-75 a T-77 |
 | **Fase 9 (auditoría independiente)** | Completa (2026-10-24): T-68 a T-74 |
 | **Hecha, Fase 8 (auditoría externa)** | T-58 a T-67 (2026-10-24). T-61 quitó 13 descargas sin clic (prefetch). T-66: CSP por `<meta>` con hashes; `frame-ancestors` y las demás cabeceras siguen en T-32. T-67 solo tiene efecto con dominio propio (RP-01) |

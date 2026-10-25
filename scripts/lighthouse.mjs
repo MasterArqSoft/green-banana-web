@@ -3,13 +3,24 @@
 // scripts/lighthouse-presupuesto.mjs: las cuatro categorías ≥ 90 (AC-08) y, desde T-75
 // (R-01), también LCP, CLS y TBT. Falla si cualquiera no cumple. Usa el Chromium de
 // Playwright y Lighthouse 13.5.0 vía npx.
+// Desde T-80 informa también las subpartes del LCP y el elemento LCP de cada corrida, y
+// acepta dos variables para comparar variantes con el mismo método:
+// - LH_THROTTLING=devtools: throttling aplicado durante la carga en vez del simulado. Es
+//   solo diagnóstico: el presupuesto está medido con el simulado y no se evalúa.
+// - LH_SALIDA=<archivo.json>: guarda el resumen (corridas, medianas, subpartes, elemento).
 // Uso: npm run build && npm run lighthouse
 import { execFileSync, spawn } from "node:child_process";
-import { readFileSync, rmSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
-import { evaluar, PRESUPUESTO } from "./lighthouse-presupuesto.mjs";
+import {
+  desgloseLcp,
+  evaluar,
+  PRESUPUESTO,
+  resumirDesgloses,
+  SUBPARTES_LCP,
+} from "./lighthouse-presupuesto.mjs";
 
 const RUNS = Number(process.env.LH_RUNS ?? 3);
 if (!Number.isInteger(RUNS) || RUNS < 1) {
@@ -17,6 +28,13 @@ if (!Number.isInteger(RUNS) || RUNS < 1) {
     `LH_RUNS debe ser un entero ≥ 1 (recibido: ${process.env.LH_RUNS})`,
   );
 }
+const METODO = process.env.LH_THROTTLING ?? "simulate";
+if (!["simulate", "devtools"].includes(METODO)) {
+  throw new Error(
+    `LH_THROTTLING debe ser simulate o devtools (recibido: ${METODO})`,
+  );
+}
+const diagnostico = METODO !== "simulate";
 const port = 4190;
 const report = join(tmpdir(), "lighthouse-green-banana.json");
 
@@ -31,6 +49,7 @@ function medir() {
       `http://localhost:${port}/`,
       "--quiet",
       "--chrome-flags=--headless=new",
+      `--throttling-method=${METODO}`,
       "--output=json",
       `--output-path=${report}`,
       // Fuera de producción la página lleva noindex a propósito (demo con datos
@@ -61,7 +80,7 @@ function medir() {
       result.audits[id].numericValue,
     ]),
   );
-  return { categorias, metricas };
+  return { categorias, metricas, desglose: desgloseLcp(result) };
 }
 
 // Se espera el mensaje con que server.mjs confirma que escucha. Sondear el puerto no
@@ -96,6 +115,9 @@ await new Promise((resolve, reject) => {
 
 let failed = false;
 try {
+  console.log(
+    `Método de throttling: ${METODO}${diagnostico ? " (diagnóstico: el presupuesto no se evalúa)" : ""}`,
+  );
   const corridas = [];
   for (let i = 1; i <= RUNS; i++) {
     const corrida = medir();
@@ -106,11 +128,43 @@ try {
     );
   }
   console.log(`Mediana de ${RUNS} corridas:`);
-  for (const { id, valor, unidad, limite, ok } of evaluar(corridas)) {
-    failed ||= !ok;
+  const filas = evaluar(corridas);
+  for (const { id, valor, unidad, limite, ok } of filas) {
+    if (!diagnostico) failed ||= !ok;
     const texto =
       unidad === "ms" ? `${Math.round(valor)}ms` : Number(valor.toFixed(3));
-    console.log(`${ok ? "✓" : "✗"} ${id}: ${texto} (${limite})`);
+    const marca = diagnostico ? "·" : ok ? "✓" : "✗";
+    console.log(`${marca} ${id}: ${texto} (${limite})`);
+  }
+  const { subpartes, elementos } = resumirDesgloses(
+    corridas.map((c) => c.desglose),
+  );
+  console.log(
+    `Subpartes del LCP (mediana): ${SUBPARTES_LCP.map((id) => `${id} ${subpartes[id] === null ? "–" : `${Math.round(subpartes[id])}ms`}`).join(" · ")}`,
+  );
+  // Con el método simulado, Lighthouse calcula las subpartes sobre la traza sin
+  // throttling: no suman el LCP simulado. Para saber dónde se va el tiempo, DevTools.
+  if (!diagnostico) {
+    console.log(
+      "  (traza sin throttling: no suman el LCP simulado; para el desglose, LH_THROTTLING=devtools)",
+    );
+  }
+  // Comparar variantes solo vale si el elemento LCP no cambió (T-80).
+  console.log(
+    elementos.length === 1
+      ? `Elemento LCP: ${elementos[0]}`
+      : `⚠ El elemento LCP cambió entre corridas: ${elementos.join(" | ")}`,
+  );
+  if (process.env.LH_SALIDA) {
+    writeFileSync(
+      process.env.LH_SALIDA,
+      JSON.stringify(
+        { metodo: METODO, corridas, mediana: filas, subpartes, elementos },
+        null,
+        2,
+      ),
+    );
+    console.log(`Resumen guardado en ${process.env.LH_SALIDA}`);
   }
 } finally {
   server.kill();

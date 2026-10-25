@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  desgloseLcp,
   evaluar,
   mediana,
   PRESUPUESTO,
+  resumirDesgloses,
+  SUBPARTES_LCP,
 } from "../../../scripts/lighthouse-presupuesto.mjs";
 
 const corrida = (lcp: number, tbt = 100, perf = 92, cls = 0) => ({
@@ -61,5 +64,68 @@ describe("presupuesto de laboratorio de Lighthouse (T-75, R-01)", () => {
   it("el presupuesto de LCP es 3400 ms, no la meta de campo de 2,5 s (T-76)", () => {
     // Cambiar el presupuesto es una decisión explícita: hay que actualizar esta prueba.
     expect(PRESUPUESTO.metricas["largest-contentful-paint"].max).toBe(3400);
+  });
+});
+
+// Fragmento de un informe de Lighthouse 13 con el insight del desglose del LCP.
+const informe = (carga: number, elemento = "section#hero > picture > img") => ({
+  audits: {
+    "lcp-breakdown-insight": {
+      details: {
+        items: [
+          {
+            type: "table",
+            items: [
+              { subpart: "timeToFirstByte", duration: 12 },
+              { subpart: "resourceLoadDelay", duration: 700 },
+              { subpart: "resourceLoadDuration", duration: carga },
+              { subpart: "elementRenderDelay", duration: 47 },
+            ],
+          },
+          { type: "node", selector: elemento },
+        ],
+      },
+    },
+  },
+});
+
+describe("desglose del LCP (T-80)", () => {
+  it("extrae el elemento y las cuatro subpartes del informe", () => {
+    expect(desgloseLcp(informe(1951))).toEqual({
+      elemento: "section#hero > picture > img",
+      subpartes: {
+        timeToFirstByte: 12,
+        resourceLoadDelay: 700,
+        resourceLoadDuration: 1951,
+        elementRenderDelay: 47,
+      },
+    });
+  });
+
+  it("sin el insight devuelve nulos en vez de fallar", () => {
+    const vacio = desgloseLcp({ audits: {} });
+    expect(vacio.elemento).toBeNull();
+    expect(SUBPARTES_LCP.every((id) => vacio.subpartes[id] === null)).toBe(
+      true,
+    );
+  });
+
+  it("resume con la mediana de cada subparte y un solo elemento", () => {
+    const resumen = resumirDesgloses(
+      [1951, 1500, 2600].map((carga) => desgloseLcp(informe(carga))),
+    );
+    expect(resumen.subpartes.resourceLoadDuration).toBe(1951);
+    expect(resumen.elementos).toEqual(["section#hero > picture > img"]);
+  });
+
+  it("informa si el elemento LCP cambió entre corridas", () => {
+    const resumen = resumirDesgloses([
+      desgloseLcp(informe(1951)),
+      desgloseLcp(informe(1900, "main h1")),
+    ]);
+    expect(resumen.elementos).toEqual([
+      "section#hero > picture > img",
+      "main h1",
+    ]);
   });
 });
