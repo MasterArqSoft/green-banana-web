@@ -42,7 +42,7 @@ export function Coverage({ locale }: { locale: Locale }) {
       >
         {coverage.title}
       </h2>
-      <dl className="mt-6 grid gap-4 md:grid-cols-2">
+      <dl className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         {items.map(({ icon: Icon, label, value }) => (
           // Dentro de <dl>, cada grupo solo puede contener <dt> y <dd>: el ícono va en el <dt>.
           <div
@@ -51,7 +51,7 @@ export function Coverage({ locale }: { locale: Locale }) {
           >
             <dt className="flex items-center gap-3 font-semibold text-hoja">
               <Icon aria-hidden="true" className="size-8 shrink-0" />
-              {label}
+              <span className="min-w-0">{label}</span>
             </dt>
             <dd className="pl-11">{value}</dd>
           </div>

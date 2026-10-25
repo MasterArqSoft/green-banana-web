@@ -41,6 +41,12 @@
   html {
     background-color: var(--color-crema);
     color: var(--color-carbon);
+    /* Una palabra, correo o URL que no cabe en su línea se parte en vez de salirse a lo
+       ancho (reflow a 320 px con texto al 200 %, WCAG 1.4.10; T-103). Si cabe, no cambia.
+       "break-word" y no "anywhere": este también reducía a una letra el ancho mínimo de
+       los elementos flex y partía palabras que cabían («Finca» a 768 px; revisión de
+       T-121, N-1). Los elementos flex con texto llevan min-w-0 para poder estrecharse. */
+    overflow-wrap: break-word;
   }
 
   h1,

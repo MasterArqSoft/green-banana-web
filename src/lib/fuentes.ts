@@ -1,4 +1,5 @@
-// Caracteres incluidos en el recorte de Inter (src/app/fonts/inter-es.woff2, T-82):
+// Caracteres incluidos en los recortes de Inter (src/app/fonts/inter-es.woff2, T-82) y de
+// Fraunces (src/app/fonts/fraunces-es.woff2, T-112; mismos rangos):
 // ASCII imprimible, Latin-1 (tildes, ñ, ü, ¿, ¡, «», ©, ·) y la puntuación tipográfica
 // común. Un carácter fuera de estos rangos se vería con la fuente de respaldo.
 // Los rangos son los que recibió fontTools (--unicodes) al generar el archivo.

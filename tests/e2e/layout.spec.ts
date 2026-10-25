@@ -157,3 +157,110 @@ test.describe("«Saltar al contenido» (T-58)", () => {
     });
   }
 });
+
+// N-5 (revisión de T-121): las fotos de las tarjetas tienen dos versiones, 200 y 600 px.
+// La elegida debe cubrir el ancho real en píxeles del dispositivo (nitidez) sin bajar la
+// grande cuando basta la pequeña (peso). Se mide en los anchos donde cambia la grilla
+// (40rem, 64rem) o la tarjeta (consulta de contenedor de 18rem: 352 y 688 px) y con el
+// texto al 200 %. `sizes` empieza por `auto` (el navegador usa el ancho maquetado);
+// el respaldo, para navegadores sin `auto`, se comprueba también contra la maqueta a
+// tamaño normal: si cambia la grilla y no `sizes`, esto falla.
+test.describe("fotos de las tarjetas a la medida (N-5)", () => {
+  // Un solo proyecto (escritorio, Chromium) recorre todos los anchos.
+  test.skip(
+    ({ isMobile, browserName }) => isMobile || browserName !== "chromium",
+    "Recorre los anchos con un solo proyecto",
+  );
+  const ANCHOS = [320, 351, 352, 360, 640, 687, 688, 768, 1023, 1024, 1280];
+
+  for (const inicio of ["/", "/en"]) {
+    for (const texto of ["100%", "200%"]) {
+      test(`${inicio} con el texto al ${texto}: cada foto baja la versión que le corresponde`, async ({
+        browser,
+        baseURL,
+      }) => {
+        const fallos: string[] = [];
+        for (const ancho of ANCHOS) {
+          // Contexto nuevo por ancho: con la caché de otro ancho, el navegador reutiliza
+          // la versión grande ya descargada y la medida no diría nada.
+          const contexto = await browser.newContext({
+            baseURL,
+            viewport: { width: ancho, height: 800 },
+          });
+          const page = await contexto.newPage();
+          page.on("pageerror", (error) =>
+            fallos.push(`${ancho} px: ${error.message}`),
+          );
+          // El texto aumentado va en el HTML desde el principio, como lo tendría quien lo
+          // usa: aplicado después de cargar, el navegador ya habría elegido las fotos
+          // diferidas con la maqueta a tamaño normal.
+          if (texto !== "100%") {
+            await page.route(
+              (url) => url.pathname === inicio,
+              async (route) => {
+                const original = await route.fetch();
+                await route.fulfill({
+                  response: original,
+                  body: (await original.text()).replace(
+                    "</head>",
+                    `<style>html { font-size: ${texto} !important; }</style></head>`,
+                  ),
+                });
+              },
+            );
+          }
+          await page.goto(inicio);
+          const fotos = page.locator("#presentaciones img");
+          await fotos.first().scrollIntoViewIfNeeded();
+          await page.waitForFunction(() =>
+            [...document.querySelectorAll("#presentaciones img")].every(
+              (img) => (img as HTMLImageElement).currentSrc,
+            ),
+          );
+          const medidas = await fotos.evaluateAll((imgs) =>
+            imgs.map((img) => {
+              const foto = img as HTMLImageElement;
+              // Primer hueco del respaldo cuya condición se cumple (rem a 16 px).
+              let respaldo: number | null = null;
+              for (const parte of foto.sizes.split(",").map((p) => p.trim())) {
+                const m = parte.match(/^(.*?)\s*([\d.]+)(px|rem)$/);
+                if (!m) continue;
+                if (!m[1] || matchMedia(m[1]).matches) {
+                  respaldo = Number(m[2]) * (m[3] === "rem" ? 16 : 1);
+                  break;
+                }
+              }
+              return {
+                ancho: foto.getBoundingClientRect().width * devicePixelRatio,
+                elegida: /-200\.\w+$/.test(foto.currentSrc) ? 200 : 600,
+                respaldo:
+                  respaldo === null ? null : respaldo * devicePixelRatio,
+              };
+            }),
+          );
+          for (const [
+            i,
+            { ancho: px, elegida, respaldo },
+          ] of medidas.entries()) {
+            const esperada = px <= 200 ? 200 : 600;
+            if (elegida !== esperada) {
+              fallos.push(
+                `${ancho} px, foto ${i + 1}: ${Math.round(px)} px reales, bajó ${elegida} (esperada ${esperada})`,
+              );
+            }
+            if (
+              texto === "100%" &&
+              (respaldo === null || (respaldo <= 200 ? 200 : 600) !== esperada)
+            ) {
+              fallos.push(
+                `${ancho} px, foto ${i + 1}: el respaldo de sizes (${respaldo}) no corresponde a ${Math.round(px)} px reales`,
+              );
+            }
+          }
+          await contexto.close();
+        }
+        expect(fallos).toEqual([]);
+      });
+    }
+  }
+});

@@ -15,7 +15,7 @@ export function Hero({ locale }: { locale: Locale }) {
     <section
       id="hero"
       aria-labelledby="hero-titulo"
-      className="contenedor grid gap-8 py-8 md:grid-cols-2 md:items-center md:py-16"
+      className="contenedor grid grid-cols-1 gap-8 py-8 md:grid-cols-2 md:items-center md:py-16"
     >
       <div className="flex flex-col gap-4">
         <h1

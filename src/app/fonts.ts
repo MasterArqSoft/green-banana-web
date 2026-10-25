@@ -1,17 +1,23 @@
-import { Fraunces } from "next/font/google";
 import localFont from "next/font/local";
 
 // Tipografía de spec/02-content-spec.md §5: Fraunces para títulos, Inter para el texto.
-// Las dos se sirven desde el propio sitio: el visitante nunca se conecta a Google.
+// Las dos se sirven desde el propio sitio: el visitante nunca se conecta a Google, y el
+// build tampoco (T-112, F-12: antes Fraunces se descargaba de Google Fonts al compilar).
 // Ambas tienen licencia SIL Open Font License (doc/creditos.md).
 
-// Solo el peso 600: todos los títulos usan font-semibold. Fijo pesa 18 KB frente a
-// 36,5 KB del archivo variable (T-30).
-export const fraunces = Fraunces({
+// Fraunces autoalojada (T-112, DR-07): instancia estática del archivo variable de
+// google/fonts (OFL) con wght 600, opsz 14, SOFT 0 y WONK 1, los valores de la versión
+// que servía Google (mismas métricas). Solo el peso 600: todos los títulos usan
+// font-semibold. Recortada a los mismos caracteres que Inter (src/lib/fuentes.ts):
+// 16,8 KB frente a los 18,1 KB del subconjunto latino de Google. Procedimiento, origen y
+// SHA-256 en doc/bitacora.md y doc/creditos.md. Respaldo con métricas de Times New Roman,
+// como hacía next/font/google con esta serif.
+export const fraunces = localFont({
+  src: "./fonts/fraunces-es.woff2",
   weight: "600",
-  subsets: ["latin"],
   display: "swap",
   variable: "--font-fraunces",
+  adjustFontFallback: "Times New Roman",
 });
 
 // Inter recortada (T-82, PERF-02): variable de 400 a 700 (texto normal, font-semibold y

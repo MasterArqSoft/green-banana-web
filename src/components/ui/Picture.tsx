@@ -17,7 +17,12 @@ type PictureProps = {
   spec: ImageSpec;
   alt: string;
   className?: string;
-  /** Ancho en pantalla para elegir la versión del srcset, p. ej. "(min-width: 1024px) 280px, 96px". */
+  /**
+   * Ancho en pantalla para elegir la versión del srcset, p. ej. "(min-width: 64rem) 17.5rem,
+   * 6rem". Es el respaldo: delante va `auto` (N-5), con el que el navegador usa el ancho
+   * maquetado, también con el texto aumentado; los que no conocen `auto` lo saltan y usan
+   * este. Solo vale con carga diferida, que aquí es siempre.
+   */
   sizes?: string;
 };
 
@@ -28,6 +33,7 @@ type PictureProps = {
 export function Picture({ spec, alt, className, sizes }: PictureProps) {
   const fallback = spec.formats[spec.formats.length - 1];
   const responsive = Boolean(spec.variants?.length);
+  const sizesAuto = responsive && sizes ? `auto, ${sizes}` : undefined;
   return (
     <picture>
       {spec.formats.slice(0, -1).map((format) => (
@@ -35,13 +41,13 @@ export function Picture({ spec, alt, className, sizes }: PictureProps) {
           key={format}
           type={MIME[format]}
           srcSet={responsive ? srcSetFor(spec, format) : imageSrc(spec, format)}
-          sizes={responsive ? sizes : undefined}
+          sizes={sizesAuto}
         />
       ))}
       <img
         src={imageSrc(spec, fallback)}
         srcSet={responsive ? srcSetFor(spec, fallback) : undefined}
-        sizes={responsive ? sizes : undefined}
+        sizes={sizesAuto}
         alt={alt}
         width={spec.width}
         height={spec.height}

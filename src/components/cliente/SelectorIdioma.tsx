@@ -10,7 +10,10 @@ import { LOCALES, rutaEquivalente, type Locale } from "@/lib/i18n";
 // enlaces a la página equivalente, ya presentes en el HTML, así que sin JavaScript
 // también cambian de idioma. En el navegador solo agrega al destino la consulta y el
 // ancla de la URL actual (?…#…), también para abrirlo en otra pestaña. Nunca traduce la
-// página ni importa catálogos: los nombres de los idiomas llegan por props.
+// página ni importa catálogos: los nombres de los idiomas llegan por props. Los nombres
+// llevan translate="no": si el navegador traduce la página, el visitante sigue viendo
+// "Español / English" y encuentra el selector; el resto de la página sigue siendo
+// traducible (T-122, INC-01, DR-13).
 
 function suscribir(avisar: () => void) {
   window.addEventListener("hashchange", avisar);
@@ -34,10 +37,10 @@ export function SelectorIdioma({
   return (
     <nav
       aria-label={etiqueta}
-      className="inline-flex shrink-0 items-center gap-1 rounded-control border border-hoja/20 bg-crema p-1 text-sm"
+      className="inline-flex max-w-full shrink-0 flex-wrap items-center gap-1 rounded-control border border-hoja/20 bg-crema p-1 text-sm"
     >
       <Globe aria-hidden="true" size={18} className="mx-2 shrink-0 text-hoja" />
-      <ul className="flex items-center gap-1">
+      <ul className="flex flex-wrap items-center gap-1">
         {LOCALES.map((destino) => (
           <li key={destino}>
             {destino === locale ? (
@@ -45,6 +48,7 @@ export function SelectorIdioma({
               <span
                 aria-current="true"
                 lang={destino}
+                translate="no"
                 className="inline-flex min-h-11 items-center rounded-control bg-hoja-claro px-3 font-semibold text-hoja underline decoration-2 underline-offset-4"
               >
                 {nombres[destino]}
@@ -56,6 +60,7 @@ export function SelectorIdioma({
                 prefetch={false}
                 hrefLang={destino}
                 lang={destino}
+                translate="no"
                 rel="alternate"
                 className="inline-flex min-h-11 items-center rounded-control px-3 underline-offset-4 hover:bg-hoja-claro hover:underline"
               >

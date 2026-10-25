@@ -5,6 +5,7 @@ import esFincas from "@/content/es-CO/fincas.json";
 import {
   countPendingMarkers,
   findForbiddenClaims,
+  findPendingMarkerEntries,
   findPendingMarkers,
 } from "@/lib/claims";
 
@@ -94,5 +95,17 @@ describe("countPendingMarkers (paridad, AC-24)", () => {
     expect(countPendingMarkers("Entre [4 y 7] días [POR CONFIRMAR]")).toBe(2);
     expect(countPendingMarkers("Finca (FICTICIO)")).toBe(1);
     expect(countPendingMarkers("Listo")).toBe(0);
+  });
+});
+
+describe("findPendingMarkerEntries (T-117)", () => {
+  it("devuelve la ruta y el texto completo, sin recortar", () => {
+    const largo = `${"x".repeat(100)} [POR CONFIRMAR, RP-04]`;
+    expect(findPendingMarkerEntries({ copy: { texto: largo } })).toEqual([
+      { ruta: "copy.texto", texto: largo },
+    ]);
+    expect(findPendingMarkers({ copy: { texto: largo } })).toEqual([
+      `copy.texto: ${largo.slice(0, 80)}`,
+    ]);
   });
 });

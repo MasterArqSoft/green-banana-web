@@ -1,0 +1,12 @@
+{
+  "name": "green-banana-web-lighthouse",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lighthouse con su propio lock (T-113, DR-08): fuera del árbol del proyecto y del artefacto que se publica.",
+  "engines": {
+    "node": "^24.15.0"
+  },
+  "dependencies": {
+    "lighthouse": "13.5.0"
+  }
+}

@@ -22,7 +22,7 @@
   {
     "id": "pinton",
     "question": "¿Puede llegar pintón?",
-    "answer": "Puede haber piezas con un tono amarillo suave. Si más de [X] por ciento llega pintón, lo reponemos."
+    "answer": "Puede haber piezas con un tono amarillo suave. Si más de [X] por ciento llega pintón, lo reponemos o te devolvemos el dinero [POR CONFIRMAR política, RP-04]."
   },
   {
     "id": "zonas",
@@ -37,7 +37,7 @@
   {
     "id": "garantia",
     "question": "¿Qué pasa si llega maltratado?",
-    "answer": "Garantía de 24 horas con reposición."
+    "answer": "Tienes 24 horas desde la entrega para reclamar con una foto del producto y del recibo. Lo reponemos o te devolvemos el dinero [POR CONFIRMAR política, RP-04]."
   },
   {
     "id": "negocios",

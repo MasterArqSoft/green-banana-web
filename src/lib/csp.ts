@@ -42,6 +42,13 @@ export function cspPolicy(hashes: string[]): string {
   ].join("; ");
 }
 
+// La misma política para la cabecera HTTP del hosting de producción (T-115, DR-06):
+// agrega frame-ancestors 'none', que por <meta> no tiene efecto. La genera
+// scripts/cabeceras.mjs para cada página, con los mismos hashes que su <meta>.
+export function cspPolicyCabecera(hashes: string[]): string {
+  return `${cspPolicy(hashes)}; frame-ancestors 'none'`;
+}
+
 // Inserta la <meta> justo después de <meta charSet>, antes de cualquier script.
 export function applyCsp(html: string): string {
   if (html.includes('http-equiv="Content-Security-Policy"')) {

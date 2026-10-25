@@ -2,7 +2,9 @@
 // defecto) y evalúa la mediana contra el presupuesto de laboratorio de
 // scripts/lighthouse-presupuesto.mjs: las cuatro categorías ≥ 90 (AC-08) y, desde T-75
 // (R-01), también LCP, CLS y TBT. Falla si cualquiera no cumple. Usa el Chromium de
-// Playwright y Lighthouse 13.5.0 vía npx.
+// Playwright y Lighthouse 13.5.0 instalado desde su propio lock en tools/lighthouse/
+// (T-113, DR-08): `npm ci --prefix tools/lighthouse`. Antes se descargaba con
+// `npx --yes`, sin congelar sus dependencias (F-16).
 // Desde T-80 informa también las subpartes del LCP y el elemento LCP de cada corrida, y
 // acepta dos variables para comparar variantes con el mismo método:
 // - LH_THROTTLING=devtools: throttling aplicado durante la carga en vez del simulado. Es
@@ -12,7 +14,13 @@
 //   (T-96, AC-29): cada una se evalúa por separado contra el mismo presupuesto.
 // Uso: npm run build && npm run lighthouse
 import { execFileSync, spawn } from "node:child_process";
-import { appendFileSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  appendFileSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
@@ -47,6 +55,19 @@ if (RUTAS.some((ruta) => !ruta.startsWith("/"))) {
     `LH_RUTAS debe tener rutas que empiecen con / (recibido: ${RUTAS})`,
   );
 }
+const LIGHTHOUSE = join(
+  "tools",
+  "lighthouse",
+  "node_modules",
+  "lighthouse",
+  "cli",
+  "index.js",
+);
+if (!existsSync(LIGHTHOUSE)) {
+  throw new Error(
+    "Falta Lighthouse: instálalo desde su lock con `npm ci --prefix tools/lighthouse` (T-113).",
+  );
+}
 const port = 4190;
 const report = join(tmpdir(), "lighthouse-green-banana.json");
 
@@ -54,10 +75,9 @@ function medir(ruta) {
   // Sin restos de la corrida anterior: si esta falla a medias, no se lee el informe viejo.
   rmSync(report, { force: true });
   execFileSync(
-    "npx",
+    process.execPath,
     [
-      "--yes",
-      "lighthouse@13.5.0",
+      LIGHTHOUSE,
       `http://localhost:${port}${ruta}`,
       "--quiet",
       // En CI (GitHub Actions, Ubuntu) Chrome no puede usar su sandbox: el sistema no
@@ -75,7 +95,6 @@ function medir(ruta) {
     {
       env: { ...process.env, CHROME_PATH: chromium.executablePath() },
       stdio: "inherit",
-      shell: process.platform === "win32",
     },
   );
   const result = JSON.parse(readFileSync(report, "utf8"));

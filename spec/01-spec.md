@@ -112,7 +112,7 @@ Ampliación A-08 (Fase 12, implementada el 2026-10-24):
 | NFR-02 | Accesibilidad | WCAG 2.2 AA |
 | NFR-03 | SEO | Título, descripción, Open Graph, datos estructurados (LocalBusiness, FAQPage), `sitemap.xml`, `robots.txt` |
 | NFR-04 | Seguridad | HTTPS, HSTS, CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; sin secretos en el cliente. `Referrer-Policy` no puede ser `no-referrer` (OSM lo prohíbe para el mapa, FR-24); el valor recomendado es `strict-origin-when-cross-origin` |
-| NFR-05 | Compatibilidad | Últimas dos versiones de Chrome, Safari, Firefox y Edge; Android 10+ e iOS 15+ |
+| NFR-05 | Compatibilidad | Últimas dos versiones de Chrome, Safari, Firefox y Edge; Android 10+ e iOS 15+. Anchos de 320 a 1440 px. **Matriz probada en cada `validate` (T-108, DR-05):** Chromium completo a 360 y 1280 px; Chromium a 320 px para reflow (con espaciado WCAG 1.4.12 y fuente al 200 %), controles con foco no tapados, composición, axe y teclado; WebKit (perfil iPhone 13) y Firefox de escritorio con el subconjunto `@smoke` (8 páginas sin violaciones de CSP, enlaces `tel:`, selector de idioma y mapa por clic en ES y EN). Los motores de Playwright aproximan Safari y Firefox; no sustituyen dispositivos reales ni Edge, que se cubre como Chromium. Lo no probado automáticamente se revisa en el protocolo manual de T-109 |
 | NFR-06 | Disponibilidad | ≥ 99,9 % (hosting estático con CDN) |
 | NFR-07 | Mantenibilidad | Contenido y datos de contacto en archivos de datos; cambiar el número no requiere tocar componentes |
 | NFR-08 | Imágenes | AVIF o WebP con respaldo, `srcset`, carga diferida fuera del primer viewport. Solo imágenes libres de derechos o propias |

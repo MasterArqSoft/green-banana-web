@@ -7,15 +7,19 @@ const telHref = `tel:${site.phone}`;
 
 test.describe("botones de llamada (AC-03)", () => {
   for (const inicio of ["/", "/en"]) {
-    test(`${inicio}: todos los enlaces tel: usan el número de site.json (AC-26)`, async ({
-      page,
-    }) => {
-      await page.goto(inicio);
-      const hrefs = await page
-        .locator('a[href^="tel:"]')
-        .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-      expect(new Set(hrefs)).toEqual(new Set([telHref]));
-    });
+    test(
+      `${inicio}: todos los enlaces tel: usan el número de site.json (AC-26)`,
+      { tag: "@smoke" },
+      async ({ page }) => {
+        await page.goto(inicio);
+        const hrefs = await page
+          .locator('a[href^="tel:"]')
+          .evaluateAll((links) =>
+            links.map((link) => link.getAttribute("href")),
+          );
+        expect(new Set(hrefs)).toEqual(new Set([telHref]));
+      },
+    );
   }
 
   for (const inicio of ["/", "/en"]) {
@@ -117,11 +121,14 @@ test.describe("teclado (AC-09)", () => {
     await expect(first).not.toHaveAttribute("open", "");
   });
 
-  test("todos los elementos interactivos se alcanzan con Tab", async ({
+  // Alcance real (T-108, F-10): enlaces y preguntas de la FAQ con el mapa sin cargar. Los
+  // botones del mapa se recorren por estado en mapa-fincas.spec.ts («teclado del mapa por
+  // estado»).
+  test("los enlaces y las preguntas de / se alcanzan con Tab (sin los controles del mapa)", async ({
     page,
   }) => {
     await page.goto("/");
-    // Numera cada elemento interactivo visible (los botones Llamar son idénticos).
+    // Numera cada enlace y pregunta visible (los botones Llamar son idénticos).
     const interactive = await page
       .locator("a[href], summary")
       .evaluateAll((elements) => {

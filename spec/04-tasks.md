@@ -14,7 +14,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 5. Fase 4: Legal y SEO
 6. Fase 5: Calidad y seguridad
 7. Fase 6: Lanzamiento
-8. Fases 7 a 12: cambio v1.5, auditorías e internacionalización
+8. Fases 7 a 13: cambio v1.5, auditorías, internacionalización y remediación
 9. Resumen y estado de avance
 10. Roadmap (fuera de la Fase 1)
 11. Roadmap de producción (RP)
@@ -85,7 +85,7 @@ Las tareas de precios, WhatsApp, formulario B2B, analítica, facturación y dato
 | ID | Tarea | Req. | Est. | Dep. |
 |---|---|---|---|---|
 | T-30 | Optimización de rendimiento: imágenes, fuentes, JS, CSS crítico; Lighthouse en local con umbrales (móvil ≥ 90). Lighthouse CI en la pipeline con R-10 | NFR-01, AC-08 | 4 | T-33 |
-| T-32 | Cabeceras de seguridad y CSP según el hosting elegido (R-08); validar scripts de Next.js; verificación con escáner de cabeceras. **Mapa (FR-24, T-54):** `Referrer-Policy` debe ser `strict-origin-when-cross-origin` o más permisiva, nunca `no-referrer` (la política de teselas de OSM exige el Referer); la CSP debe permitir `img-src https://tile.openstreetmap.org` | NFR-04 | 2 | T-33, R-08 |
+| T-32 | Cabeceras de seguridad y CSP según el hosting elegido (R-08); validar scripts de Next.js; verificación con escáner de cabeceras. **Mapa (FR-24, T-54):** `Referrer-Policy` debe ser `strict-origin-when-cross-origin` o más permisiva, nunca `no-referrer` (la política de teselas de OSM exige el Referer); la CSP debe permitir `img-src https://tile.openstreetmap.org`. **Preparado por T-115 (2026-10-25):** archivos de cabeceras generados en el build y verificador remoto; queda aplicarlos en el hosting de R-08 y verificar el dominio final | NFR-04 | 2 | T-33, R-08 |
 | T-37 | Pruebas e2e Playwright: botón Llamar en todos los puntos de contacto, acordeón, navegación por teclado | AC-01 a 03, 09 | 4 | T-33 |
 | T-38 | Auditoría de accesibilidad (axe) y prueba con lector de pantalla | NFR-02, AC-09 | 3 | T-33 |
 | T-39 | Revisión de copy contra P1 y P3, sin precios, sin imágenes sin licencia y la lista legal (spec §9) | AC-02, 07, 13 | 2 | T-33, T-27 |
@@ -122,7 +122,7 @@ Origen: auditoría pasiva de caja negra sobre la demo publicada el 2026-10-23 (4
 
 Clasificación de los hallazgos:
 - **Ya resueltos:** UX-01 (el build de producción falla con marcadores), SEO-01 (`robots` por `SITE_ENV`), SEC-08 (verificado con `owasp-security`), PERF-01 y PERF-02 en parte, SEO-08 y SEC-10.
-- **Bloqueados por el usuario o el negocio:** RP-01, R-08 (T-32), T-36, RP-03, T-03, FR-12 y la protección de `main`.
+- **Bloqueados por el usuario o el negocio:** RP-01, R-08 (T-32), T-36, RP-03, T-03 y FR-12. La protección de `main` quedó configurada el 2026-10-25 (B11, ruleset 25829447).
 - **Fuera de la Fase 1:** R-01, R-02, R-06 y R-07. Las páginas de recetas y la navegación interna requieren un cambio de alcance en `05`.
 - **No adoptados:** JavaScript < 70 KB (el runtime de React y Next no baja; el presupuesto es P5), payload RSC, quitar el preload de Inter.
 
@@ -205,7 +205,7 @@ Decisiones del usuario:
 
 Origen: solicitud del usuario de analizar el proyecto local, consultar buenas prácticas y preparar tareas para implementación por Claude Code (2026-10-24). Alcance A-08 (`05` v1.6); requisitos FR-25 a FR-28 y AC-21 a AC-29 (`01` v1.6); contenido `02` §1 y decisión D7 (`03` v1.9).
 
-**Estado:** implementada el 2026-10-24 por orden del usuario (T-87 a T-99), sin dependencias nuevas, sin commit, push ni publicación. Evidencia por tarea en `doc/bitacora.md` (entrada «Fase 12, implementación»).
+**Estado:** implementada el 2026-10-24 por orden del usuario (T-87 a T-99), sin dependencias nuevas. Integrada después en `main` con los commits `2bf312d` y `10cd67b` y publicada en la demo (ver «Estados de entrega»). Evidencia por tarea en `doc/bitacora.md` (entrada «Fase 12, implementación»).
 
 Objetivo: conservar español colombiano en las URL actuales y añadir inglés bajo `/en`, con selector y HTML estático por idioma. La URL conserva el idioma al navegar y recargar; `/` sigue siendo española sin detección del navegador ni persistencia por cookies. No cambia la cobertura comercial ni cierra pendientes del negocio.
 
@@ -235,6 +235,63 @@ Objetivo: conservar español colombiano en las URL actuales y añadir inglés ba
 4. Actualizar bitácora y estado por tarea, con pruebas reales. Las dependencias son obligatorias aunque no se hagan commits intermedios. Los pendientes RP/T-05 permanecen abiertos.
 5. Entregar resumen de archivos, validaciones y limitaciones. La implementación local no implica permiso para publicar ni hacer push.
 
+## Fase 13: Remediación de la auditoría forense (2026-10-24)
+
+Origen: auditoría forense integral sobre `10cd67b` (informe y paquete locales en `doc/auditorias/2026-10-24/`, fuera de Git; SHA-256 del informe `6a8c78ff…02cac`, del paquete `f645e8c5…09f32`). Dictamen: demo funcional, lanzamiento comercial no aprobado; 17 hallazgos (F-01 a F-17: 1 alto de lanzamiento, 12 medios, 4 bajos), sin crítico ni alto explotable demostrado. Se añade INC-01 (traducción automática de Chrome sobre `/en/`, reportada por el usuario y diagnosticada como comportamiento del navegador).
+
+**Plan detallado:** `spec/06-plan-remediacion-auditoria-forense.md` (trazabilidad hallazgo → tarea → control, decisiones con opciones, criterio de cierre de cada tarea, riesgos y fuentes). Ese plan no es fuente de verdad: si contradice `05`, la constitución o `CLAUDE.md`, ganan ellos. **El criterio de cierre de cada tarea está en la columna "Cierre" del plan; sin esa evidencia la tarea no se marca hecha.**
+
+Decisiones del usuario (2026-10-24), detalle en el plan §4:
+- **DR-01:** tarjetas de producto con consulta de contenedor (se apilan cuando la tarjeta es estrecha); `whitespace-nowrap` solo se relaja en el CTA `sm`.
+- **DR-02:** plazo de 15 s para la carga del módulo del mapa, constante compartida con las teselas; id de intento para descartar resoluciones tardías.
+- **DR-03:** garantía alineada ya al estado pendiente (T-106) y fuente estructurada única tras RP-04 (T-116).
+- **DR-04:** registro de hallazgos versionado con hashes. Sustituida el 2026-10-25: el usuario prescinde del almacenamiento adicional de paquetes y F-08 queda aceptado por su decisión.
+- **F-05 (2026-10-25):** titulares de garantía aprobados: «¿Tu pedido llegó con algún problema?» y «Is there a problem with your order?».
+- **DR-05:** WebKit y Firefox en Playwright (`@smoke`), proyecto `movil-320` y `@vitest/coverage-v8` solo informativa. **Confirmado por el usuario el 2026-10-25: los smoke de WebKit y Firefox son bloqueantes dentro de `verificar`; su fallo impide publicar la demo.**
+- **DR-06:** fuente única de cabeceras de seguridad para Cloudflare y Azure antes de R-08; F-11 cierra solo al verificar el dominio final.
+- **DR-07:** Fraunces autoalojada desde `google/fonts` (OFL), recortada con fontTools.
+- **DR-08:** Lighthouse con lock propio en `tools/lighthouse/`.
+- **DR-09:** refactor del adaptador del mapa diferido (T-119, opcional, después de la Ola 1).
+- **DR-10 a DR-12:** runtime (`engines`, `devEngines`, `.nvmrc`), timeouts de CI medidos y `/output/` en `.gitignore`, con la recomendación del plan.
+- **DR-13:** `translate="no"` solo en los nombres de idioma del selector; la página sigue siendo traducible.
+- Dependencias de desarrollo autorizadas: `@vitest/coverage-v8`, motores WebKit y Firefox de Playwright y `lighthouse` en su lock dedicado. Ninguna de runtime.
+
+| ID | Tarea | Hallazgo / Req. | Est. | Dep. |
+|---|---|---|---|---|
+| T-100 | Línea base: releer fuentes, confirmar HEAD, `validate` completo fuera del sandbox (aislar el cierre colgado de `test:prefijo` si se repite), `audit:deps` y `lighthouse` con red | E05, E12, E13 | 2 | – |
+| T-101 | Registro durable de hallazgos (DR-04): ID `AUD-2026-10-24-FORENSE/F-xx`, hashes, ubicación del original, estado, prueba de cierre y residual | F-08 | 3 | T-100 |
+| T-102 | Regresiones e2e rojas antes de corregir (ES/EN): reflow a 320 px con espaciado 1.4.12 y texto al 200 %; import del mapa retenido con `page.clock`; foco dentro/fuera de la región ante error diferido | F-02, F-03, F-04 | 5 | T-100 |
+| T-103 | Reflow de tarjetas con consulta de contenedor (DR-01) en `ProductCards.tsx` y `CallButton.tsx` (`sm`) | F-02 | 4 | T-102 |
+| T-104 | Foco a "Reintentar" solo si el foco está en la región del mapa o se perdió; si no, solo anuncio `role=status` | F-04 | 2 | T-102 |
+| T-105 | Plazo de 15 s desde el inicio de `cargarMapa()` con id de intento (DR-02); lógica pura en `src/lib/` con prueba y en la lista permitida de ESLint | F-03 | 6 | T-102, T-104 |
+| T-106 | Alinear la garantía de la FAQ ES/EN con `copy.json` y `legal.json` (pendiente RP-04) y prueba de coherencia | F-05 | 2 | T-100 |
+| T-122 | `translate="no"` en los nombres de idioma del selector y aserción e2e (DR-13) | INC-01 | 1 | T-100 |
+| T-107 | Canon: `02` sin "Sin hreflang"; `CLAUDE.md` y este archivo sin "sin commit" obsoleto; tabla de estados de entrega con SHA | F-06, F-07 | 1,5 | T-100 |
+| T-108 | Matriz QA (DR-05): `movil-320`, `webkit-movil`, `firefox-escritorio` `@smoke`; recorrido de teclado renombrado y por estado del mapa; cobertura informativa; soporte declarado en `01` | F-10 | 8 | T-103, T-105 |
+| T-109 | Protocolo de aceptación manual WCAG 2.2 A/AA con NVDA y TalkBack para que lo ejecute el usuario (parte manual de T-38) | F-09 | 3 | T-108 |
+| T-110 | Contrato de runtime (DR-10) y `node-version-file` en `pages.yml` | F-14 | 1 | T-100 |
+| T-111 | `timeout-minutes` por job y en `test:prefijo` con duración medida (DR-11) | F-15 | 1 | T-110, T-108 |
+| T-112 | Fraunces local (DR-07), prueba de cobertura de caracteres, `doc/creditos.md`; build sin red a Google Fonts | F-12 | 5 | T-100 |
+| T-113 | Lighthouse con lock dedicado (DR-08), job con `npm ci --prefix` y su audit, Dependabot | F-16 | 4 | T-110 |
+| T-114 | `/output/` en `.gitignore` (DR-12), sin borrar nada | Informe §10 | 0,5 | T-100 |
+| T-115 | Fuente única de cabeceras (DR-06): generación para Cloudflare y Azure, emisión en el servidor de pruebas, e2e y script de verificación remota | F-11 | 8 | T-100 |
+| T-116 | Garantía como dato común estructurado tras RP-04 | F-05 | 4 | T-106, RP-04 |
+| T-117 | Expediente de lanzamiento con los pendientes de producción agrupados por RP y listado reproducible desde `pendingMarkers()` | F-01 | 4 | T-101 |
+| T-118 | Plan de medición solo documental (R-07 sigue fuera de Fase 1). **Aprobado por el usuario el 2026-10-25** (documento y procedimiento manual; sin analítica) | F-13 | 3 | T-100 |
+| T-120 | Evidencia remota de ruleset y ejecuciones con `gh api` de solo lectura. **Ampliada el 2026-10-25 por autorización del usuario:** ruleset de `main` configurado (id 25829447) y verificado como efectivo | B11 | 1 | T-111 |
+| T-119 | Refactor del adaptador del mapa sin cambio de comportamiento (opcional, DR-09) | F-17 | 8–16 | T-105, T-108 |
+| T-121 | Cierre: `validate`, `lighthouse`, sondas del informe, revisión independiente, registro, bitácora, estado y `CLAUDE.md`. Commit/push solo con orden del usuario | Todos | 3 | T-100 a T-118, T-120, T-122 |
+
+**Total Fase 13: ~72 h efectivas** sin T-119 (80–88 h con T-119). Excluye esperas de terceros (RP-01 a RP-05, R-08) y la sesión humana con lector de pantalla. Ruta crítica: T-100 → T-102 → T-104 → T-105 → T-108 → T-111 → T-121.
+
+### Ejecución por Claude Code
+
+1. Leer `CLAUDE.md` y las fuentes en su orden, después `spec/06-plan-remediacion-auditoria-forense.md`. Ejecutar por olas (plan §5): Ola 0 (T-100, T-101), Ola 1 (T-102 a T-106 y T-122), Ola 2 (T-107), Ola 3 (T-108, T-109), Ola 4 (T-110 a T-114), Ola 5 (T-115 a T-118, T-120) y cierre (T-121).
+2. En la Ola 1, la regresión roja de T-102 va antes de cada corrección y se registra su salida fallida.
+3. No tocar datos de negocio (`site.json`, marcadores `(FICTICIO)`/`[POR CONFIRMAR]`), no añadir analítica, formularios, WhatsApp ni precios, no borrar archivos y no hacer commit ni push sin orden expresa.
+4. Al terminar cada tarea: bitácora, estado en este archivo y fila del registro de hallazgos (T-101).
+5. T-116 espera a RP-04; F-09 y F-11 solo cierran con la sesión humana (T-109) y la verificación del dominio final tras R-08.
+
 ## Resumen
 
 | Fase | Horas estimadas |
@@ -252,7 +309,8 @@ Objetivo: conservar español colombiano en las URL actuales y añadir inglés ba
 | 10. Reauditoría de cierre | 10 |
 | 11. Auditoría de causa raíz | 56 |
 | 12. Español predeterminado e inglés opcional | 64 |
-| **Total** | **~266 h** |
+| 13. Remediación de la auditoría forense | 72 (80–88 con T-119) |
+| **Total** | **~338 h** |
 
 **Ruta crítica:** T-01 → T-05 → T-42 → T-44, con RP-01 a RP-05 antes de T-42 y T-43. En paralelo: T-09 → componentes → T-33 → T-30/T-37/T-39.
 **Hito sugerido:** MVP publicable al completar Fase 2 + T-26, T-27 y T-44. Publicar exige cerrar antes el roadmap de producción: RP-01 (datos reales y dominio), RP-02 (origen y fotos reales) y RP-03 (validación jurídica del precio por teléfono, medios de pago y tiempo de entrega), RP-04 (política de garantía) y RP-05 (procedimiento de PQR), además de decidir hosting (R-08) y CI/CD (R-10). La Fase 1 se construye con datos ficticios.
@@ -260,11 +318,12 @@ Objetivo: conservar español colombiano en las URL actuales y añadir inglés ba
 
 ## Estado de avance
 
-Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
+Actualizado: 2026-10-25. Detalle de cada tarea en `doc/bitacora.md`.
 
 | Estado | Tareas |
 |---|---|
-| **Fase 12 (español predeterminado e inglés opcional)** | Completa (2026-10-24): T-87 a T-99. AC-21 a AC-29 acreditados con `validate` y Lighthouse (bitácora). Sin commit ni publicación. Pendientes que no cierra: revisión editorial del inglés, revisión jurídica de los legales en los dos idiomas (T-05), idioma de la atención telefónica [POR CONFIRMAR] y prueba manual con lector de pantalla también en inglés (T-38) |
+| **Fase 13 (remediación de la auditoría forense)** | Ejecutada el 2026-10-25, sin commit ni push. **Hechas:** T-100 a T-115, T-117, T-118, T-120, T-122 y T-121 (cierre con `validate`, Lighthouse, sondas y revisión independiente; detalle en la bitácora). **Bloqueada:** T-116 (espera RP-04). **Diferida:** T-119 (DR-09). Hallazgos (`doc/registro-hallazgos.md`): cerrados F-03, F-04, F-06, F-07, F-10, F-12, F-14, F-15, F-16, R-01 e INC-01; condicionados F-02 (revisión visual del usuario) y F-05 (RP-04); aceptado F-08 (decisión del usuario); abiertos F-01, F-09, F-11, F-13 (con su preparación hecha), F-17 (diferido), B11 y el cierre colgado de `test:prefijo` (no reproducido). Revisión independiente de T-121: aprobado con observaciones; N-1 (palabras partidas por `overflow-wrap: anywhere`), N-3, N-4 y N-5 corregidos con prueba roja previa donde aplica; `validate` y Lighthouse repetidos sobre el estado final. **Segundo cierre (2026-10-25):** DR-05 confirmada (smoke de WebKit y Firefox bloqueantes en `verificar`), plan de medición aprobado (F-13 condicionado: medición real no acreditada, analítica en R-07), 404 con `frame-ancestors` por cabecera y proveedor explícito (N-6 b y c), cargador portable (N-6 a), `sizes` verificado (N-5 cerrado) y ruleset de `main` configurado (B11 cerrado); `validate` y Lighthouse repetidos sobre el estado final. Siguen abiertos F-01, F-09, F-11 (dominio), N-6 d y F-17. **El cierre técnico de la remediación no aprueba producción** |
+| **Fase 12 (español predeterminado e inglés opcional)** | Completa (2026-10-24): T-87 a T-99. AC-21 a AC-29 acreditados con `validate` y Lighthouse (bitácora). En `main` (`2bf312d`, `10cd67b`) y desplegada en la demo (ver «Estados de entrega»). Pendientes que no cierra: revisión editorial del inglés, revisión jurídica de los legales en los dos idiomas (T-05), idioma de la atención telefónica [POR CONFIRMAR] y prueba manual con lector de pantalla también en inglés (T-38) |
 | **Hecha** | T-01; T-07, T-08, T-09, T-10, T-11; T-12 a T-21, T-23, T-24, T-25, T-28, T-33, T-46, T-47; T-26, T-31; T-30, T-37, T-39, T-40, T-49 |
 | **Hecha con contenido provisional** | T-04: fotos generadas con IA, se reemplazan en RP-02. T-27: páginas legales en borrador, esperan T-05 |
 | **Parcial** | T-38: auditoría automática con axe sin infracciones; falta la prueba manual con lector de pantalla |
@@ -277,6 +336,16 @@ Actualizado: 2026-10-24. Detalle de cada tarea en `doc/bitacora.md`.
 | **Hecha, cambio v1.5** | T-50 (specs v1.5); T-51 a T-55 y T-57 (2026-10-19). T-56 hecha en código (atribución y aviso); su revisión jurídica de D-13 sigue pendiente junto con T-05 |
 
 Demo publicada: https://masterarqsoft.github.io/green-banana-web/ (GitHub Pages, datos ficticios, sin indexar).
+
+### Estados de entrega (T-107, F-07)
+
+Cuatro estados distintos: **implementado** (en el working tree), **commit** (en el historial local), **push** (en `origin/main`) y **desplegado** (publicado por `pages.yml` en la demo). Cada fila nombra la evidencia; un estado sin evidencia se marca ND. Desplegar la demo no es publicar en producción (RP-01 a RP-05, R-08).
+
+| Trabajo | Implementado | Commit | Push | Desplegado | Evidencia |
+|---|---|---|---|---|---|
+| Fase 12 (T-87 a T-99) | 2026-10-24 | `2bf312d` | Sí | Sí | `gh run` 40153585845 (push, `verificar` y `deploy` correctos, 2026-10-25 02:12 UTC) |
+| Ajuste del selector (T-93/T-98) | 2026-10-24 | `10cd67b` | Sí (`origin/main` = `10cd67b` según `gh api`, 2026-10-25) | Sí | `gh run` 40154926939 (push, `verificar`, `lighthouse` y `deploy` correctos, 2026-10-25 02:33 UTC); `/en/` responde 200 |
+| Fase 13 (T-100 a T-122) | 2026-10-25 | No | No | No | Working tree sobre `10cd67b`; el usuario no ordenó commit ni push |
 
 ---
 

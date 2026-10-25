@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import type { Page } from "@playwright/test";
+import type { Locator, Page, Route } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import enCopy from "../../src/content/en/copy.json";
 import copy from "../../src/content/es-CO/copy.json";
@@ -33,52 +33,54 @@ async function vigilarRed(page: Page) {
 }
 
 test.describe("mapa de fincas (FR-24)", () => {
-  test("Leaflet y las teselas no se descargan hasta pulsar «Ver mapa» (AC-15, AC-19)", async ({
-    page,
-  }) => {
-    const red = await vigilarRed(page);
-    const externas: string[] = [];
-    page.on("request", (request) => {
-      if (!request.url().startsWith("http://localhost")) {
-        externas.push(request.url());
-      }
-    });
-    const svg: string[] = [];
-    page.on("request", (request) => {
-      if (/mapa-fincas(-movil)?\.svg/.test(request.url()))
-        svg.push(request.url());
-    });
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    // El mapa ilustrado no se pide en la carga inicial, solo al acercarse a la sección.
-    expect(svg).toEqual([]);
-    await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
-    await page.waitForLoadState("networkidle");
-    expect(red.leaflet).toEqual([]);
-    expect(red.teselas).toEqual([]);
-    // El mapa ilustrado de fondo sale del propio sitio: ninguna conexión a terceros.
-    await expect(
-      page.locator('#mapa-fincas img[src$="mapa-fincas.svg"]'),
-    ).toHaveJSProperty("complete", true);
-    expect(externas).toEqual([]);
-    await expect(page.locator(".leaflet-container")).toHaveCount(0);
+  test(
+    "Leaflet y las teselas no se descargan hasta pulsar «Ver mapa» (AC-15, AC-19)",
+    { tag: "@smoke" },
+    async ({ page }) => {
+      const red = await vigilarRed(page);
+      const externas: string[] = [];
+      page.on("request", (request) => {
+        if (!request.url().startsWith("http://localhost")) {
+          externas.push(request.url());
+        }
+      });
+      const svg: string[] = [];
+      page.on("request", (request) => {
+        if (/mapa-fincas(-movil)?\.svg/.test(request.url()))
+          svg.push(request.url());
+      });
+      await page.goto("/");
+      await page.waitForLoadState("networkidle");
+      // El mapa ilustrado no se pide en la carga inicial, solo al acercarse a la sección.
+      expect(svg).toEqual([]);
+      await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
+      await page.waitForLoadState("networkidle");
+      expect(red.leaflet).toEqual([]);
+      expect(red.teselas).toEqual([]);
+      // El mapa ilustrado de fondo sale del propio sitio: ninguna conexión a terceros.
+      await expect(
+        page.locator('#mapa-fincas img[src$="mapa-fincas.svg"]'),
+      ).toHaveJSProperty("complete", true);
+      expect(externas).toEqual([]);
+      await expect(page.locator(".leaflet-container")).toHaveCount(0);
 
-    // El aviso está antes del botón (AC-19).
-    const aviso = page.locator("#mapa-fincas-aviso");
-    await expect(aviso).toContainText(copy.map.consent);
-    await expect(
-      aviso.getByRole("link", { name: copy.map.privacyLink }),
-    ).toHaveAttribute("href", copy.map.privacyUrl);
+      // El aviso está antes del botón (AC-19).
+      const aviso = page.locator("#mapa-fincas-aviso");
+      await expect(aviso).toContainText(copy.map.consent);
+      await expect(
+        aviso.getByRole("link", { name: copy.map.privacyLink }),
+      ).toHaveAttribute("href", copy.map.privacyUrl);
 
-    await page.getByRole("button", { name: copy.map.showButton }).click();
-    const mapa = page.locator(".leaflet-container");
-    await expect(mapa).toBeVisible();
-    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
-    await expect.poll(() => red.leaflet.length).toBeGreaterThan(0);
-    await expect.poll(() => red.teselas.length).toBeGreaterThan(0);
-    // Tras cargar, el foco pasa al mapa para no perderse.
-    await expect(mapa).toBeFocused();
-  });
+      await page.getByRole("button", { name: copy.map.showButton }).click();
+      const mapa = page.locator(".leaflet-container");
+      await expect(mapa).toBeVisible();
+      await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+      await expect.poll(() => red.leaflet.length).toBeGreaterThan(0);
+      await expect.poll(() => red.teselas.length).toBeGreaterThan(0);
+      // Tras cargar, el foco pasa al mapa para no perderse.
+      await expect(mapa).toBeFocused();
+    },
+  );
 
   test("la atribución de OpenStreetMap queda visible, sin prefijo (AC-18)", async ({
     page,
@@ -179,27 +181,29 @@ test.describe("errores del mapa y reintento (H-03, H-04, T-69)", () => {
     ).toBeVisible();
   });
 
-  test("si falla la descarga de Leaflet, también se puede reintentar", async ({
-    page,
-  }) => {
-    await page.route(TILE, (route) =>
-      route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
-    );
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    // Desde aquí, ningún archivo JS nuevo se descarga: falla el import() de Leaflet.
-    await page.route("**/_next/static/chunks/**", (route) => route.abort());
-    await page.getByRole("button", { name: copy.map.showButton }).click();
-    const reintentar = page.getByRole("button", { name: copy.map.retry });
-    await expect(reintentar).toBeVisible();
-    await expect(page.locator("#mapa-fincas [role='status']")).toHaveText(
-      copy.map.error,
-    );
+  test(
+    "si falla la descarga de Leaflet, también se puede reintentar",
+    { tag: "@smoke" },
+    async ({ page }) => {
+      await page.route(TILE, (route) =>
+        route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+      );
+      await page.goto("/");
+      await page.waitForLoadState("networkidle");
+      // Desde aquí, ningún archivo JS nuevo se descarga: falla el import() de Leaflet.
+      await page.route("**/_next/static/chunks/**", (route) => route.abort());
+      await page.getByRole("button", { name: copy.map.showButton }).click();
+      const reintentar = page.getByRole("button", { name: copy.map.retry });
+      await expect(reintentar).toBeVisible();
+      await expect(page.locator("#mapa-fincas [role='status']")).toHaveText(
+        copy.map.error,
+      );
 
-    await page.unroute("**/_next/static/chunks/**");
-    await reintentar.click();
-    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
-  });
+      await page.unroute("**/_next/static/chunks/**");
+      await reintentar.click();
+      await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+    },
+  );
 });
 
 // T-78 (auditoría de causa raíz, MAP-01 y MAP-02): la salud del mapa se evalúa por
@@ -434,40 +438,42 @@ test.describe("navegación de retorno (FR-19, AC-14)", () => {
 test.describe("mapa de fincas en inglés (AC-27)", () => {
   const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
 
-  test("Leaflet no se pide antes del clic; el mapa ilustrado es el inglés", async ({
-    page,
-  }) => {
-    const red = await vigilarRed(page);
-    await page.goto("/en");
-    await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
-    const svg = page.locator('#mapa-fincas img[src$="/en/mapa-fincas.svg"]');
-    await expect(svg).toHaveJSProperty("complete", true);
-    expect(red.leaflet).toEqual([]);
-    expect(red.teselas).toEqual([]);
-    await expect(page.locator("#mapa-fincas-aviso")).toContainText(
-      enCopy.map.consent,
-    );
+  test(
+    "Leaflet no se pide antes del clic; el mapa ilustrado es el inglés",
+    { tag: "@smoke" },
+    async ({ page }) => {
+      const red = await vigilarRed(page);
+      await page.goto("/en");
+      await page.locator("#mapa-fincas").scrollIntoViewIfNeeded();
+      const svg = page.locator('#mapa-fincas img[src$="/en/mapa-fincas.svg"]');
+      await expect(svg).toHaveJSProperty("complete", true);
+      expect(red.leaflet).toEqual([]);
+      expect(red.teselas).toEqual([]);
+      await expect(page.locator("#mapa-fincas-aviso")).toContainText(
+        enCopy.map.consent,
+      );
 
-    await page.getByRole("button", { name: enCopy.map.showButton }).click();
-    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
-    await expect.poll(() => red.teselas.length).toBeGreaterThan(0);
-    await expect(page.locator(".leaflet-control-attribution")).toHaveText(
-      enCopy.map.attribution,
-    );
-    await expect(
-      page.getByRole("button", { name: enCopy.map.zoomIn }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: enCopy.map.zoomOut }),
-    ).toBeVisible();
+      await page.getByRole("button", { name: enCopy.map.showButton }).click();
+      await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+      await expect.poll(() => red.teselas.length).toBeGreaterThan(0);
+      await expect(page.locator(".leaflet-control-attribution")).toHaveText(
+        enCopy.map.attribution,
+      );
+      await expect(
+        page.getByRole("button", { name: enCopy.map.zoomIn }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: enCopy.map.zoomOut }),
+      ).toBeVisible();
 
-    await page.locator(".marcador-acopio.leaflet-marker-icon").click();
-    const popup = page.locator(".leaflet-popup");
-    await expect(popup).toContainText("Santa Marta collection center");
-    await expect(
-      popup.getByRole("button", { name: enCopy.map.closePopup }),
-    ).toBeAttached();
-  });
+      await page.locator(".marcador-acopio.leaflet-marker-icon").click();
+      const popup = page.locator(".leaflet-popup");
+      await expect(popup).toContainText("Santa Marta collection center");
+      await expect(
+        popup.getByRole("button", { name: enCopy.map.closePopup }),
+      ).toBeAttached();
+    },
+  );
 
   test("error y reintento en inglés", async ({ page }) => {
     let caidas = true;
@@ -530,4 +536,210 @@ test.describe("navegación de retorno en inglés (FR-19, FR-26)", () => {
       await expect(page).toHaveURL(/\/en$/);
     });
   }
+});
+
+// T-102 (auditoría forense del 2026-10-24): regresiones de F-03 (la descarga del código
+// del mapa no tenía plazo propio) y F-04 (un error diferido llevaba el foco a
+// "Reintentar" aunque el usuario estuviera en otra parte de la página), en los dos
+// idiomas. Teselas siempre interceptadas.
+for (const { ruta, textos } of [
+  { ruta: "/", textos: copy.map },
+  { ruta: "/en", textos: enCopy.map },
+]) {
+  test.describe(`carga y foco del mapa en ${ruta} (F-03, F-04)`, () => {
+    const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
+
+    test(
+      "si el código del mapa no llega, avisa a los 15 s y la llegada tardía no crea el mapa",
+      { tag: "@smoke" },
+      async ({ page }) => {
+        await page.clock.install();
+        await page.route(TILE, (route) =>
+          route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+        );
+        await page.goto(ruta);
+        await page.waitForLoadState("networkidle");
+        // Desde aquí, los archivos JS y CSS nuevos (Leaflet) quedan retenidos sin respuesta.
+        const retenidas: Route[] = [];
+        await page.route("**/_next/static/chunks/**", (route) => {
+          retenidas.push(route);
+        });
+        await page.getByRole("button", { name: textos.showButton }).click();
+        await expect.poll(() => retenidas.length).toBeGreaterThan(0);
+        await expect(estado(page)).toHaveText(textos.loading);
+
+        await page.clock.runFor(16_000);
+        await expect(estado(page)).toHaveText(textos.error);
+        const reintentar = page.getByRole("button", { name: textos.retry });
+        await expect(reintentar).toBeVisible();
+
+        // Llegan tarde: la carga vencida no puede crear el mapa ni cambiar el estado.
+        const terminadas = retenidas.map((route) =>
+          page.waitForEvent("requestfinished", {
+            predicate: (request) => request === route.request(),
+          }),
+        );
+        await page.unroute("**/_next/static/chunks/**");
+        await Promise.all(retenidas.map((route) => route.continue()));
+        await Promise.all(terminadas);
+        await page.clock.runFor(1_000);
+        await expect(page.locator(".leaflet-container")).toHaveCount(0);
+        await expect(estado(page)).toHaveText(textos.error);
+        await expect(reintentar).toBeVisible();
+
+        // "Reintentar" crea un solo mapa.
+        await reintentar.click();
+        await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+        await expect(page.locator(".leaflet-container")).toHaveCount(1);
+      },
+    );
+
+    test(
+      "un error diferido con el foco fuera del mapa no mueve el foco y se anuncia",
+      { tag: "@smoke" },
+      async ({ page }) => {
+        await page.clock.install();
+        await page.route(TILE, () => {});
+        await page.goto(ruta);
+        await page.getByRole("button", { name: textos.showButton }).click();
+        await expect(page.locator(".leaflet-container")).toBeVisible();
+        const telefono = page.locator('footer a[href^="tel:"]').first();
+        await telefono.focus();
+        await page.clock.runFor(16_000);
+        await expect(estado(page)).toHaveText(textos.error);
+        await expect(
+          page.getByRole("button", { name: textos.retry }),
+        ).toBeVisible();
+        await expect(telefono).toBeFocused();
+      },
+    );
+
+    test(
+      "un error diferido con el foco en el mapa lleva el foco a «Reintentar»",
+      { tag: "@smoke" },
+      async ({ page }) => {
+        await page.clock.install();
+        await page.route(TILE, () => {});
+        await page.goto(ruta);
+        await page.getByRole("button", { name: textos.showButton }).click();
+        const mapa = page.locator(".leaflet-container");
+        // Tras cargar, el foco queda en el mapa; al fallar, el mapa desaparece.
+        await expect(mapa).toBeFocused();
+        await page.clock.runFor(16_000);
+        await expect(estado(page)).toHaveText(textos.error);
+        await expect(
+          page.getByRole("button", { name: textos.retry }),
+        ).toBeFocused();
+      },
+    );
+  });
+}
+
+// T-108 (F-10): los controles del mapa se alcanzan y se usan con el teclado en cada
+// estado: inicial, cargando, listo, con fallo parcial y con error. El recorrido de
+// calls.spec.ts no los incluye (solo enlaces y preguntas). Teselas interceptadas.
+test.describe("teclado del mapa por estado (T-108, F-10)", () => {
+  const estado = (page: Page) => page.locator("#mapa-fincas [role='status']");
+
+  // Tab desde donde esté el foco hasta que `objetivo` lo tenga.
+  async function tabHasta(page: Page, objetivo: Locator, max = 120) {
+    for (let i = 0; i < max; i++) {
+      if (await objetivo.evaluate((el) => el === document.activeElement))
+        return;
+      await page.keyboard.press("Tab");
+    }
+    await expect(objetivo).toBeFocused();
+  }
+
+  test("inicial y listo: «Ver mapa» con Tab y Enter; luego zoom y marcadores", async ({
+    page,
+  }) => {
+    await vigilarRed(page);
+    await page.goto("/");
+    const ver = page.getByRole("button", { name: copy.map.showButton });
+    await tabHasta(page, ver);
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(page.locator(".leaflet-container")).toBeFocused();
+
+    const acercar = page.getByRole("button", { name: copy.map.zoomIn });
+    await tabHasta(page, acercar);
+    await page.keyboard.press("Enter");
+    await expect(acercar).toBeFocused();
+
+    const acopio = page.locator(".marcador-acopio.leaflet-marker-icon");
+    await tabHasta(page, acopio);
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".leaflet-popup")).toContainText(
+      "Acopio en Santa Marta",
+    );
+  });
+
+  test("cargando: sin el botón, el foco no queda atrapado y Tab sigue por la página", async ({
+    page,
+  }) => {
+    await vigilarRed(page);
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const retenidas: Route[] = [];
+    await page.route("**/_next/static/chunks/**", (route) => {
+      retenidas.push(route);
+    });
+    const ver = page.getByRole("button", { name: copy.map.showButton });
+    await tabHasta(page, ver);
+    await page.keyboard.press("Enter");
+    await expect(estado(page)).toHaveText(copy.map.loading);
+    await page.keyboard.press("Tab");
+    const activo = await page.evaluate(
+      () => document.activeElement?.tagName ?? "",
+    );
+    expect(["A", "BUTTON", "SUMMARY"]).toContain(activo);
+    await page.unroute("**/_next/static/chunks/**");
+    await Promise.all(retenidas.map((route) => route.continue()));
+    await expect(page.locator(".leaflet-marker-icon")).toHaveCount(6);
+  });
+
+  test("parcial: «Reintentar» del aviso con Tab y Enter", async ({ page }) => {
+    let servidas = 0;
+    let fallar = true;
+    await page.route(TILE, (route) => {
+      servidas += 1;
+      return !fallar || servidas <= 1
+        ? route.fulfill({ status: 200, contentType: "image/png", body: PNG })
+        : route.fulfill({ status: 500, body: "" });
+    });
+    await page.goto("/");
+    const ver = page.getByRole("button", { name: copy.map.showButton });
+    await tabHasta(page, ver);
+    await page.keyboard.press("Enter");
+    await expect(estado(page)).toHaveText(copy.map.partial);
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await tabHasta(page, reintentar);
+    fallar = false;
+    await page.keyboard.press("Enter");
+    await expect(reintentar).toHaveCount(0);
+    await expect(estado(page)).not.toHaveText(copy.map.partial);
+  });
+
+  test("error: el foco pasa a «Reintentar» y Enter vuelve a cargar el mapa", async ({
+    page,
+  }) => {
+    let caidas = true;
+    await page.route(TILE, (route) =>
+      caidas
+        ? route.fulfill({ status: 500, body: "" })
+        : route.fulfill({ status: 200, contentType: "image/png", body: PNG }),
+    );
+    await page.goto("/");
+    const ver = page.getByRole("button", { name: copy.map.showButton });
+    await tabHasta(page, ver);
+    await page.keyboard.press("Enter");
+    await expect(estado(page)).toHaveText(copy.map.error);
+    const reintentar = page.getByRole("button", { name: copy.map.retry });
+    await expect(reintentar).toBeFocused();
+    caidas = false;
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".leaflet-tile-loaded").first()).toBeVisible();
+    await expect(page.locator(".leaflet-container")).toHaveCount(1);
+  });
 });

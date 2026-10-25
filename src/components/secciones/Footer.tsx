@@ -26,7 +26,8 @@ export function Footer({ locale }: { locale: Locale }) {
     >
       <div className="contenedor flex flex-col gap-6 py-10 text-sm">
         <p className="font-display text-lg font-semibold">{site.brand}</p>
-        <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
+        {/* Correo y datos legales: cadenas largas sin espacios; se parten en cualquier punto si no caben (texto al 200 %, T-103). */}
+        <dl className="grid grid-cols-1 gap-x-8 gap-y-2 wrap-anywhere sm:grid-cols-2">
           {identity.map(({ label, value }) => (
             <div key={label}>
               <dt className="inline font-semibold">{label}: </dt>
