@@ -1,11 +1,13 @@
 // Presupuesto de peso inicial (P5, spec/03-plan.md §8): suma, comprimido con gzip
 // como lo sirve el hosting, el HTML de cada página y los JS, CSS y fuentes que
 // precarga. Las imágenes diferidas no cuentan, y la foto del hero tiene su propio límite.
+// Los polyfills <script noModule> tampoco: los navegadores actuales no los descargan (T-83).
 // Falla si alguna página supera el límite o si alguna versión del hero supera el suyo.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { IMAGES } from "../src/lib/images.ts";
+import { recursosIniciales } from "./budget-recursos.mjs";
 
 const LIMIT_KB = 300;
 // Carpeta a medir: out/ por defecto, u out-pages/ (el artefacto que publica GitHub
@@ -31,15 +33,7 @@ const transferred = (file) => {
 let failed = false;
 for (const page of pages) {
   const html = readFileSync(join(out, page), "utf8");
-  const assets = [
-    ...new Set(
-      [
-        ...html.matchAll(
-          /["'](?:\/[^"']*?)?(\/_next\/static\/[^"']+\.(?:js|css|woff2))["']/g,
-        ),
-      ].map((match) => match[1]),
-    ),
-  ];
+  const assets = recursosIniciales(html);
   const parts = { html: transferred(page), js: 0, css: 0, fuentes: 0 };
   for (const asset of assets) {
     const size = transferred(asset);

@@ -20,6 +20,30 @@ No es fuente de verdad: si algo contradice los specs, ganan los specs (`spec/05-
   - Inter se recorta a los caracteres del español y a los pesos usados, servida desde el sitio;
   - Lighthouse en `verificar` como paso informativo, sin bloquear (CI-01).
 
+### T-83: análisis del JavaScript inicial (PERF-02)
+- **Herramienta:** el analizador oficial de Next 16.4 (`node_modules/next/dist/docs/01-app/02-guides/package-bundling.md`): `npx next analyze --output --snapshot t83` y `npx next analyze export --snapshot t83 --route /` (JSON Lines; desde PowerShell, porque Git Bash convierte `/` en una ruta de Windows). **Ojo:** `next analyze` borra `out/`; hay que volver a correr `npm run build`.
+- **Composición de la carga inicial de `/`** (comprimido, según el analizador; 219 KB incluido el chunk de polyfills):
+
+  | Origen | KB |
+  |---|---:|
+  | `react-dom` | 63,9 |
+  | Componentes del cliente de Next (router, layout, límites de error) | 60,6 |
+  | Polyfills de Next (`<script noModule>`) | 39,2 |
+  | Utilidades compartidas de Next | 12,2 |
+  | `react-server-dom-turbopack` (lectura del payload RSC) | 7,7 |
+  | `globals.css` | 5,1 |
+  | **Código propio:** `MapaFincasInteractivo` 2,1 · `lucide-react` 1,4 · `FloatingCallVisibility` 0,5 | 4,0 |
+
+  Leaflet (41,5 KB) y su CSS siguen en grupos asíncronos: solo se piden al pulsar "Ver mapa".
+- **Hallazgo:** el chunk de polyfills se carga con `noModule`, y los navegadores actuales no lo descargan (en la red de la auditoría, los scripts suman ~143 KB con cabeceras). **`npm run budget` lo contaba**: inflaba el JS en ~38 KB.
+- **Corrección:** la detección de recursos pasa a `scripts/budget-recursos.mjs` (función pura `recursosIniciales(html)`), que excluye los `<script noModule>`; prueba en `tests/unit/scripts/budget-recursos.test.ts` (sin repetir, exclusión de `noModule`/`nomodule`, prefijo de la demo). Resultado: JS de la landing 177,2 → 138,6 KB; landing 242,5 → **203,9 KB**; con el hero, 235,3 KB en móvil y 260,8 KB en escritorio. El límite de 300 KB no cambia.
+- **Descartado, con justificación:**
+  - quitar scripts de Next o desactivar la hidratación: rompe la navegación con `next/link`, el mapa y el botón flotante (la auditoría también lo desaconseja);
+  - mover los íconos de `lucide-react` fuera del bundle cliente: 1,4 KB, ganancia por debajo del ruido;
+  - el resto es el runtime de React y Next: no se reduce sin cambiar de framework, y la auditoría no encontró evidencia de que eso sea necesario.
+- **Lo que queda del LCP de laboratorio** es la descarga de la foto compitiendo con ~139 KB de JS, y el trabajo de hidratación (TBT con DevTools ~340 ms). No hay otro cambio pequeño y seguro en esta fase.
+- Archivos: `scripts/budget-recursos.mjs`, `scripts/budget.mjs`, `tests/unit/scripts/budget-recursos.test.ts`, `CLAUDE.md`, `spec/03-plan.md`, `spec/04-tasks.md`, `doc/bitacora.md`.
+
 ### T-82: Inter recortada al español (PERF-02)
 - **Punto de partida:** `next/font/google` servía Inter 4.001 variable (eje `wght` 100 a 900) con el subconjunto latino de Google: 48,4 KB, precargado en todas las páginas. El sitio usa solo 400 (texto), 600 (`font-semibold`) y 700 (`<strong>`, `font-weight: bolder`), y los caracteres no ASCII del contenido son `© « · » ¿ á é í ñ ó ú – …`.
 - **Herramienta de un solo uso:** fontTools 4.60.1 y brotli 1.1.0 en un entorno virtual del scratchpad (no es dependencia del proyecto; mismo criterio que la geometría del mapa con Overpass y shapely). Procedimiento reproducible:
