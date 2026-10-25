@@ -75,7 +75,7 @@
   },
   "benefits": {
     "title": "What it provides",
-    "text": "Green banana is a source of resistant starch, a type of fiber. It is a traditional cooking food and does not replace advice from a health professional."
+    "text": "Green banana is a source of resistant starch, a type of fiber. It is a traditional cooking staple and does not replace advice from a health professional."
   },
   "howItWorks": {
     "title": "How it works",
@@ -115,7 +115,7 @@
   "guarantee": {
     "title": "Is there a problem with your order?",
     "text": "You have 24 hours from delivery to call us or email the contact address with a photo of the product and the receipt. We replace it in the next delivery or refund your money [TO BE CONFIRMED policy, RP-04].",
-    "legalNote": "As a perishable product, the right of withdrawal does not apply. This guarantee is in addition to your rights as a consumer."
+    "legalNote": "Because this is a perishable product, the right of withdrawal does not apply. This guarantee is in addition to your rights as a consumer."
   },
   "finalCta": {
     "title": "Call us and let's talk about your order"
@@ -158,7 +158,7 @@
   },
   "map": {
     "title": "Origin farms in the banana-growing area",
-    "text": "These are reference farms of our origin in the banana-growing area of Magdalena. Locations are approximate. [TO BE CONFIRMED authorization from each producer, RP-02]",
+    "text": "These farms show where our bananas come from in the banana-growing area of Magdalena. Locations are approximate. [TO BE CONFIRMED authorization from each producer, RP-02]",
     "showButton": "Show map",
     "consent": "When you view the map, your browser will connect to OpenStreetMap, which receives your IP address.",
     "privacyUrl": "https://wiki.osmfoundation.org/wiki/Privacy_Policy",
