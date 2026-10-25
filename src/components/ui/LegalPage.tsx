@@ -18,7 +18,7 @@ export function LegalPage({
 }) {
   const { copy, legal } = getContent(locale);
   const { title, sections } = legal[page];
-  const values = legalValues();
+  const values = legalValues(locale);
   return (
     <main id={MAIN_ID} className="contenedor flex-1 py-12">
       <article className="max-w-prose">

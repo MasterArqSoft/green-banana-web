@@ -209,6 +209,11 @@ export const copySchema = z.strictObject({
   }),
   // FR-06. Los datos del productor y del lote vienen de origin.json (ficticios hasta RP-02).
   origin: z.strictObject({
+    exampleValues: z.strictObject({
+      producer: text,
+      municipality: text,
+      department: text,
+    }),
     title: textWith("municipio").and(textWith("ciudad")),
     text: textWith("productor").and(textWith("municipio")),
     steps: z.array(text).length(3, "El esquema de origen tiene 3 pasos"),
@@ -247,6 +252,10 @@ export const copySchema = z.strictObject({
   finalCta: z.strictObject({ title: text }),
   // FR-16. Los datos legales vienen de site.json; aquí solo las etiquetas.
   footer: z.strictObject({
+    exampleValues: z.strictObject({
+      razonSocial: text,
+      direccion: textWith("ciudad"),
+    }),
     labels: z.strictObject({
       razonSocial: text,
       nit: text,

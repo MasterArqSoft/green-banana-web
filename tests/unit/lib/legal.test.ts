@@ -35,4 +35,29 @@ describe("metadatos de las páginas legales (FR-18, FR-28)", () => {
       nit: site.legal.nit,
     });
   });
+
+  it("localiza solo los ejemplos y no modifica los datos compartidos", () => {
+    expect(legalValues("en")).toMatchObject({
+      razonSocial: "Example legal entity S.A.S. (FICTICIO)",
+      direccion: "Example address, Santa Marta (FICTICIO)",
+      nit: site.legal.nit,
+    });
+    expect(site.legal.razonSocial).toBe(
+      "Razón social de ejemplo S.A.S. (FICTICIO)",
+    );
+  });
+
+  it("conserva una razón social y dirección reales en la versión inglesa", () => {
+    const original = { ...site.legal };
+    try {
+      site.legal.razonSocial = "Distribuciones del Caribe S.A.S.";
+      site.legal.direccion = "Carrera 1 # 2-30, Santa Marta";
+      expect(legalValues("en")).toMatchObject({
+        razonSocial: site.legal.razonSocial,
+        direccion: site.legal.direccion,
+      });
+    } finally {
+      Object.assign(site.legal, original);
+    }
+  });
 });
