@@ -14,14 +14,20 @@ import { expect, test } from "./fixtures";
 const contenedor = (page: Page) => page.locator("#hero [data-efecto]");
 const foto = (page: Page) => page.locator("#hero img");
 
-// WebGL con GPU y OffscreenCanvas: lo mismo que deciden profundidad-webgl.ts y su
-// worker (el WebKit de Playwright en Windows no tiene transferControlToOffscreen).
+// WebGL con GPU en un OffscreenCanvas: lo mismo que deciden profundidad-webgl.ts y su
+// worker. El WebKit de Playwright en Windows no tiene transferControlToOffscreen; el de
+// Linux (CI) sí, y da WebGL en un canvas normal («Apple GPU», nombre enmascarado), pero
+// no en OffscreenCanvas: el efecto vuelve a la foto (data-motivo «sin WebGL en
+// OffscreenCanvas»).
 const hayGpu = (page: Page) =>
   page
     .evaluate(() => {
-      if (!("transferControlToOffscreen" in HTMLCanvasElement.prototype))
+      if (
+        !("transferControlToOffscreen" in HTMLCanvasElement.prototype) ||
+        typeof OffscreenCanvas !== "function"
+      )
         return null;
-      const gl = document.createElement("canvas").getContext("webgl");
+      const gl = new OffscreenCanvas(1, 1).getContext("webgl");
       if (!gl) return null;
       const info = gl.getExtension("WEBGL_debug_renderer_info");
       return String(
