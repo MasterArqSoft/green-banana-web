@@ -14,11 +14,12 @@ import { expect, test } from "./fixtures";
 const contenedor = (page: Page) => page.locator("#hero [data-efecto]");
 const foto = (page: Page) => page.locator("#hero img");
 
-// WebGL con GPU en un OffscreenCanvas: lo mismo que deciden profundidad-webgl.ts y su
-// worker. El WebKit de Playwright en Windows no tiene transferControlToOffscreen; el de
-// Linux (CI) sí, y da WebGL en un canvas normal («Apple GPU», nombre enmascarado), pero
-// no en OffscreenCanvas: el efecto vuelve a la foto (data-motivo «sin WebGL en
-// OffscreenCanvas»).
+// WebGL con GPU en un OffscreenCanvas: lo que necesitan profundidad-webgl.ts y su
+// worker. Es una predicción desde la página, válida en Chromium y Firefox (donde corren
+// las pruebas del efecto activo). No sirve para el WebKit de Linux (CI): da WebGL en la
+// página («Apple GPU», nombre enmascarado) pero no en el OffscreenCanvas del worker, y
+// el efecto vuelve a la foto con data-motivo «sin WebGL en OffscreenCanvas». La prueba
+// de humo por eso no predice: espera a que el efecto decida (efectoDecidido).
 const hayGpu = (page: Page) =>
   page
     .evaluate(() => {
@@ -37,6 +38,21 @@ const hayGpu = (page: Page) =>
     .then((r) => r !== null && !esRenderizadorSoftware(r));
 const SIN_GPU =
   "sin GPU, sin WebGL o sin OffscreenCanvas: el efecto no se activa";
+
+// Motivos de fallo que son límites del entorno (el navegador no puede), no errores del
+// efecto: un error del shader, una excepción o una capa que no carga hacen fallar.
+const MOTIVO_DEL_ENTORNO =
+  /^(sin WebGL en OffscreenCanvas|renderizador por software|sin OffscreenCanvas)/;
+
+// Espera a que el efecto se active o vuelva a la foto; true si se activó.
+async function efectoDecidido(page: Page) {
+  await expect(contenedor(page)).toHaveAttribute(
+    "data-efecto",
+    /^(activo|fallo)$/,
+    { timeout: 10_000 },
+  );
+  return (await contenedor(page).getAttribute("data-efecto")) === "activo";
+}
 
 // Fracción de píxeles que cambian de forma apreciable entre dos capturas (en el navegador).
 const fraccionDistinta = (page: Page, a: Buffer, b: Buffer) =>
@@ -196,7 +212,7 @@ for (const ruta of ["/", "/en"]) {
     await expect(foto(page)).not.toHaveAttribute("loading", "lazy");
     await expect(foto(page)).toHaveAttribute("alt", /.+/);
     await expect(foto(page)).toBeVisible();
-    if (await hayGpu(page)) {
+    if (await efectoDecidido(page)) {
       await esperarActivo(page);
       const lienzo = page.locator("#hero canvas");
       await expect(lienzo).toHaveAttribute("aria-hidden", "true");
@@ -207,9 +223,11 @@ for (const ruta of ["/", "/en"]) {
       ]);
       expect(b).toEqual(a);
     } else {
-      await expect(contenedor(page)).toHaveAttribute("data-efecto", "fallo", {
-        timeout: 10_000,
-      });
+      // Vuelve a la foto solo por un límite del navegador, nunca por un error propio.
+      await expect(contenedor(page)).toHaveAttribute(
+        "data-motivo",
+        MOTIVO_DEL_ENTORNO,
+      );
       await expect(page.locator("#hero canvas")).toHaveCount(0);
     }
     expect(errores).toEqual([]);
