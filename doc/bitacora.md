@@ -1,5 +1,13 @@
 # Bitácora del proyecto
 
+## 2026-10-26 — T-124: variante C integrada y desplegada
+
+PR #13 (`feature/hero-depth-capas`) fusionado en `main` con el merge `1ae2765`, con autorización del usuario y después de que `verificar` pasara. El workflow de Pages del push (`gh run` 40267681682, 04:17 UTC) terminó con `verificar`, `lighthouse` y `deploy` correctos. Comprobado en la demo publicada: las seis capas (`hero-{escritorio,movil}-{fondo,alfa,profundidad}.webp`) son idénticas byte a byte a las del repositorio, y en `/` y `/en` (1280×800 a DPR 2 y 1, 390×844 a DPR 3, Chromium con GPU) el efecto se activa, el lienzo aparece con el primer gesto y no hay errores de consola. Se apagaron los servidores locales de comparación. La rama `feature/hero-depth-parallax` (variante B) queda sin integrar como referencia.
+
+**Pendientes:** prueba en celular físico (arrastre horizontal, scroll vertical sobre la foto, varios arrastres, giro) y en Safari, con la compatibilidad sin comprobar hasta probarlo en un dispositivo Apple.
+
+**Archivos:** `spec/04-tasks.md` (T-124 y su estado de entrega), `CLAUDE.md`, `doc/bitacora.md`.
+
 ## 2026-10-25 — T-124, variante C: PR #13 y fallo de WebKit en CI
 
 Autorizados por el usuario commit, push, PR y merge de C (rama `feature/hero-depth-capas`, PR #13). El primer `verificar` falló solo en las pruebas de humo del hero con WebKit (Linux): el efecto volvía a la foto y la prueba esperaba que se activara. Diagnóstico con un motivo nuevo en el fallo (`data-motivo` en el contenedor, que también informa error del shader con su registro, contexto perdido, excepción o capa que no carga): «sin WebGL en OffscreenCanvas». Ese WebKit da WebGL en la página (el renderizador se informa enmascarado como «Apple GPU»), incluso en un OffscreenCanvas del hilo principal, pero no en el del worker: es un límite del entorno (le habría pasado igual a B) y la vuelta a la foto es el comportamiento correcto. Ninguna comprobación desde la página lo predice, así que la prueba de humo ya no predice: espera a que el efecto se active o vuelva a la foto y, si vuelve, exige que el motivo sea un límite del navegador (sin WebGL en OffscreenCanvas, renderizador por software o sin OffscreenCanvas); un error propio sigue fallando. Un reintento falló además por la instalación de navegadores (límite de 3 min con el mirror de Ubuntu lento, ya visto en T-111), sin relación con el cambio. Con eso, `verificar` pasa. Safari real sigue pendiente: este WebKit de CI no lo representa.
