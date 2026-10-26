@@ -1,5 +1,9 @@
 # Bitácora del proyecto
 
+## 2026-10-25 — T-124, variante C: PR #13 y fallo de WebKit en CI
+
+Autorizados por el usuario commit, push, PR y merge de C (rama `feature/hero-depth-capas`, PR #13). El primer `verificar` falló solo en las pruebas de humo del hero con WebKit (Linux): el efecto volvía a la foto y la prueba esperaba que se activara. Diagnóstico con un motivo nuevo en el fallo (`data-motivo` en el contenedor, que también informa error del shader con su registro, contexto perdido, excepción o capa que no carga): «sin WebGL en OffscreenCanvas». Ese WebKit da WebGL en la página (el renderizador se informa enmascarado como «Apple GPU»), incluso en un OffscreenCanvas del hilo principal, pero no en el del worker: es un límite del entorno (le habría pasado igual a B) y la vuelta a la foto es el comportamiento correcto. Ninguna comprobación desde la página lo predice, así que la prueba de humo ya no predice: espera a que el efecto se active o vuelva a la foto y, si vuelve, exige que el motivo sea un límite del navegador (sin WebGL en OffscreenCanvas, renderizador por software o sin OffscreenCanvas); un error propio sigue fallando. Un reintento falló además por la instalación de navegadores (límite de 3 min con el mirror de Ubuntu lento, ya visto en T-111), sin relación con el cambio. Con eso, `verificar` pasa. Safari real sigue pendiente: este WebKit de CI no lo representa.
+
 ## 2026-10-25 — T-124: C elegida como candidata final local (sin commit)
 
 El usuario revisó C en el navegador y la eligió como candidata final local («sí me convence»): tallo con borde limpio, sin vetas ni dobles siluetas evidentes, producto apoyado en la mesa. Se cierra la exploración de variantes: no se crean más ni se aumenta la amplitud sin un defecto visible concreto.
