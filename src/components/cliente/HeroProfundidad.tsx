@@ -50,6 +50,7 @@ export function HeroProfundidad({
       efecto?.destruir();
       efecto = null;
       caja.dataset.efecto = "foto";
+      delete caja.dataset.motivo;
     };
     const encender = () => {
       apagar();
@@ -70,10 +71,12 @@ export function HeroProfundidad({
               alActivar: () => {
                 if (mio === intento) caja.dataset.efecto = "activo";
               },
-              alFallar: () => {
+              alFallar: (motivo) => {
                 if (mio !== intento) return;
                 efecto = null;
                 caja.dataset.efecto = "fallo";
+                // Solo diagnóstico (lo leen las pruebas y las herramientas del navegador).
+                caja.dataset.motivo = motivo;
               },
             });
           })

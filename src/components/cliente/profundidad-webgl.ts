@@ -37,7 +37,8 @@ export function crearEfecto({
   foto: HTMLImageElement;
   capas: Capas;
   alActivar: () => void;
-  alFallar: () => void;
+  /** Con el motivo, para diagnóstico. */
+  alFallar: (motivo: string) => void;
 }): Efecto {
   let destruido = false;
   // Un solo abort() quita todos los listeners; el resto de la limpieza va en la lista.
@@ -54,10 +55,16 @@ export function crearEfecto({
     worker?.terminate();
     for (const limpiar of limpiezas.splice(0)) limpiar();
   };
-  const fallar = () => {
+  const fallar = (motivo: unknown) => {
     if (destruido) return;
     destruir();
-    alFallar();
+    alFallar(
+      motivo instanceof Error
+        ? motivo.message
+        : motivo instanceof Event
+          ? `evento ${motivo.type}`
+          : String(motivo),
+    );
   };
 
   const lienzo = document.createElement("canvas");
@@ -65,7 +72,7 @@ export function crearEfecto({
     typeof lienzo.transferControlToOffscreen !== "function" ||
     typeof createImageBitmap !== "function"
   ) {
-    queueMicrotask(fallar);
+    queueMicrotask(() => fallar("sin OffscreenCanvas o createImageBitmap"));
     return { destruir };
   }
   lienzo.className = CLASE_LIENZO;
@@ -196,7 +203,7 @@ export function crearEfecto({
       worker.addEventListener(
         "message",
         ({ data }: MessageEvent<DelWorker>) => {
-          if (data.tipo === "fallo") fallar();
+          if (data.tipo === "fallo") fallar(data.motivo);
           else if (data.tipo === "estado") {
             contenedor.dataset.parallax = data.parallax;
             if (data.parallax === "movimiento")

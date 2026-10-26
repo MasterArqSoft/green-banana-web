@@ -43,7 +43,8 @@ export type AlWorker =
 export type DelWorker =
   | { tipo: "listo" }
   | { tipo: "estado"; parallax: "reposo" | "movimiento" }
-  | { tipo: "fallo" };
+  /** `motivo`: por qué no se activó (diagnóstico; queda en data-motivo). */
+  | { tipo: "fallo"; motivo: string };
 
 /** Caja de la foto en CSS, densidad de píxeles y object-position (fracciones). */
 export type Tamano = {
@@ -190,11 +191,11 @@ let fallado = false;
 const segundosDesdeInicio = () =>
   inicio ? (performance.now() - inicio) / 1000 : 0;
 
-function fallar() {
+function fallar(motivo: string) {
   if (fallado) return;
   fallado = true;
   escena = null;
-  enviar({ tipo: "fallo" });
+  enviar({ tipo: "fallo", motivo: motivo.slice(0, 200) });
 }
 
 ambito.onmessage = ({ data }) => {
@@ -215,8 +216,8 @@ ambito.onmessage = ({ data }) => {
       dibujar();
       avisar("reposo");
     }
-  } catch {
-    fallar();
+  } catch (e) {
+    fallar(`excepción: ${e instanceof Error ? e.message : String(e)}`);
   }
 };
 
@@ -228,13 +229,15 @@ function iniciar(m: Extract<AlWorker, { tipo: "iniciar" }>) {
     premultipliedAlpha: false,
     powerPreference: "low-power",
   });
-  if (!gl || esRenderizadorSoftware(renderizador(gl))) return fallar();
+  if (!gl) return fallar("sin WebGL en OffscreenCanvas");
+  if (esRenderizadorSoftware(renderizador(gl)))
+    return fallar(`renderizador por software: ${renderizador(gl)}`);
   m.lienzo.addEventListener("webglcontextlost", (e) => {
     e.preventDefault();
-    fallar();
+    fallar("contexto perdido");
   });
   const programa = compilar(gl);
-  if (!programa) return fallar();
+  if (typeof programa === "string") return fallar(programa);
   const u = (nombre: string) => gl.getUniformLocation(programa, nombre);
   gl.uniform1f(u("u_foco"), FOCO);
   gl.uniform1i(u("u_foto"), 0);
@@ -406,21 +409,24 @@ function renderizador(gl: WebGLRenderingContext): string {
   );
 }
 
-function compilar(gl: WebGLRenderingContext): WebGLProgram | null {
+// El programa, o el motivo del error (con el registro del compilador).
+function compilar(gl: WebGLRenderingContext): WebGLProgram | string {
   const programa = gl.createProgram();
   for (const [tipo, fuente] of [
     [gl.VERTEX_SHADER, VERTICES],
     [gl.FRAGMENT_SHADER, FRAGMENTOS],
   ] as const) {
     const shader = gl.createShader(tipo);
-    if (!shader) return null;
+    if (!shader) return "sin shader";
     gl.shaderSource(shader, fuente);
     gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return null;
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+      return `shader: ${gl.getShaderInfoLog(shader) ?? ""}`;
     gl.attachShader(programa, shader);
   }
   gl.linkProgram(programa);
-  if (!gl.getProgramParameter(programa, gl.LINK_STATUS)) return null;
+  if (!gl.getProgramParameter(programa, gl.LINK_STATUS))
+    return `programa: ${gl.getProgramInfoLog(programa) ?? ""}`;
   gl.useProgram(programa);
   return programa;
 }
