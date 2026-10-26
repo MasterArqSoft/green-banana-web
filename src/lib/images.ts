@@ -131,6 +131,27 @@ export const IMAGES = {
   recipes: Record<string, ImageSpec>;
 };
 
+/**
+ * Capas del efecto de profundidad del hero (components/cliente/HeroProfundidad.tsx),
+ * con la proporción y el encuadre de cada foto publicada: `profundidad` (R = fondo,
+ * G = producto; blanco = cerca), `fondo` (la mesa y el fondo reconstruidos detrás del
+ * producto) y `alfa` (R = opacidad del producto, G = dónde se usa el fondo
+ * reconstruido). No los genera scripts/images.mjs sino tools/profundidad/generar.py
+ * (variante c, tools/profundidad/capas.py), a partir de las fotos de
+ * public/images/hero/: si cambian, hay que volver a correrlo. Se piden después de la
+ * carga y solo si el efecto se activa.
+ */
+const capasHero = (foto: string) => ({
+  profundidad: `hero/${foto}-profundidad.webp`,
+  fondo: `hero/${foto}-fondo.webp`,
+  alfa: `hero/${foto}-alfa.webp`,
+});
+export const HERO_PROFUNDIDAD = {
+  escritorio: capasHero("hero-escritorio"),
+  movil: capasHero("hero-movil"),
+  maxKB: 50,
+} as const;
+
 /** Foto de una receta por su id de recipes.json. Si falta, el build falla con el id. */
 export function recipeImage(id: string): ImageSpec {
   const recipes: Record<string, ImageSpec> = IMAGES.recipes;

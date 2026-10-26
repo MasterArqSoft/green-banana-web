@@ -5,7 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 type Observado = { ruta: string; hero: boolean; pie: boolean };
 
-// Uno de los tres componentes cliente (los otros son MapaFincasInteractivo y SelectorIdioma). Muestra el botón flotante en móvil
+// Uno de los componentes cliente (los otros son MapaFincasInteractivo, SelectorIdioma y HeroProfundidad). Muestra el botón flotante en móvil
 // cuando el hero (#hero) ya salió de la pantalla y el pie (#pie) aún no entra,
 // para no taparlo (FR-17). Sin JavaScript el botón queda oculto: los demás
 // botones Llamar siguen disponibles.
