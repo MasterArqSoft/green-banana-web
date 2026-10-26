@@ -40,11 +40,12 @@ const LIB_CLIENTE = {
     "!@/lib/tel",
     "!@/lib/salud-mapa",
     "!@/lib/carga-por-intento",
+    "!@/lib/parallax",
     "!@/lib/i18n",
     "!@/lib/content",
   ],
   message:
-    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel, salud-mapa, carga-por-intento o i18n. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
+    "Un componente cliente solo importa @/lib/schema (tipos), template, format, tel, salud-mapa, carga-por-intento, parallax o i18n. Los demás módulos de lib/ cargan el contenido: pásalo por props.",
 };
 // Directivas que agregan JavaScript o código de servidor.
 const USE_CLIENT = {
@@ -165,6 +166,9 @@ const eslintConfig = defineConfig([
     "output/**",
     // Informe generado por `npm run test:coverage` (T-108), fuera de Git.
     "coverage/**",
+    // Entorno de Python y modelo de tools/profundidad/ (mapas del hero), fuera de Git.
+    "tools/profundidad/.venv/**",
+    "tools/profundidad/modelos/**",
   ]),
 ]);
 

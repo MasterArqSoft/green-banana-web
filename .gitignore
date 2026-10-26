@@ -73,3 +73,8 @@ next-env.d.ts
 
 # Lighthouse con su propio lock (T-113): se versionan package.json y package-lock.json
 /tools/lighthouse/node_modules/
+
+# Mapas de profundidad del hero: entorno de Python y modelo ONNX descargado (solo local).
+/tools/profundidad/.venv/
+/tools/profundidad/modelos/
+__pycache__/

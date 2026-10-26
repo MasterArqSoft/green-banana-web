@@ -27,11 +27,13 @@ export function TopBar({
     <header className="@container sticky top-0 z-20 border-b border-hoja/15 bg-crema/95 backdrop-blur md:static @max-xs/pagina:static [@media(max-height:32rem)]:static">
       <div className="contenedor grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 py-2 @max-xs:grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
         <div className="min-w-0">
-          {/* Sin prefetch (PERF-05, T-61): en la landing descargaba otra vez la página completa. */}
+          {/* Sin prefetch (PERF-05, T-61): en la landing descargaba otra vez la página completa.
+              La marca se parte en dos líneas si no cabe, en vez de cortarse con «…»
+              (revisión del hero en móvil, 2026-10-25). */}
           <Link
             href={rutaDe("inicio", locale)}
             prefetch={false}
-            className="block truncate rounded-control font-display @max-xs:whitespace-normal text-lg font-semibold text-hoja"
+            className="block rounded-control font-display text-base leading-snug font-semibold text-balance text-hoja sm:text-lg"
           >
             {site.brand}
           </Link>
